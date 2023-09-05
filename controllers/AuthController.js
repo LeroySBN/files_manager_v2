@@ -13,13 +13,12 @@ class AuthController {
     }
 
     const base64Credentials = authHeader.split(' ')[1];
-    const credentials = Buffer.from(base64Credentials, 'base64').toString('ascii');
+    const credentials = Buffer.from(base64Credentials, 'base64').toString('utf-8');
     const [email, password] = credentials.split(':');
 
     // Retrieve user based on email and password
     const users = dbClient.db.collection('users');
     const user = await users.findOne({ email, password: sha1(password) });
-
     if (user) {
       // Generate a random token
       const token = uuidv4();
@@ -32,12 +31,9 @@ class AuthController {
   }
 
   static async getDisconnect(req, res) {
-    // Get the token from the X-Token header
     const token = req.header('X-Token');
-
     // Retrieve user based on the token
     const userId = await redisClient.get(`auth_${token}`);
-
     if (userId) {
       // Delete the token from Redis
       await redisClient.del(`auth_${token}`);
