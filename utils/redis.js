@@ -1,5 +1,6 @@
 // Redis utils
 const redis = require('redis');
+const { promisify } = require('util');
 
 class RedisClient {
   constructor() {
@@ -14,20 +15,32 @@ class RedisClient {
   }
 
   async get(key) {
-    const value = await this.client.get(key);
-    return value;
+    const asyncGet = promisify(this.client.get).bind(this.client);
+    try {
+      const value = await asyncGet(key);
+      return value;
+    } catch (error) {
+      return null;
+    }
   }
 
   async set(key, value, duration) {
-    await this.client.set(key, value);
-    await this.client.expire(key, duration);
+    try {
+      await this.client.setex(key, duration, value);
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   async del(key) {
-    await this.client.del(key);
+    try {
+      await this.client.del(key);
+    } catch (error) {
+      console.log(error);
+    }
   }
 }
 
-const redisClient = RedisClient();
+const redisClient = new RedisClient();
 
 module.exports = redisClient;
