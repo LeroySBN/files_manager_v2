@@ -1,7 +1,9 @@
 // Routes
-const express = require('express');
-const router = express.Router();
+import { Router } from 'express';
+
 const AppController = require('../controllers/AppController');
+
+const router = Router();
 
 router.get('/status', AppController.getStatus);
 router.get('/stats', AppController.getStats);
