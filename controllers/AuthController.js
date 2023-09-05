@@ -24,7 +24,7 @@ class AuthController {
       const key = `auth_${token}`;
       const expiryInSeconds = 60 * 60 * 24;
       // Store the user ID in Redis with the token as the key for 24 hours
-      await redisClient.set(key, user._id.toString(), 'EX', expiryInSeconds);
+      await redisClient.set(key, user._id.toString(), expiryInSeconds);
       // Return the generated token
       return res.status(200).json({ token });
     }
