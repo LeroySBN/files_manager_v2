@@ -20,7 +20,6 @@ class AuthController {
     const users = dbClient.db.collection('users');
     const user = await users.findOne({ email, password: sha1(password) });
     if (user) {
-      // Generate a random token
       const token = uuidv4();
       const key = `auth_${token}`;
       const expiryInSeconds = 60 * 60 * 24;
@@ -34,12 +33,9 @@ class AuthController {
 
   static async getDisconnect(req, res) {
     const token = req.header('X-Token');
-    // Retrieve user based on the token
     const userId = await redisClient.get(`auth_${token}`);
     if (userId) {
-      // Delete the token from Redis
       await redisClient.del(`auth_${token}`);
-      // Return a success response with status code 204 (No Content)
       return res.status(204).json({});
     }
     return res.status(401).json({ error: 'Unauthorized' });
