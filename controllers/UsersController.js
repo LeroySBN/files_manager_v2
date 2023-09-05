@@ -42,9 +42,9 @@ class UsersController {
     const userId = await redisClient.get(`auth_${token}`);
 
     if (userId) {
-      const users = dbClient.db.collection('users');
+      const users = await dbClient.db.collection('users');
       const userObj = new ObjectID(userId);
-      const user = users.findOne({ _id: userObj });
+      const user = await users.findOne({ _id: userObj });
       if (user) {
         return res.status(200).json({ id: user._id, email: user.email });
       }
