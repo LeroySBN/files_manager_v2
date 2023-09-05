@@ -2,8 +2,9 @@
 // Description: This controller is responsible for handling all the user related requests
 // and responses.
 import sha1 from 'sha1';
-
+import { ObjectID } from 'mongodb';
 import dbClient from '../utils/db';
+import redisClient from '../utils/redis';
 
 class UsersController {
   static postNew(request, response) {
@@ -34,6 +35,32 @@ class UsersController {
         }).catch((error) => console.log(error));
       }
     });
+  }
+
+  static async getMe(req, res) {
+    const token = req.header('X-Token');
+
+    if (!token) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    const userId = await redisClient.get(`auth_${token}`);
+
+    if (!userId) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    try {
+      const user = await dbClient.usersCollection.findOne({ _id: ObjectID(userId) }, { projection: { _id: 0, email: 1 } });
+
+      if (!user) {
+        return res.status(401).json({ error: 'Unauthorized' });
+      }
+
+      return res.status(200).json(user);
+    } catch (error) {
+      return res.status(500).json({ error: 'Internal Server Error' });
+    }
   }
 }
 
