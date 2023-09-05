@@ -79,6 +79,67 @@ class FilesController {
       ...fileDocument,
     });
   }
+
+  static async getShow(req, res) {
+    // Retrieve the user based on the token
+    const token = req.header('X-Token');
+    const userId = await redisClient.get(`auth_${token}`);
+
+    if (!userId) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    // Retrieve the file document based on the ID
+    const fileId = req.params.id;
+    const file = await dbClient.db.collection('files').findOne({
+      _id: new ObjectID(fileId),
+      userId: new ObjectID(userId),
+    });
+
+    if (!file) {
+      return res.status(404).json({ error: 'Not found' });
+    }
+
+    return res.status(200).json(file);
+  }
+
+  static async getIndex(req, res) {
+    // Retrieve the user based on the token
+    const token = req.header('X-Token');
+    const userId = await redisClient.get(`auth_${token}`);
+
+    if (!userId) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    // Extract parentId and page query parameters, with defaults
+    const parentId = req.query.parentId || '0';
+    const page = req.query.page || 0;
+
+    // Pagination parameters
+    const perPage = 20;
+    const skip = page * perPage;
+
+    // MongoDB aggregation to fetch paginated files
+    const files = await dbClient.db.collection('files')
+      .aggregate([
+        {
+          $match: {
+            userId: new ObjectID(userId),
+            parentId: new ObjectID(parentId),
+          },
+        },
+        {
+          $skip: skip,
+        },
+        {
+          $limit: perPage,
+        },
+      ])
+      .toArray();
+
+    return res.status(200).json(files);
+  }
 }
 
 module.exports = FilesController;
