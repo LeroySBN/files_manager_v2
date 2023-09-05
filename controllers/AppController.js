@@ -1,24 +1,18 @@
 // Controllers
 // Description: This file contains all the controllers for the application
-const DBClient = require('../utils/db');
-const RedisClient = require('../utils/redis');
+import redisClient from '../utils/redis';
+import dbClient from '../utils/db';
 
-const AppController = {
-  getStatus: async (req, res) => {
-    const redisStatus = RedisClient.isAlive();
-    const dbStatus = await DBClient.isAlive();
-    if (redisStatus && dbStatus) {
-      res.status(200).json({ redis: true, db: true });
-    } else {
-      res.status(200).json({ redis: redisStatus, db: dbStatus });
-    }
-  },
+class AppController {
+  static getStatus(req, res) {
+    res.status(200).json({ redis: redisClient.isAlive(), db: dbClient.isAlive() });
+  }
 
-  getStats: async (req, res) => {
-    const users = await DBClient.nbUsers();
-    const files = await DBClient.nbFiles();
+  static async getStats(req, res) {
+    const users = await dbClient.nbUsers();
+    const files = await dbClient.nbFiles();
     res.status(200).json({ users, files });
-  },
-};
+  }
+}
 
 module.exports = AppController;
