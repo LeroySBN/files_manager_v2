@@ -20,42 +20,31 @@ class AuthController {
     const users = dbClient.db.collection('users');
     const user = await users.findOne({ email, password: sha1(password) });
 
-    if (!user) {
-      return res.status(401).json({ error: 'Unauthorized' });
+    if (user) {
+      // Generate a random token
+      const token = uuidv4();
+      // Store the user ID in Redis with the token as the key for 24 hours
+      await redisClient.set(`auth_${token}`, user._id.toString(), 24 * 60 * 60);
+      // Return the generated token
+      return res.status(200).json({ token });
     }
-
-    // Generate a random token
-    const token = uuidv4();
-
-    // Store the user ID in Redis with the token as the key for 24 hours
-    await redisClient.set(`auth_${token}`, user.id, 'EX', 24 * 60 * 60);
-
-    // Return the generated token
-    res.status(200).json({ token });
-    return true;
+    return res.status(401).json({ error: 'Unauthorized' });
   }
 
   static async getDisconnect(req, res) {
     // Get the token from the X-Token header
     const token = req.header('X-Token');
 
-    if (!token) {
-      return res.status(401).json({ error: 'Unauthorized' });
-    }
-
     // Retrieve user based on the token
     const userId = await redisClient.get(`auth_${token}`);
 
-    if (!userId) {
-      return res.status(401).json({ error: 'Unauthorized' });
+    if (userId) {
+      // Delete the token from Redis
+      await redisClient.del(`auth_${token}`);
+      // Return a success response with status code 204 (No Content)
+      return res.status(204).json({});
     }
-
-    // Delete the token from Redis
-    await redisClient.del(`auth_${token}`);
-
-    // Return a success response with status code 204 (No Content)
-    res.status(204).end();
-    return true;
+    return res.status(401).json({ error: 'Unauthorized' });
   }
 }
 
