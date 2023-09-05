@@ -8,9 +8,6 @@ class AuthController {
   static async getConnect(req, res) {
     // Parse Basic Auth header
     const authHeader = req.header('Authorization');
-    if (!authHeader || !authHeader.startsWith('Basic ')) {
-      return res.status(401).json({ error: 'Unauthorized' });
-    }
 
     const base64Credentials = authHeader.split(' ')[1];
     const credentials = Buffer.from(base64Credentials, 'base64').toString('utf-8');
