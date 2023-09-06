@@ -109,7 +109,6 @@ class FilesController {
   }
 
   static async getIndex(req, res) {
-    // Retrieve the user based on the token
     const token = req.header('X-Token');
     const userId = await redisClient.get(`auth_${token}`);
 
@@ -117,30 +116,28 @@ class FilesController {
       return res.status(401).json({ error: 'Unauthorized' });
     }
 
-    // Extract parentId and page query parameters, with defaults
-    const parentId = req.query.parentId || '0';
-    const page = req.query.page || 0;
+    const { parentId = '0', page = 0 } = req.query;
 
-    // Pagination parameters
-    const perPage = 20;
-    const skip = page * perPage;
+    let parentIdObjectID;
+    if (parentId !== '0') {
+      try {
+        parentIdObjectID = new ObjectID(parentId);
+      } catch (error) {
+        return res.status(400).json({ error: 'Invalid parentId' });
+      }
 
-    // MongoDB aggregation to fetch paginated files
-    const files = await dbClient.db.collection('files')
-      .aggregate([
-        {
-          $match: {
-            userId: new ObjectID(userId),
-            parentId: new ObjectID(parentId),
-          },
-        },
-        {
-          $skip: skip,
-        },
-        {
-          $limit: perPage,
-        },
-      ])
+      const parentFile = await dbClient.db.collection('files').findOne({ _id: parentIdObjectID });
+
+      if (!parentFile || parentFile.type !== 'folder') {
+        return res.status(400).json({ error: 'Parent not found or not a folder' });
+      }
+    }
+
+    const filesCollection = dbClient.db.collection('files');
+    const files = await filesCollection
+      .find({ parentId: parentIdObjectID || '0' })
+      .skip(page * 20)
+      .limit(20)
       .toArray();
 
     return res.status(200).json(files);
