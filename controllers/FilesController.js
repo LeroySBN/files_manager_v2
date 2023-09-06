@@ -130,10 +130,10 @@ class FilesController {
       return res.status(401).json({ error: 'Unauthorized' });
     }
 
-    const { parentId = '0', page = 0 } = req.query;
+    const { parentId = 0, page = 0 } = req.query;
 
     let parentIdObjectID;
-    if (parentId !== '0') {
+    if (parentId !== 0) {
       try {
         parentIdObjectID = new ObjectID(parentId);
       } catch (error) {
@@ -149,7 +149,7 @@ class FilesController {
 
     const filesCollection = dbClient.db.collection('files');
     const files = await filesCollection
-      .find({ parentId: parentIdObjectID || '0' })
+      .find({ parentId: parentIdObjectID || 0 })
       .skip(page * 20)
       .limit(20)
       .toArray();
