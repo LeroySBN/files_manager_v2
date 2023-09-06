@@ -67,8 +67,8 @@ class FilesController {
       userId: new ObjectID(userId),
       name,
       type,
-      isPublic,
       parentId: parentIdObjectID || 0,
+      isPublic,
       localPath: localPath || null,
     };
 
