@@ -58,8 +58,11 @@ class FilesController {
 
       const parentFile = await dbClient.db.collection('files').findOne({ _id: parentIdObjectID });
 
-      if (!parentFile || parentFile.type !== 'folder') {
-        return res.status(400).json({ error: 'Parent not found or not a folder' });
+      if (!parentFile) {
+        return res.status(400).json({ error: 'Parent not found' });
+      }
+      if (parentFile.type !== 'folder') {
+        return res.status(400).json({ error: 'Parent is not a folder' });
       }
     }
 
@@ -105,7 +108,18 @@ class FilesController {
       return res.status(404).json({ error: 'Not found' });
     }
 
-    return res.status(200).json(file);
+    const {
+      type, isPublic, name, parentId,
+    } = file;
+
+    return res.status(200).json({
+      id: fileId,
+      userId,
+      name,
+      type,
+      isPublic,
+      parentId,
+    });
   }
 
   static async getIndex(req, res) {
