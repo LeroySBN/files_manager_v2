@@ -14,7 +14,7 @@ class FilesController {
     }
 
     const {
-      name, type, parentId = null, isPublic = false, data,
+      name, type, parentId = 0, isPublic = false, data,
     } = req.body;
 
     if (!name) {
@@ -26,7 +26,7 @@ class FilesController {
     if (!data && type !== 'folder') {
       return res.status(400).json({ error: 'Missing data' });
     }
-    if (parentId !== null) {
+    if (parentId !== 0) {
       const parent = await dbClient.db.collection('files').findOne({ _id: ObjectID(parentId) });
       if (!parent) {
         return res.status(400).json({ error: 'Parent not found' });
@@ -49,7 +49,7 @@ class FilesController {
     }
 
     let parentIdObjectID;
-    if (parentId !== null) {
+    if (parentId !== 0) {
       try {
         parentIdObjectID = new ObjectID(parentId);
       } catch (error) {
@@ -68,7 +68,7 @@ class FilesController {
       name,
       type,
       isPublic,
-      parentId: parentIdObjectID || null,
+      parentId: parentIdObjectID || 0,
       localPath: localPath || null,
     };
 
@@ -80,7 +80,7 @@ class FilesController {
       name,
       type,
       isPublic,
-      parentId: parentIdObjectID || null,
+      parentId: parentIdObjectID || 0,
       // ...fileDocument,
     });
   }
