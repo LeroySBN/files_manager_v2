@@ -100,8 +100,8 @@ class FilesController {
     // Retrieve the file document based on the ID
     const fileId = req.params.id;
     const file = await dbClient.db.collection('files').findOne({
-      id: new ObjectID(fileId),
-      // userId: new ObjectID(userId),
+      _id: ObjectID(fileId),
+      userId: ObjectID(userId),
     });
 
     if (!file || file.userId.toString() !== userId || file.type === 'folder') {
@@ -149,6 +149,12 @@ class FilesController {
       .skip(page * 20)
       .limit(20)
       .toArray();
+
+    files.forEach((file) => {
+      file.id = file._id;
+      delete file._id;
+      delete file.localPath;
+    });
 
     return res.status(200).json(files);
   }
