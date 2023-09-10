@@ -104,7 +104,7 @@ class FilesController {
       userId: ObjectID(userId),
     });
 
-    if (!file || file.userId.toString() !== userId || file.type === 'folder') {
+    if (!file || file.type === 'folder') {
       return res.status(404).json({ error: 'Not found' });
     }
 
