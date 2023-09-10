@@ -150,13 +150,19 @@ class FilesController {
       .limit(20)
       .toArray();
 
+    const filesObj = [];
     files.forEach((file) => {
-      file.id = file._id;
-      delete file._id;
-      delete file.localPath;
+      filesObj.push({
+        id: file._id,
+        userId: file.userId,
+        name: file.name,
+        type: file.type,
+        isPublic: file.isPublic,
+        parentId: file.parentId,
+      });
     });
 
-    return res.status(200).json(files);
+    return res.status(200).json(filesObj);
   }
 }
 
