@@ -16,21 +16,19 @@ class AuthController {
     const credentials = Buffer.from(base64Credentials, 'base64').toString('utf-8');
     const [email, password] = credentials.split(':');
 
-    if (!email || !password) {
-      return res.status(401).json({ error: 'Unauthorized' });
-    }
-
-    // Retrieve user based on email and password
-    const users = dbClient.db.collection('users');
-    const user = await users.findOne({ email, password: sha1(password) });
-    if (user) {
-      const token = uuidv4();
-      const key = `auth_${token}`;
-      const expiryInSeconds = 60 * 60 * 24;
-      // Store the user ID in Redis with the token as the key for 24 hours
-      await redisClient.set(key, user._id.toString(), expiryInSeconds);
-      // Return the generated token
-      return res.status(200).json({ token });
+    if (email && password) {
+      // Retrieve user based on email and password
+      const users = dbClient.db.collection('users');
+      const user = await users.findOne({ email, password: sha1(password) });
+      if (user) {
+        const token = uuidv4();
+        const key = `auth_${token}`;
+        const expiryInSeconds = 60 * 60 * 24;
+        // Store the user ID in Redis with the token as the key for 24 hours
+        await redisClient.set(key, user._id.toString(), expiryInSeconds);
+        // Return the generated token
+        return res.status(200).json({ token });
+      }
     }
     return res.status(401).json({ error: 'Unauthorized' });
   }
