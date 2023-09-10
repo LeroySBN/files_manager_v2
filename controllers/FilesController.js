@@ -145,7 +145,7 @@ class FilesController {
 
     const filesCollection = dbClient.db.collection('files');
     const files = await filesCollection
-      .find({ parentId: parentIdObjectID || 0 })
+      .match({ parentId: parentIdObjectID || 0 })
       .skip(page * 20)
       .limit(20)
       .toArray();
