@@ -100,25 +100,21 @@ class FilesController {
     // Retrieve the file document based on the ID
     const fileId = req.params.id;
     const file = await dbClient.db.collection('files').findOne({
-      _id: new ObjectID(fileId),
-      userId: new ObjectID(userId),
+      id: new ObjectID(fileId),
+      // userId: new ObjectID(userId),
     });
 
     if (!file || file.userId.toString() !== userId || file.type === 'folder') {
       return res.status(404).json({ error: 'Not found' });
     }
 
-    const {
-      type, isPublic, name, parentId,
-    } = file;
-
     return res.status(200).json({
-      id: fileId,
-      userId,
-      name,
-      type,
-      isPublic,
-      parentId,
+      id: file._id,
+      userId: file.userId,
+      name: file.name,
+      type: file.type,
+      isPublic: file.isPublic,
+      parentId: file.parentId,
     });
   }
 
