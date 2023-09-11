@@ -141,7 +141,7 @@ class FilesController {
     if (page.isNaN || page < 0) {
       page = 0;
     }
-    const pageSize = 2;
+    const pageSize = 20;
     const skipCount = page * pageSize;
 
     let parentIdObjectID;
