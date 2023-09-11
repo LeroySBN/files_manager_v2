@@ -5,6 +5,9 @@ import redisClient from '../utils/redis';
 import dbClient from '../utils/db';
 
 class FilesController {
+  /**
+   * Createa a new file document in the DB
+   */
   static async postUpload(req, res) {
     const token = req.header('X-Token');
     const userId = await redisClient.get(`auth_${token}`);
@@ -88,6 +91,9 @@ class FilesController {
     });
   }
 
+  /**
+   * Retrieve a file document based on the ID
+   */
   static async getShow(req, res) {
     // Retrieve the user based on the token
     const token = req.header('X-Token');
@@ -108,18 +114,19 @@ class FilesController {
       return res.status(404).json({ error: 'Not found' });
     }
 
-    // return res.status(200).json({
-    //   id: file._id,
-    //   userId: file.userId,
-    //   name: file.name,
-    //   type: file.type,
-    //   isPublic: file.isPublic,
-    //   parentId: file.parentId,
-    // });
-
-    return res.status(200).send(file);
+    return res.status(200).json({
+      id: file._id,
+      userId: file.userId,
+      name: file.name,
+      type: file.type,
+      isPublic: file.isPublic,
+      parentId: file.parentId,
+    });
   }
 
+  /**
+   * Retrieve all users file documents for a specific parentId and with pagination
+   */
   static async getIndex(req, res) {
     const token = req.header('X-Token');
     const userId = await redisClient.get(`auth_${token}`);
@@ -128,7 +135,9 @@ class FilesController {
       return res.status(401).json({ error: 'Unauthorized' });
     }
 
-    const { parentId = 0, page = 0 } = req.query;
+    // const { parentId = 0, page = 0 } = req.query;
+    const parentId = req.query.parentId || 0;
+    const page = req.query.page || 0;
 
     let parentIdObjectID;
     if (parentId !== 0) {
