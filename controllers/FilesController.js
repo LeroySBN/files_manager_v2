@@ -335,10 +335,11 @@ class FilesController {
     }
 
     const mimeType = mime.lookup(file.name);
+    res.setHeader('Content-Disposition', `inline; filename=${file.name}`);
     res.setHeader('Content-Type', mimeType);
     const fileStream = fs.createReadStream(file.localPath);
     fileStream.pipe(res);
-    return res.status(200).end();
+    return res.end();
   }
 }
 
