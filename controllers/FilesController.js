@@ -161,10 +161,11 @@ class FilesController {
 
     const filesCollection = dbClient.db.collection('files');
     const files = await filesCollection
-      .find({ parentId: parentIdObjectID || 0 })
-      .skip(skipCount)
-      .limit(pageSize)
-      .toArray();
+      .aggregate([
+        { $match: { parentId: parentIdObjectID || 0 } },
+        { $skip: skipCount },
+        { $limit: pageSize },
+      ]).toArray();
 
     const filesObj = [];
     files.forEach((file) => {
