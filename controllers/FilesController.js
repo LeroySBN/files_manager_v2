@@ -3,6 +3,7 @@ import fs from 'fs';
 import { v4 as uuidv4 } from 'uuid';
 import redisClient from '../utils/redis';
 import dbClient from '../utils/db';
+import mime from 'mime-types';
 
 class FilesController {
   /**
@@ -333,7 +334,11 @@ class FilesController {
       return res.status(404).json({ error: 'Not found' });
     }
 
-    return res.status(200).sendFile(file.localPath);
+    const mimeType = mime.lookup(file.name);
+    res.setHeader('Content-Disposition', `inline; filename=${file.name}`);
+    res.setHeader('Content-Type', mimeType);
+    const fileStream = fs.createReadStream(file.localPath);
+    fileStream.pipe(res);
   }
 }
 
