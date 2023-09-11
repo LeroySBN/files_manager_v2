@@ -6,7 +6,13 @@ import dbClient from '../utils/db';
 
 class FilesController {
   /**
-   * Createa a new file document in the DB
+   * Createa a new file document in the DB if the user is authenticated
+   * Endpoint: POST /files
+   * @static
+   * @param {*} req
+   * @param {*} res
+   * @returns
+   * @memberof FilesController
    */
   static async postUpload(req, res) {
     const token = req.header('X-Token');
@@ -92,7 +98,12 @@ class FilesController {
   }
 
   /**
-   * Retrieve a file document based on the ID
+   * Retrieve a file document based on the ID if the user is the owner of the file
+   * Endpoint: GET /files/:id
+   * @param {*} req
+   * @param {*} res
+   * @returns
+   * @memberof FilesController
    */
   static async getShow(req, res) {
     // Retrieve the user based on the token
@@ -126,6 +137,12 @@ class FilesController {
 
   /**
    * Retrieve all users file documents for a specific parentId and with pagination
+   * if the user is the owner of the file
+   * Endpoint: GET /files
+   * @param {*} req
+   * @param {*} res
+   * @returns
+   * @memberof FilesController
    */
   static async getIndex(req, res) {
     const token = req.header('X-Token');
@@ -138,7 +155,7 @@ class FilesController {
     // const { parentId = 0, page = 0 } = req.query;
     const parentId = req.query.parentId || 0;
     let page = parseInt(req.query.page, 10);
-    if (page.isNaN || page < 0) {
+    if (!Number.isInteger(page) || page < 0) {
       page = 0;
     }
     const pageSize = 20;
@@ -159,7 +176,7 @@ class FilesController {
       }
     }
 
-    const filesCollection = dbClient.db.collection('files');
+    const filesCollection = await dbClient.db.collection('files');
     const files = await filesCollection
       .aggregate([
         { $match: { parentId: parentIdObjectID || 0 } },
@@ -185,6 +202,7 @@ class FilesController {
   /**
    * Update a file document based on the ID by setting isPublic to true
    * if the user is the owner of the file
+   * Endpoint: PUT /files/:id/publish
    * @param {*} req
    * @param {*} res
    * @returns
@@ -233,6 +251,7 @@ class FilesController {
   /**
    * Update a file document based on the ID by setting isPublic to false
    * if the user is the owner of the file
+   * Endpoint: PUT /files/:id/unpublish
    * @param {*} req
    * @param {*} res
    * @returns
@@ -276,6 +295,45 @@ class FilesController {
       isPublic: false,
       parentId: file.parentId,
     });
+  }
+
+  /**
+   * Retrieve the content of a file document based on the ID
+   * if the user is the owner of the file or the file is public
+   * Endpoint: GET /files/:id/data
+   * @param {*} req
+   * @param {*} res
+   * @returns
+   * @memberof FilesController
+   */
+  static async getFile(req, res) {
+    // Retrieve the user based on the token
+    const token = req.header('X-Token');
+    const userId = await redisClient.get(`auth_${token}`);
+
+    // Retrieve the file document based on the ID
+    const fileId = req.params.id;
+    const file = await dbClient.db.collection('files').findOne({
+      _id: new ObjectID(fileId),
+    });
+
+    if (!file) {
+      return res.status(404).json({ error: 'Not found' });
+    }
+
+    if (file.userId.toString() !== userId && !file.isPublic) {
+      return res.status(404).json({ error: 'Not found' });
+    }
+
+    if (file.type === 'folder') {
+      return res.status(400).json({ error: 'A folder doesn\'t have content' });
+    }
+
+    if (!file.localPath) {
+      return res.status(404).json({ error: 'Not found' });
+    }
+
+    return res.status(200).sendFile(file.localPath);
   }
 }
 
