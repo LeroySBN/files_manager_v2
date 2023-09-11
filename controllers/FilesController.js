@@ -129,19 +129,17 @@ class FilesController {
    */
   static async getIndex(req, res) {
     const token = req.header('X-Token');
-    console.log('Received token:', token);
     const userId = await redisClient.get(`auth_${token}`);
 
     if (!userId) {
-      console.log('Unauthorized:', token);
       return res.status(401).json({ error: 'Unauthorized' });
     }
 
     // const { parentId = 0, page = 0 } = req.query;
     const parentId = req.query.parentId || 0;
     const page = parseInt(req.query.page, 10) || 0;
-    const pageSize = 2;
-    // const skipCount = page * pageSize;
+    const pageSize = 20;
+    const skipCount = page * pageSize;
 
     let parentIdObjectID;
     if (parentId !== 0) {
@@ -158,21 +156,12 @@ class FilesController {
       }
     }
 
-    const baseQuery = {
-      parentId: parentIdObjectID,
-    };
     const filesCollection = dbClient.db.collection('files');
-    // Create a cursor to find files
-    const cursor = filesCollection.find(baseQuery);
-    // Count the total number of files that match the base query
-    const totalCount = await cursor.count();
-    // Calculate the number of pages
-    const totalPages = Math.ceil(totalCount / pageSize);
-    console.log(totalPages);
-    // Skip and limit based on the page and pageSize
-    cursor.skip(page * pageSize).limit(pageSize);
-    // Convert the cursor to an array of files
-    const files = await cursor.toArray();
+    const files = await filesCollection
+      .find({ parentId: parentIdObjectID || 0 })
+      .skip(skipCount)
+      .limit(pageSize)
+      .toArray();
 
     const filesObj = [];
     files.forEach((file) => {
