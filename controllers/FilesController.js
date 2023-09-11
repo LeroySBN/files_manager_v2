@@ -339,7 +339,6 @@ class FilesController {
     res.setHeader('Content-Type', mimeType);
     const fileStream = fs.createReadStream(file.localPath);
     fileStream.pipe(res);
-    return res.end();
   }
 }
 
