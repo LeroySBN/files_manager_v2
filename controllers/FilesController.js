@@ -137,7 +137,9 @@ class FilesController {
 
     // const { parentId = 0, page = 0 } = req.query;
     const parentId = req.query.parentId || 0;
-    const page = req.query.page || 0;
+    const page = parseInt(req.query.page, 10) || 0;
+    const pageSize = 2;
+    // const skipCount = page * pageSize;
 
     let parentIdObjectID;
     if (parentId !== 0) {
@@ -154,12 +156,21 @@ class FilesController {
       }
     }
 
+    const baseQuery = {
+      parentId: parentIdObjectID,
+    };
     const filesCollection = dbClient.db.collection('files');
-    const files = await filesCollection
-      .find({ parentId: parentIdObjectID || 0 })
-      .skip(page * 20)
-      .limit(20)
-      .toArray();
+    // Create a cursor to find files
+    const cursor = filesCollection.find(baseQuery);
+    // Count the total number of files that match the base query
+    const totalCount = await cursor.count();
+    // Calculate the number of pages
+    const totalPages = Math.ceil(totalCount / pageSize);
+    console.log(totalPages);
+    // Skip and limit based on the page and pageSize
+    cursor.skip(page * pageSize).limit(pageSize);
+    // Convert the cursor to an array of files
+    const files = await cursor.toArray();
 
     const filesObj = [];
     files.forEach((file) => {
