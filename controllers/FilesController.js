@@ -2,12 +2,15 @@ import { ObjectID } from 'mongodb';
 import fs from 'fs';
 import { v4 as uuidv4 } from 'uuid';
 import mime from 'mime-types';
+import Bull from 'bull';
 import redisClient from '../utils/redis';
 import dbClient from '../utils/db';
 
+const fileQueue = new Bull('fileQueue');
+
 class FilesController {
   /**
-   * Createa a new file document in the DB if the user is authenticated
+   * Creates a new file document in the DB if the user is authenticated
    * Endpoint: POST /files
    * @static
    * @param {*} req
@@ -86,6 +89,11 @@ class FilesController {
     };
 
     const insertedFile = await dbClient.db.collection('files').insertOne(fileDocument);
+
+    if (type === 'image') {
+      const fileId = insertedFile.insertedId.toString();
+      fileQueue.add({ fileId, userId });
+    }
 
     return res.status(201).json({
       id: insertedFile.insertedId,
@@ -334,12 +342,33 @@ class FilesController {
       return res.status(404).json({ error: 'Not found' });
     }
 
-    const mimeType = mime.lookup(file.name);
-    res.setHeader('Content-Disposition', `inline; filename=${file.name}`);
+    const { size } = req.query;
+    let width = 500; // Default size
+    // Determine the desired width based on the 'size' query parameter
+    if (size === '250') {
+      width = 250;
+    } else if (size === '100') {
+      width = 100;
+    }
+
+    // Generate the path to the resized image based on the width
+    const resizedImagePath = `${file.localPath}_${width}`;
+
+    // Check if the resized image exists, and if not, return a 404 error
+    if (!fs.existsSync(resizedImagePath)) {
+      return res.status(404).json({ error: 'Not found' });
+    }
+
+    // Determine the appropriate content type based on the file's extension
+    const mimeType = mime.lookup(file.name) || 'application/octet-stream';
+
+    // Set the content type header
     res.setHeader('Content-Type', mimeType);
-    const fileStream = fs.createReadStream(file.localPath);
-    fileStream.pipe(res);
-    return res.status(200).sendFile(file.localPath);
+    res.setHeader('Content-Disposition', `inline; filename=${file.name}`);
+
+    // Read the resized image file and send it as the response
+    const fileData = fs.readFileSync(resizedImagePath);
+    return res.status(200).send(fileData);
   }
 }
 
