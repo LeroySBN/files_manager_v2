@@ -129,9 +129,11 @@ class FilesController {
    */
   static async getIndex(req, res) {
     const token = req.header('X-Token');
+    console.log('Received token:', token);
     const userId = await redisClient.get(`auth_${token}`);
 
     if (!userId) {
+      console.log('Unauthorized:', token);
       return res.status(401).json({ error: 'Unauthorized' });
     }
 
