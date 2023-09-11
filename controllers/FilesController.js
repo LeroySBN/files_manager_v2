@@ -1,9 +1,9 @@
 import { ObjectID } from 'mongodb';
 import fs from 'fs';
 import { v4 as uuidv4 } from 'uuid';
+import mime from 'mime-types';
 import redisClient from '../utils/redis';
 import dbClient from '../utils/db';
-import mime from 'mime-types';
 
 class FilesController {
   /**
@@ -335,10 +335,10 @@ class FilesController {
     }
 
     const mimeType = mime.lookup(file.name);
-    res.setHeader('Content-Disposition', `inline; filename=${file.name}`);
     res.setHeader('Content-Type', mimeType);
     const fileStream = fs.createReadStream(file.localPath);
     fileStream.pipe(res);
+    return res.status(200).end();
   }
 }
 
