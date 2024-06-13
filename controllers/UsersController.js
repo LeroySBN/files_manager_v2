@@ -20,6 +20,7 @@ class UsersController {
     }
 
     const users = dbClient.db.collection('users');
+    console.log(users);
     users.findOne({ email }, (err, user) => {
       if (user) {
         response.status(400).json({ error: 'Already exist' });
