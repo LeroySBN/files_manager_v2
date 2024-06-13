@@ -169,6 +169,9 @@ class FilesController {
     const pageSize = 20;
     const skipCount = page * pageSize;
 
+    // case 1: no parent id is given in query
+    // case 2: parentId = 0 or other given value
+
     let parentIdObjectID = parentId === '0' ? 0 : new ObjectID(parentId);
 
     if (parentId !== '0' && !ObjectID.isValid(parentId)) {
@@ -178,7 +181,8 @@ class FilesController {
     const filesCollection = await dbClient.db.collection('files');
 
     let files;
-    if (parentId === '0') {
+    // if (parentId === '0') {
+    if (req.query.parentId === undefined || parentId === '0') {
       files = await filesCollection
         .aggregate([
           { $match: { userId: new ObjectID(userId) } },
