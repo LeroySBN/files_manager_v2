@@ -169,31 +169,16 @@ class FilesController {
     const pageSize = 20;
     const skipCount = page * pageSize;
 
-    let parentIdObjectID;
+    let parentIdObjectID = parentId === '0' ? 0 : new ObjectID(parentId);
 
-    if (parentId !== 0) {
-      try {
-        parentIdObjectID = new ObjectID(parentId);
-      } catch (error) {
-        return res.status(400).json({ error: 'Invalid parentId' });
-      }
-
-      const parentFile = await dbClient.db.collection('files').findOne({ _id: parentIdObjectID });
-
-      if (!parentFile || parentFile.type !== 'folder') {
-        return res.status(400).json({ error: 'Parent not found or not a folder' });
-      }
+    if (parentId !== '0' && !ObjectID.isValid(parentId)) {
+      return res.status(400).json({ error: 'Invalid parentId' });
     }
 
     const filesCollection = await dbClient.db.collection('files');
 
     let files;
-    // case 1: no parent id is given in query
-    // case 2: parentId = 0 or other given value
-
-    console.log(req.query.parentId);
-
-    if (req.query.parentId === undefined) {
+    if (parentId === '0') {
       files = await filesCollection
         .aggregate([
           { $match: { userId: new ObjectID(userId) } },
@@ -207,7 +192,8 @@ class FilesController {
           { $match: { parentId: parentIdObjectID, userId: new ObjectID(userId) } },
           { $skip: skipCount },
           { $limit: pageSize },
-        ]).toArray();
+        ])
+        .toArray();
     }
 
     const filesObj = [];
