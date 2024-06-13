@@ -182,7 +182,7 @@ class FilesController {
 
     let files;
     // if (parentId === '0') {
-    if (req.query.parentId === undefined || parentId === '0') {
+    if (req.query.parentId === undefined ) {
       files = await filesCollection
         .aggregate([
           { $match: { userId: new ObjectID(userId) } },
