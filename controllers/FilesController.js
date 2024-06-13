@@ -5,7 +5,6 @@ import mime from 'mime-types';
 import Bull from 'bull';
 import redisClient from '../utils/redis';
 import dbClient from '../utils/db';
-import { type } from 'os';
 
 const fileQueue = new Bull('fileQueue');
 
@@ -190,7 +189,7 @@ class FilesController {
     const filesCollection = await dbClient.db.collection('files');
     const files = await filesCollection
       .aggregate([
-        { $match: { parentId: parentIdObjectID || 0 || type.toString } },
+        { $match: { userId: new ObjectID(userId) } },
         { $skip: skipCount },
         { $limit: pageSize },
       ]).toArray();
