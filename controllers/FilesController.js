@@ -192,7 +192,9 @@ class FilesController {
     // case 1: no parent id is given in query
     // case 2: parentId = 0 or other given value
 
-    if (req.query.parentId == null) {
+    console.log(req.query.parentId);
+
+    if (req.query.parentId === undefined) {
       files = await filesCollection
         .aggregate([
           { $match: { userId: new ObjectID(userId) } },
@@ -208,7 +210,6 @@ class FilesController {
           { $limit: pageSize },
         ]).toArray();
     }
-
 
     const filesObj = [];
     await files.forEach((file) => {
