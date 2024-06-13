@@ -5,7 +5,6 @@ import mime from 'mime-types';
 import Bull from 'bull';
 import redisClient from '../utils/redis';
 import dbClient from '../utils/db';
-import { query } from 'express';
 
 const fileQueue = new Bull('fileQueue');
 
