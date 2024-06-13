@@ -187,12 +187,24 @@ class FilesController {
     }
 
     const filesCollection = await dbClient.db.collection('files');
-    const files = await filesCollection
-      .aggregate([
-        { $match: { userId: new ObjectID(userId) } },
-        { $skip: skipCount },
-        { $limit: pageSize },
-      ]).toArray();
+
+    let files;
+
+    if (parentId) {
+      files = await filesCollection
+        .aggregate([
+          { $match: { parentId: parentIdObjectID || 0, userId: new ObjectID(userId) } },
+          { $skip: skipCount },
+          { $limit: pageSize },
+        ]).toArray();
+    } else {
+      files = await filesCollection
+        .aggregate([
+          { $match: { userId: new ObjectID(userId) } },
+          { $skip: skipCount },
+          { $limit: pageSize },
+        ]).toArray();
+    }
 
     const filesObj = [];
     await files.forEach((file) => {
