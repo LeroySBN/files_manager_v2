@@ -5,6 +5,7 @@ import mime from 'mime-types';
 import Bull from 'bull';
 import redisClient from '../utils/redis';
 import dbClient from '../utils/db';
+import { query } from 'express';
 
 const fileQueue = new Bull('fileQueue');
 
@@ -161,7 +162,6 @@ class FilesController {
       return res.status(401).json({ error: 'Unauthorized' });
     }
 
-    // const { parentId = 0, page = 0 } = req.query;
     const parentId = req.query.parentId || 0;
     let page = parseInt(req.query.page, 10);
     if (!Number.isInteger(page) || page < 0) {
@@ -189,22 +189,26 @@ class FilesController {
     const filesCollection = await dbClient.db.collection('files');
 
     let files;
+    // case 1: no parent id is given in query
+    // case 2: parentId = 0 or other given value
 
-    if (parentId) {
-      files = await filesCollection
-        .aggregate([
-          { $match: { parentId: parentIdObjectID || 0, userId: new ObjectID(userId) } },
-          { $skip: skipCount },
-          { $limit: pageSize },
-        ]).toArray();
-    } else {
+    if (req.query.parentId == null) {
       files = await filesCollection
         .aggregate([
           { $match: { userId: new ObjectID(userId) } },
           { $skip: skipCount },
           { $limit: pageSize },
+        ])
+        .toArray();
+    } else {
+      files = await filesCollection
+        .aggregate([
+          { $match: { parentId: parentIdObjectID, userId: new ObjectID(userId) } },
+          { $skip: skipCount },
+          { $limit: pageSize },
         ]).toArray();
     }
+
 
     const filesObj = [];
     await files.forEach((file) => {
