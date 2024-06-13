@@ -9,20 +9,32 @@ const router = Router();
 
 router.get('/status', AppController.getStatus);
 router.get('/stats', AppController.getStats);
+
 // Create a new user
 router.post('/users', UsersController.postNew);
-// Authentication
+
+// Authenticate user
 router.get('/connect', AuthController.getConnect);
-router.get('/disconnect', AuthController.getDisconnect);
+
+// Get Authenticated user
 router.get('/users/me', UsersController.getMe);
-// Add file
+
+// De-Authenticate user
+router.get('/disconnect', AuthController.getDisconnect);
+
+// Add file or folder
 router.post('/files', FilesController.postUpload);
-// Get and list file
-router.get('/files/:id', FilesController.getShow);
+
+// List files and folders
 router.get('/files', FilesController.getIndex);
+
+// File get metadata
+router.get('/files/:id', FilesController.getShow);
+
 // File publish/unpublish
 router.put('/files/:id/publish', FilesController.putPublish);
 router.put('/files/:id/unpublish', FilesController.putUnpublish);
+
 // File get content
 router.get('/files/:id/data', FilesController.getFile);
 
