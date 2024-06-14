@@ -163,26 +163,23 @@ class FilesController {
 
     const parentId = req.query.parentId || 0;
     let page = parseInt(req.query.page, 10);
+
     if (!Number.isInteger(page) || page < 0) {
       page = 0;
     }
+
     const pageSize = 20;
     const skipCount = page * pageSize;
 
     // case 1: no parent id is given in query
     // case 2: parentId = 0 or other given value
 
-    let parentIdObjectID = parentId === '0' ? 0 : new ObjectID(parentId);
-
-    if (parentId !== '0' && !ObjectID.isValid(parentId)) {
-      return res.status(400).json({ error: 'Invalid parentId' });
-    }
+    // let parentIdObjectID = parentId === '0' ? 0 : new ObjectID(parentId);
 
     const filesCollection = await dbClient.db.collection('files');
 
     let files;
-    // if (parentId === '0') {
-    if (req.query.parentId === undefined ) {
+    if (req.query.parentId === undefined) {
       files = await filesCollection
         .aggregate([
           { $match: { userId: new ObjectID(userId) } },
@@ -191,26 +188,30 @@ class FilesController {
         ])
         .toArray();
     } else {
-      files = await filesCollection
-        .aggregate([
-          { $match: { parentId: parentIdObjectID, userId: new ObjectID(userId) } },
-          { $skip: skipCount },
-          { $limit: pageSize },
-        ])
-        .toArray();
+      let parentIdObjectID;
+      try {
+        parentIdObjectID = new ObjectID(parentId);
+        
+        files = await filesCollection
+          .aggregate([
+            { $match: { parentId: parentIdObjectID, userId: new ObjectID(userId) } },
+            { $skip: skipCount },
+            { $limit: pageSize },
+          ])
+          .toArray();
+        } catch (error) {
+          return res.status(400).json([]);
+        }
     }
 
-    const filesObj = [];
-    await files.forEach((file) => {
-      filesObj.push({
-        id: file._id,
-        userId: file.userId,
-        name: file.name,
-        type: file.type,
-        isPublic: file.isPublic,
-        parentId: file.parentId,
-      });
-    });
+    const filesObj = files.map((file) => ({
+      id: file._id,
+      userId: file.userId,
+      name: file.name,
+      type: file.type,
+      isPublic: file.isPublic,
+      parentId: file.parentId,
+    }));
 
     return res.status(200).json(filesObj);
   }
