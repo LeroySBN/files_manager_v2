@@ -172,23 +172,23 @@ class FilesController {
     
     const parentId = req.query.parentId || FilesController.ROOT_FOLDER_ID;
     
-    // const queryFilter = {
-    //   userId: new ObjectID(userId),
-    //   parentId: parentId === FilesController.ROOT_FOLDER_ID
-    //     ? parentId 
-    //     : new ObjectID(ObjectID.isValid(parentId) ? parentId : NULL_ID),
-    // };
+    const queryFilter = {
+      userId: new ObjectID(userId),
+      parentId: parentId === FilesController.ROOT_FOLDER_ID
+        ? FilesController.ROOT_FOLDER_ID
+        : new ObjectID(ObjectID.isValid(parentId) ? parentId : FilesController.NULL_ID),
+    };
 
-    let queryFilter = { userId: new ObjectID(userId) };
+    // let queryFilter = { userId: new ObjectID(userId) };
 
-    if (parentId === FilesController.ROOT_FOLDER_ID) {
-      queryFilter.parentId = FilesController.ROOT_FOLDER_ID;
-    } else {
-      if (!ObjectID.isValid(parentId)) {
-        return res.status(400).json({ error: 'Invalid parentId' });
-      }
-      queryFilter.parentId = new ObjectID(parentId);
-    }
+    // if (parentId === FilesController.ROOT_FOLDER_ID) {
+    //   queryFilter.parentId = FilesController.ROOT_FOLDER_ID;
+    // } else {
+    //   if (!ObjectID.isValid(parentId)) {
+    //     return res.status(400).json({ error: 'Invalid parentId' });
+    //   }
+    //   queryFilter.parentId = new ObjectID(parentId);
+    // }
 
     const files = await dbClient.db.collection('files')
         .aggregate([
