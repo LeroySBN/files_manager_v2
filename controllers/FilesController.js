@@ -5,6 +5,7 @@ import mime from 'mime-types';
 import Bull from 'bull';
 import redisClient from '../utils/redis';
 import dbClient from '../utils/db';
+import { error } from 'console';
 
 const fileQueue = new Bull('fileQueue');
 
@@ -156,31 +157,29 @@ class FilesController {
   static async getIndex(req, res) {
     const token = req.header('X-Token');
     const userId = await redisClient.get(`auth_${token}`);
-
     if (!userId) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
 
-    const parentId = req.query.parentId || 0;
     let page = parseInt(req.query.page, 10);
-
     if (!Number.isInteger(page) || page < 0) {
       page = 0;
     }
 
-    const pageSize = 20;
-    const skipCount = page * pageSize;
+    if (ObjectID.isValid(req.query.parentId) === false && req.query.parentId !== undefined) {
+      console.log('getIndex- Failed search query');
+      return res.status(400).json([]);
+    }
 
-    // case 1: no parent id is given in query
-    // case 2: parentId = 0 or other given value
- 
+    const pageSize = 20;
+    const skipCount = page * pageSize; 
     const filesCollection = await dbClient.db.collection('files');
     
-    try {
-      let files;
+    try {    
+      const parentId = req.query.parentId || 0;
       let parentIdObjectID = parentId === '0' ? 0 : new ObjectID(parentId);
-    
-      if (req.query.parentId === undefined || parentIdObjectID === 0) {
+      let files;
+      if (req.query.parentId === undefined) {
         files = await filesCollection
           .aggregate([
             { $match: { userId: new ObjectID(userId) } },
@@ -207,9 +206,15 @@ class FilesController {
         parentId: file.parentId,
       }));
 
+      if (filesObj.length == 0){
+        console.log("getIndex- Empty search query");
+      } else if (filesObj.length >= 1) {
+        console.log("getIndex- Successful search query")
+      }
+
       return res.status(200).json(filesObj);
     } catch (error) {
-      return res.status(400).json([]);
+      return res.status(400).json({error});
     }
   }
 
