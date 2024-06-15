@@ -1,3 +1,6 @@
+/* eslint-disable import/no-named-as-default */
+/* eslint-disable no-unused-vars */
+
 import { ObjectID } from 'mongodb';
 import fs from 'fs';
 import { v4 as uuidv4 } from 'uuid';
@@ -5,7 +8,10 @@ import mime from 'mime-types';
 import Bull from 'bull';
 import redisClient from '../utils/redis';
 import dbClient from '../utils/db';
-import { error } from 'console';
+
+const ROOT_FOLDER_ID = 0;
+const NULL_ID = Buffer.alloc(24, '0').toString('utf-8');
+const MAX_FILES_PER_PAGE = 20;
 
 const fileQueue = new Bull('fileQueue');
 
@@ -160,62 +166,41 @@ class FilesController {
     if (!userId) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
-
-    let page = parseInt(req.query.page, 10);
-    if (!Number.isInteger(page) || page < 0) {
-      page = 0;
-    }
-
-    if (ObjectID.isValid(req.query.parentId) === false && req.query.parentId !== undefined) {
-      console.log('getIndex- Failed search query');
-      return res.status(400).json([]);
-    }
-
-    const pageSize = 20;
-    const skipCount = page * pageSize; 
-    const filesCollection = await dbClient.db.collection('files');
+      
+    let page = /\d+/.test(req.query.page) ? parseInt(req.query.page) : 0;
     
-    try {    
-      const parentId = req.query.parentId || 0;
-      let parentIdObjectID = parentId === '0' ? 0 : new ObjectID(parentId);
-      let files;
-      if (req.query.parentId === undefined) {
-        files = await filesCollection
-          .aggregate([
-            { $match: { userId: new ObjectID(userId) } },
-            { $skip: skipCount },
-            { $limit: pageSize },
-          ])
-          .toArray();
-      } else {       
-        files = await filesCollection
-          .aggregate([
-            { $match: { parentId: parentIdObjectID, userId: new ObjectID(userId) } },
-            { $skip: skipCount },
-            { $limit: pageSize },
-          ])
-          .toArray();
-      }
+    const parentId = req.query.parentId || ROOT_FOLDER_ID.toString();
+    
+    const filesFilter = {
+      userId: new ObjectID(userId),
+      parentId: parentId === ROOT_FOLDER_ID.toString()
+        ? parentId 
+        : new ObjectID(ObjectID.isValid(parentId) ? parentId : NULL_ID),
+    };
 
-      const filesObj = files.map((file) => ({
-        id: file._id,
-        userId: file.userId,
-        name: file.name,
-        type: file.type,
-        isPublic: file.isPublic,
-        parentId: file.parentId,
-      }));
+    let files = await dbClient.db.collection('files')
+        .aggregate([
+          { $match: filesFilter },
+          { $sort: { _id: -1 } },
+          { $skip: page * MAX_FILES_PER_PAGE },
+          { $limit: MAX_FILES_PER_PAGE },
+          {
+            $project: {
+              _id: 0,
+              id: '$_id',
+              userId: '$userId',
+              name: '$name',
+              type: '$type',
+              isPublic: '$isPublic',
+              parentId: {
+                $cond: { if: { $eq: ["$parentId" , "0"]}, then: 0, else: "$parentId" },
+              },
+            },
+          }
+        ])
+        .toArray();
 
-      if (filesObj.length == 0){
-        console.log("getIndex- Empty search query");
-      } else if (filesObj.length >= 1) {
-        console.log("getIndex- Successful search query")
-      }
-
-      return res.status(200).json(filesObj);
-    } catch (error) {
-      return res.status(400).json({error});
-    }
+    return res.status(200).json(files);
   }
 
   /**
