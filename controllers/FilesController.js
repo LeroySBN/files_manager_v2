@@ -9,11 +9,11 @@ import Bull from 'bull';
 import redisClient from '../utils/redis';
 import dbClient from '../utils/db';
 
-
-const fileQueue = new Bull('fileQueue');
 const ROOT_FOLDER_ID = 0;
 const NULL_ID = Buffer.alloc(24, '0').toString('utf-8');
 const MAX_FILES_PER_PAGE = 20;
+
+const fileQueue = new Bull('fileQueue');
 
 export default class FilesController {
 
@@ -172,17 +172,17 @@ export default class FilesController {
     
     const parentId = req.query.parentId || ROOT_FOLDER_ID;
     
-    const queryFilter = {
-      userId: new ObjectID(userId),
-      parentId: parentId === ROOT_FOLDER_ID
-        ? ROOT_FOLDER_ID
-        : new ObjectID(ObjectID.isValid(parentId) ? parentId : NULL_ID),
-    };
+    const queryFilter = parentId === ROOT_FOLDER_ID
+      ? { userId: new ObjectID(userId) }
+      : { userId: new ObjectID(userId), parentId: parentId === ROOT_FOLDER_ID
+            ? ROOT_FOLDER_ID
+            : new ObjectID(ObjectID.isValid(parentId) ? parentId : NULL_ID),
+        };
 
     const files = await dbClient.db.collection('files')
         .aggregate([
           { $match: queryFilter },
-          { $sort: { _id: -1 } },
+          // { $sort: { _id: -1 } },
           { $skip: page * MAX_FILES_PER_PAGE },
           { $limit: MAX_FILES_PER_PAGE },
           {
