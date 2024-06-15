@@ -5,7 +5,6 @@ import mime from 'mime-types';
 import Bull from 'bull';
 import redisClient from '../utils/redis';
 import dbClient from '../utils/db';
-import { parse } from 'path';
 
 const fileQueue = new Bull('fileQueue');
 
@@ -174,17 +173,14 @@ class FilesController {
 
     // case 1: no parent id is given in query
     // case 2: parentId = 0 or other given value
-
-    // let parentIdObjectID = parentId === '0' ? 0 : new ObjectID(parentId);
-    
-
+ 
     const filesCollection = await dbClient.db.collection('files');
-
-    console.log(filesCollection)
+    
     try {
       let files;
+      let parentIdObjectID = parentId === '0' ? 0 : new ObjectID(parentId);
     
-      if (req.query.parentId === undefined || parseInt(req.query.parentId) === 0) {
+      if (req.query.parentId === undefined || parentIdObjectID === 0) {
         files = await filesCollection
           .aggregate([
             { $match: { userId: new ObjectID(userId) } },
@@ -192,10 +188,7 @@ class FilesController {
             { $limit: pageSize },
           ])
           .toArray();
-      } else {
-        let parentIdObjectID;
-        parentIdObjectID = new ObjectID(parentId);     
-        
+      } else {       
         files = await filesCollection
           .aggregate([
             { $match: { parentId: parentIdObjectID, userId: new ObjectID(userId) } },
@@ -203,8 +196,6 @@ class FilesController {
             { $limit: pageSize },
           ])
           .toArray();
-          console.log("this is files")
-          console.log(files)
       }
 
       const filesObj = files.map((file) => ({
