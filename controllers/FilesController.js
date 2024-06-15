@@ -11,11 +11,11 @@ import dbClient from '../utils/db';
 
 
 const fileQueue = new Bull('fileQueue');
+const ROOT_FOLDER_ID = 0;
+const NULL_ID = Buffer.alloc(24, '0').toString('utf-8');
+const MAX_FILES_PER_PAGE = 20;
 
-class FilesController {
-  static ROOT_FOLDER_ID = 0;
-  static NULL_ID = Buffer.alloc(24, '0').toString('utf-8');
-  static MAX_FILES_PER_PAGE = 20;
+export default class FilesController {
 
   /**
    * Creates a new file document in the DB if the user is authenticated
@@ -170,32 +170,21 @@ class FilesController {
       
     let page = /\d+/.test(req.query.page) ? parseInt(req.query.page) : 0;
     
-    const parentId = req.query.parentId || FilesController.ROOT_FOLDER_ID;
+    const parentId = req.query.parentId || ROOT_FOLDER_ID;
     
     const queryFilter = {
       userId: new ObjectID(userId),
-      parentId: parentId === FilesController.ROOT_FOLDER_ID
-        ? FilesController.ROOT_FOLDER_ID
-        : new ObjectID(ObjectID.isValid(parentId) ? parentId : FilesController.NULL_ID),
+      parentId: parentId === ROOT_FOLDER_ID
+        ? ROOT_FOLDER_ID
+        : new ObjectID(ObjectID.isValid(parentId) ? parentId : NULL_ID),
     };
-
-    // let queryFilter = { userId: new ObjectID(userId) };
-
-    // if (parentId === FilesController.ROOT_FOLDER_ID) {
-    //   queryFilter.parentId = FilesController.ROOT_FOLDER_ID;
-    // } else {
-    //   if (!ObjectID.isValid(parentId)) {
-    //     return res.status(400).json({ error: 'Invalid parentId' });
-    //   }
-    //   queryFilter.parentId = new ObjectID(parentId);
-    // }
 
     const files = await dbClient.db.collection('files')
         .aggregate([
           { $match: queryFilter },
           { $sort: { _id: -1 } },
-          { $skip: page * FilesController.MAX_FILES_PER_PAGE },
-          { $limit: FilesController.MAX_FILES_PER_PAGE },
+          { $skip: page * MAX_FILES_PER_PAGE },
+          { $limit: MAX_FILES_PER_PAGE },
           {
             $project: {
               _id: 0,
@@ -205,7 +194,7 @@ class FilesController {
               type: '$type',
               isPublic: '$isPublic',
               parentId: {
-                $cond: [ { $eq: ["$parentId" , FilesController.ROOT_FOLDER_ID] }, 0, "$parentId" ],
+                $cond: [ { $eq: ["$parentId" , ROOT_FOLDER_ID] }, 0, "$parentId" ],
               },
             },
           }
@@ -378,5 +367,3 @@ class FilesController {
     return res.status(200).send(fileData);
   }
 }
-
-module.exports = FilesController;
