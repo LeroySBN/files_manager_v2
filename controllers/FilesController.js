@@ -9,13 +9,14 @@ import Bull from 'bull';
 import redisClient from '../utils/redis';
 import dbClient from '../utils/db';
 
-const ROOT_FOLDER_ID = 0;
-const NULL_ID = Buffer.alloc(24, '0').toString('utf-8');
-const MAX_FILES_PER_PAGE = 20;
 
 const fileQueue = new Bull('fileQueue');
 
 class FilesController {
+  static ROOT_FOLDER_ID = 0;
+  static NULL_ID = Buffer.alloc(24, '0').toString('utf-8');
+  static MAX_FILES_PER_PAGE = 20;
+
   /**
    * Creates a new file document in the DB if the user is authenticated
    * Endpoint: POST /files
@@ -169,21 +170,32 @@ class FilesController {
       
     let page = /\d+/.test(req.query.page) ? parseInt(req.query.page) : 0;
     
-    const parentId = req.query.parentId || ROOT_FOLDER_ID.toString();
+    const parentId = req.query.parentId || FilesController.ROOT_FOLDER_ID;
     
-    const filesFilter = {
-      userId: new ObjectID(userId),
-      parentId: parentId === ROOT_FOLDER_ID.toString()
-        ? parentId 
-        : new ObjectID(ObjectID.isValid(parentId) ? parentId : NULL_ID),
-    };
+    // const queryFilter = {
+    //   userId: new ObjectID(userId),
+    //   parentId: parentId === FilesController.ROOT_FOLDER_ID
+    //     ? parentId 
+    //     : new ObjectID(ObjectID.isValid(parentId) ? parentId : NULL_ID),
+    // };
 
-    let files = await dbClient.db.collection('files')
+    let queryFilter = { userId: new ObjectID(userId) };
+
+    if (parentId === FilesController.ROOT_FOLDER_ID) {
+      queryFilter.parentId = FilesController.ROOT_FOLDER_ID;
+    } else {
+      if (!ObjectID.isValid(parentId)) {
+        return res.status(400).json({ error: 'Invalid parentId' });
+      }
+      queryFilter.parentId = new ObjectID(parentId);
+    }
+
+    const files = await dbClient.db.collection('files')
         .aggregate([
-          { $match: filesFilter },
+          { $match: queryFilter },
           { $sort: { _id: -1 } },
-          { $skip: page * MAX_FILES_PER_PAGE },
-          { $limit: MAX_FILES_PER_PAGE },
+          { $skip: page * FilesController.MAX_FILES_PER_PAGE },
+          { $limit: FilesController.MAX_FILES_PER_PAGE },
           {
             $project: {
               _id: 0,
@@ -193,7 +205,7 @@ class FilesController {
               type: '$type',
               isPublic: '$isPublic',
               parentId: {
-                $cond: { if: { $eq: ["$parentId" , "0"]}, then: 0, else: "$parentId" },
+                $cond: [ { $eq: ["$parentId" , FilesController.ROOT_FOLDER_ID] }, 0, "$parentId" ],
               },
             },
           }
