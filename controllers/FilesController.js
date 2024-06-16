@@ -16,7 +16,6 @@ const MAX_FILES_PER_PAGE = 20;
 const fileQueue = new Bull('fileQueue');
 
 export default class FilesController {
-
   /**
    * Creates a new file document in the DB if the user is authenticated
    * Endpoint: POST /files
@@ -167,39 +166,40 @@ export default class FilesController {
     if (!userId) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
-      
-    let page = /\d+/.test(req.query.page) ? parseInt(req.query.page) : 0;
-    
+
+    const page = /\d+/.test(req.query.page) ? parseInt(req.query.page, 10) : 0;
     const parentId = req.query.parentId || ROOT_FOLDER_ID;
-    
+
     const queryFilter = parentId === ROOT_FOLDER_ID
       ? { userId: new ObjectID(userId) }
-      : { userId: new ObjectID(userId), parentId: parentId === ROOT_FOLDER_ID
-            ? ROOT_FOLDER_ID
-            : new ObjectID(ObjectID.isValid(parentId) ? parentId : NULL_ID),
-        };
+      : {
+        userId: new ObjectID(userId),
+        parentId: parentId === ROOT_FOLDER_ID
+          ? ROOT_FOLDER_ID
+          : new ObjectID(ObjectID.isValid(parentId) ? parentId : NULL_ID),
+      };
 
     const files = await dbClient.db.collection('files')
-        .aggregate([
-          { $match: queryFilter },
-          // { $sort: { _id: -1 } },
-          { $skip: page * MAX_FILES_PER_PAGE },
-          { $limit: MAX_FILES_PER_PAGE },
-          {
-            $project: {
-              _id: 0,
-              id: '$_id',
-              userId: '$userId',
-              name: '$name',
-              type: '$type',
-              isPublic: '$isPublic',
-              parentId: {
-                $cond: [ { $eq: ["$parentId" , ROOT_FOLDER_ID] }, 0, "$parentId" ],
-              },
+      .aggregate([
+        { $match: queryFilter },
+        // { $sort: { _id: -1 } },
+        { $skip: page * MAX_FILES_PER_PAGE },
+        { $limit: MAX_FILES_PER_PAGE },
+        {
+          $project: {
+            _id: 0,
+            id: '$_id',
+            userId: '$userId',
+            name: '$name',
+            type: '$type',
+            isPublic: '$isPublic',
+            parentId: {
+              $cond: [{ $eq: ['$parentId', ROOT_FOLDER_ID] }, 0, '$parentId'],
             },
-          }
-        ])
-        .toArray();
+          },
+        },
+      ])
+      .toArray();
 
     return res.status(200).json(files);
   }
