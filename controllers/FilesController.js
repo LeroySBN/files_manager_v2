@@ -363,7 +363,7 @@ export default class FilesController {
 
     // Set the content type header
     res.setHeader('Content-Type', mimeType);
-    res.setHeader('Content-Disposition', `inline; filename=${file.name}`);
+    // res.setHeader('Content-Disposition', `inline; filename=${file.name}`);
 
     // Read the resized image file and send it as the response
     // const fileData = fs.readFileSync(resizedImagePath);
