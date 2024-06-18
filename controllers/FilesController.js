@@ -1,7 +1,7 @@
 /* eslint-disable import/no-named-as-default */
 /* eslint-disable no-unused-vars */
 
-import { ObjectID } from 'mongodb';
+import { ObjectId } from 'mongodb';
 import fs from 'fs';
 import { v4 as uuidv4 } from 'uuid';
 import mime from 'mime-types';
@@ -47,7 +47,7 @@ export default class FilesController {
       return res.status(400).json({ error: 'Missing data' });
     }
     if (parentId !== 0) {
-      const parent = await dbClient.db.collection('files').findOne({ _id: ObjectID(parentId) });
+      const parent = await dbClient.db.collection('files').findOne({ _id: ObjectId(parentId) });
       if (!parent) {
         return res.status(400).json({ error: 'Parent not found' });
       }
@@ -68,15 +68,15 @@ export default class FilesController {
       fs.writeFileSync(localPath, bufferData);
     }
 
-    let parentIdObjectID;
+    let parentIdObjectId;
     if (parentId !== 0) {
       try {
-        parentIdObjectID = new ObjectID(parentId);
+        parentIdObjectId = new ObjectId(parentId);
       } catch (error) {
         return res.status(400).json({ error: 'Invalid parentId' });
       }
 
-      const parentFile = await dbClient.db.collection('files').findOne({ _id: parentIdObjectID });
+      const parentFile = await dbClient.db.collection('files').findOne({ _id: parentIdObjectId });
 
       if (!parentFile) {
         return res.status(400).json({ error: 'Parent not found' });
@@ -87,10 +87,10 @@ export default class FilesController {
     }
 
     const fileDocument = {
-      userId: new ObjectID(userId),
+      userId: new ObjectId(userId),
       name,
       type,
-      parentId: parentIdObjectID || 0,
+      parentId: parentIdObjectId || 0,
       isPublic,
       localPath: localPath || null,
     };
@@ -104,11 +104,11 @@ export default class FilesController {
 
     return res.status(201).json({
       id: insertedFile.insertedId,
-      userId: new ObjectID(userId),
+      userId: new ObjectId(userId),
       name,
       type,
       isPublic,
-      parentId: parentIdObjectID || 0,
+      parentId: parentIdObjectId || 0,
       // ...fileDocument,
     });
   }
@@ -133,8 +133,8 @@ export default class FilesController {
     // Retrieve the file document based on the ID
     const fileId = req.params.id;
     const file = await dbClient.db.collection('files').findOne({
-      _id: new ObjectID(fileId),
-      userId: new ObjectID(userId),
+      _id: new ObjectId(fileId),
+      userId: new ObjectId(userId),
     });
 
     if (!file) {
@@ -171,12 +171,12 @@ export default class FilesController {
     const parentId = req.query.parentId || ROOT_FOLDER_ID;
 
     const queryFilter = parentId === ROOT_FOLDER_ID
-      ? { userId: new ObjectID(userId) }
+      ? { userId: new ObjectId(userId) }
       : {
-        userId: new ObjectID(userId),
+        userId: new ObjectId(userId),
         parentId: parentId === ROOT_FOLDER_ID
           ? ROOT_FOLDER_ID
-          : new ObjectID(ObjectID.isValid(parentId) ? parentId : NULL_ID),
+          : new ObjectId(ObjectId.isValid(parentId) ? parentId : NULL_ID),
       };
 
     const files = await dbClient.db.collection('files')
@@ -225,8 +225,8 @@ export default class FilesController {
     // Retrieve the file document based on the ID
     const fileId = req.params.id;
     const file = await dbClient.db.collection('files').findOne({
-      _id: new ObjectID(fileId),
-      userId: new ObjectID(userId),
+      _id: new ObjectId(fileId),
+      userId: new ObjectId(userId),
     });
 
     if (!file) {
@@ -235,7 +235,7 @@ export default class FilesController {
 
     // Update the file document based on the ID
     const updatedFile = await dbClient.db.collection('files').updateOne(
-      { _id: new ObjectID(fileId) },
+      { _id: new ObjectId(fileId) },
       { $set: { isPublic: true } },
     );
 
@@ -274,8 +274,8 @@ export default class FilesController {
     // Retrieve the file document based on the ID
     const fileId = req.params.id;
     const file = await dbClient.db.collection('files').findOne({
-      _id: new ObjectID(fileId),
-      userId: new ObjectID(userId),
+      _id: new ObjectId(fileId),
+      userId: new ObjectId(userId),
     });
 
     if (!file) {
@@ -284,7 +284,7 @@ export default class FilesController {
 
     // Update the file document based on the ID
     const updatedFile = await dbClient.db.collection('files').updateOne(
-      { _id: new ObjectID(fileId) },
+      { _id: new ObjectId(fileId) },
       { $set: { isPublic: false } },
     );
 
@@ -315,11 +315,14 @@ export default class FilesController {
     // Retrieve the user based on the token
     const token = req.header('X-Token');
     const userId = await redisClient.get(`auth_${token}`);
+    if (!userId) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
 
     // Retrieve the file document based on the ID
     const fileId = req.params.id;
     const file = await dbClient.db.collection('files').findOne({
-      _id: new ObjectID(fileId),
+      _id: new ObjectId(fileId),
     });
 
     if (!file) {
