@@ -314,32 +314,27 @@ export default class FilesController {
   static async getFile(req, res) {
     const token = req.header('X-Token');
     const userId = await redisClient.get(`auth_${token}`);
-    if (!userId) {
-      return res.status(404).json({ error: 'Not found' });
-    }
-
     let file;
     const fileId = req.params.id;
-    if (ObjectId.isValid(fileId)) {
-      const queryFilter = {
-        _id: new ObjectId(fileId),
-        userId: new ObjectId(userId),
-        isPublic: true,
-      };
-      file = await dbClient.db.collection('files').findOne(queryFilter);
-      console.log(file);
-      if (!file) {
-        return res.status(404).json({ error: 'Not found' });
-      }
-      if (file.type === 'folder') {
-        return res.status(400).json({ error: 'A folder doesn\'t have content' });
-      }
-    } else {
+
+    if (!ObjectId.isValid(fileId)) {
       return res.status(404).json({ error: 'Not found' });
     }
 
-    if (!file.localPath) {
+    const queryFilter = {
+      _id: ObjectId.isValid(fileId) ? new ObjectId(fileId) : NULL_ID,
+      userId: new ObjectId(userId),
+      isPublic: true,
+    }
+
+    file = await dbClient.db.collection('files').findOne(queryFilter);
+
+    if (!file || !userId || !file.localPath) {
       return res.status(404).json({ error: 'Not found' });
+    }
+
+    if (file.type === 'folder') {
+      return res.status(400).json({ error: 'A folder doesn\'t have content' });
     }
 
     // const { size } = req.query;
