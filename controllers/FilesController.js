@@ -13,6 +13,12 @@ const ROOT_FOLDER_ID = 0;
 const NULL_ID = Buffer.alloc(24, '0').toString('utf-8');
 const MAX_FILES_PER_PAGE = 20;
 
+const VALID_FILE_TYPES = {
+  folder: 'folder',
+  file: 'file',
+  image: 'image',
+};
+
 const fileQueue = new Bull('fileQueue');
 
 export default class FilesController {
@@ -314,27 +320,26 @@ export default class FilesController {
   static async getFile(req, res) {
     const token = req.header('X-Token');
     const userId = await redisClient.get(`auth_${token}`);
-    let file;
     const fileId = req.params.id;
-
-    if (!ObjectId.isValid(fileId)) {
-      return res.status(404).json({ error: 'Not found' });
-    }
 
     const queryFilter = {
       _id: ObjectId.isValid(fileId) ? new ObjectId(fileId) : NULL_ID,
-      userId: new ObjectId(userId),
-      isPublic: true,
-    }
+    };
 
-    file = await dbClient.db.collection('files').findOne(queryFilter);
+    const file = await dbClient.db.collection('files').findOne(queryFilter);
 
-    if (!file || !userId || !file.localPath) {
+    if (!file) {
       return res.status(404).json({ error: 'Not found' });
     }
 
-    if (file.type === 'folder') {
-      return res.status(400).json({ error: 'A folder doesn\'t have content' });
+    // Check if the file is public or the user is authenticated
+    if (!file.isPublic && (!userId || file.userId.toString() !== userId)) {
+      return res.status(404).json({ error: 'Not found' });
+    }
+
+    // Check if the file is a folder
+    if (file.type === VALID_FILE_TYPES.folder) {
+      return res.status(400).json({ error: "A folder doesn't have content" });
     }
 
     // const { size } = req.query;
