@@ -325,7 +325,7 @@ export default class FilesController {
         _id: new ObjectId(fileId),
         userId: new ObjectId(userId),
         isPublic: true,
-      }
+      };
       file = await dbClient.db.collection('files').findOne(queryFilter);
       console.log(file);
       if (!file) {
