@@ -312,51 +312,51 @@ export default class FilesController {
    * @memberof FilesController
    */
   static async getFile(req, res) {
-    // Retrieve the user based on the token
     const token = req.header('X-Token');
     const userId = await redisClient.get(`auth_${token}`);
     if (!userId) {
-      return res.status(401).json({ error: 'Unauthorized' });
+      return res.status(404).json({ error: 'Not found' });
     }
 
-    // Retrieve the file document based on the ID
+    let file;
     const fileId = req.params.id;
-    const file = await dbClient.db.collection('files').findOne({
-      _id: new ObjectId(fileId),
-    });
-
-    if (!file) {
+    if (ObjectId.isValid(fileId)) {
+      const queryFilter = {
+        _id: new ObjectId(fileId),
+        userId: new ObjectId(userId),
+        isPublic: true,
+      }
+      file = await dbClient.db.collection('files').findOne(queryFilter);
+      console.log(file);
+      if (!file) {
+        return res.status(404).json({ error: 'Not found' });
+      }
+      if (file.type === 'folder') {
+        return res.status(400).json({ error: 'A folder doesn\'t have content' });
+      }
+    } else {
       return res.status(404).json({ error: 'Not found' });
-    }
-
-    if (file.userId.toString() !== userId && !file.isPublic) {
-      return res.status(404).json({ error: 'Not found' });
-    }
-
-    if (file.type === 'folder') {
-      return res.status(400).json({ error: 'A folder doesn\'t have content' });
     }
 
     if (!file.localPath) {
       return res.status(404).json({ error: 'Not found' });
     }
 
-    const { size } = req.query;
-    let width = 500; // Default size
-    // Determine the desired width based on the 'size' query parameter
-    if (size === '250') {
-      width = 250;
-    } else if (size === '100') {
-      width = 100;
-    }
+    // const { size } = req.query;
+    // let width = 500;
+    // if (size === '250') {
+    //   width = 250;
+    // } else if (size === '100') {
+    //   width = 100;
+    // }
 
     // Generate the path to the resized image based on the width
-    const resizedImagePath = `${file.localPath}_${width}`;
+    // const resizedImagePath = `${file.localPath}_${width}`;
 
     // Check if the resized image exists, and if not, return a 404 error
-    if (!fs.existsSync(resizedImagePath)) {
-      return res.status(404).json({ error: 'Not found' });
-    }
+    // if (!fs.existsSync(resizedImagePath)) {
+    //   return res.status(404).json({ error: 'Not found' });
+    // }
 
     // Determine the appropriate content type based on the file's extension
     const mimeType = mime.lookup(file.name) || 'application/octet-stream';
@@ -366,7 +366,11 @@ export default class FilesController {
     res.setHeader('Content-Disposition', `inline; filename=${file.name}`);
 
     // Read the resized image file and send it as the response
-    const fileData = fs.readFileSync(resizedImagePath);
-    return res.status(200).send(fileData);
+    // const fileData = fs.readFileSync(resizedImagePath);
+    // return res.status(200).send(fileData);
+    const filePath = file.localPath.toString();
+    const fileContentBase64 = fs.readFileSync(filePath, 'base64');
+    const fileContent = Buffer.from(fileContentBase64, 'base64');
+    return res.status(200).send(fileContent);
   }
 }
