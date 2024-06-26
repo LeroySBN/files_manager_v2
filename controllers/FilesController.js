@@ -363,14 +363,16 @@ export default class FilesController {
 
     // Set the content type header
     res.setHeader('Content-Type', mimeType);
+    return res.status(200).send();
     // res.setHeader('Content-Disposition', `inline; filename=${file.name}`);
 
     // Read the resized image file and send it as the response
     // const fileData = fs.readFileSync(resizedImagePath);
     // return res.status(200).send(fileData);
-    const filePath = file.localPath.toString();
-    const fileContentBase64 = fs.readFileSync(filePath, 'base64');
-    const fileContent = Buffer.from(fileContentBase64, 'base64');
-    return res.status(200).send(fileContent);
+
+    // const filePath = file.localPath.toString();
+    // const fileContentBase64 = fs.readFileSync(filePath, 'base64');
+    // const fileContent = Buffer.from(fileContentBase64, 'base64');
+    // return res.status(200).send(fileContent);
   }
 }
