@@ -5,7 +5,7 @@ import { promisify } from 'util';
 import { ObjectId } from 'mongodb';
 import fs, { existsSync, realpath } from 'fs';
 import { v4 as uuidv4 } from 'uuid';
-import { contentType} from 'mime-types';
+import { contentType } from 'mime-types';
 import Bull from 'bull';
 import redisClient from '../utils/redis';
 import dbClient from '../utils/db';
