@@ -328,12 +328,7 @@ export default class FilesController {
 
     const file = await dbClient.db.collection('files').findOne(queryFilter);
 
-    if (!file) {
-      return res.status(404).json({ error: 'Not found' });
-    }
-
-    // Check if the file is public or the user is authenticated
-    if (!file.isPublic || (!userId && file.userId.toString() !== userId)) {
+    if ((!file || !file.isPublic ) && file.userId.toString() !== userId) {
       return res.status(404).json({ error: 'Not found' });
     }
 
