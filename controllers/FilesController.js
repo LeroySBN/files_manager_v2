@@ -324,7 +324,7 @@ export default class FilesController {
 
     const queryFilter = {
       _id: ObjectId.isValid(fileId) ? new ObjectId(fileId) : NULL_ID,
-      userId: userId ? new ObjectId(userId) : NULL_ID,
+      // userId: userId ? new ObjectId(userId) : NULL_ID,
     };
 
     const file = await dbClient.db.collection('files').findOne(queryFilter);
@@ -333,14 +333,14 @@ export default class FilesController {
       return res.status(404).json({ error: 'Not found' });
     }
 
+    // Check if the file is public or the user is authenticated
+    if (!file.isPublic || (!userId && file.userId.toString() !== userId)) {
+      return res.status(404).json({ error: 'Not found' });
+    }
+
     // Check if the file is a folder
     if (file.type === VALID_FILE_TYPES.folder) {
       return res.status(400).json({ error: "A folder doesn't have content" });
-    }
-
-    // Check if the file is public or the user is authenticated
-    if (!file.isPublic || !userId) {
-      return res.status(404).json({ error: 'Not found' });
     }
 
     // Check if file is present locally
