@@ -359,11 +359,10 @@ export default class FilesController {
     // }
 
     // Determine the appropriate content type based on the file's extension
-    // const mimeType = mime.lookup(file.name) || 'application/octet-stream';
+    const mimeType = mime.lookup(file.name) || 'application/octet-stream';
 
     // Set the content type header
-    // res.setHeader('Content-Type', mimeType);
-    res.setHeader('Content-Type', contentType(file.name) || 'text/plain; charset=utf-8');
+    res.setHeader('Content-Type', mimeType || 'text/plain; charset=utf-8');
 
     // Read the resized image file and send it as the response
     // const fileData = fs.readFileSync(resizedImagePath);
