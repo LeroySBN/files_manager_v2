@@ -324,7 +324,7 @@ export default class FilesController {
 
     const queryFilter = {
       _id: ObjectId.isValid(fileId) ? new ObjectId(fileId) : NULL_ID,
-      // userId: userId ? new ObjectId(userId) : NULL_ID,
+      userId: userId ? new ObjectId(userId) : NULL_ID,
     };
 
     const file = await dbClient.db.collection('files').findOne(queryFilter);
