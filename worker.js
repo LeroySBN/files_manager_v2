@@ -5,6 +5,11 @@ import thumbnail from 'image-thumbnail';
 import dbClient from './utils/db';
 
 const fileQueue = new Bull('fileQueue');
+const THUMBNAIL_SIZE = {
+  'large': 500,
+  'medium': 250,
+  'small': 100,
+}
 
 fileQueue.process(async (job) => {
   const { userId, fileId } = job.data;
@@ -25,12 +30,11 @@ fileQueue.process(async (job) => {
     throw new Error('File not found');
   }
 
-  if (file.type !== 'image' && file.localPath) {
-    const sizes = [500, 250, 100];
-
-    for (const size of sizes) {
-      const thumbnailPath = `${file.localPath}_${size}`;
-      thumbnail(file.localPath, { width: size, height: size, fit: 'cover' }).toFile(thumbnailPath);
-    }
+  const sizes = [THUMBNAIL_SIZE.large, THUMBNAIL_SIZE.medium, THUMBNAIL_SIZE.small];
+  
+  for (const size of sizes) {
+    const thumbnailPath = `${file.localPath}_${size}`;
+    let options = { width: size, height: size, fit: 'cover' };
+    await thumbnail(file.localPath, options).toFile(thumbnailPath);
   }
 });
