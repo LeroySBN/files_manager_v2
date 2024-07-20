@@ -20,11 +20,3 @@ The objective is to build a simple platform to upload and view files:
 * [Image thumbnail](https://www.npmjs.com/package/image-thumbnail)
 * [Mime-Types](https://www.npmjs.com/package/mime-types)
 * [Redis](https://github.com/redis/node-redis)
-
-## Tasks
-<details>
-<summary></summary>
-<div style="width: 100%;">
-<img src="./0x04.png" style="width: 100%; height: auto;">
-</div>
-</details>
