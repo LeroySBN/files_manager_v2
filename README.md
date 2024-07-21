@@ -22,3 +22,4 @@ The objective is to build a simple platform to upload and view files:
 * [Redis](https://github.com/redis/node-redis)
 
 ## API Documentation
+Click [here](https://web.postman.co/workspace/b5c98977-165e-4a15-9cb5-2e7174b98542) to view the Postman API documentation.
