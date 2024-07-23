@@ -1,6 +1,10 @@
 # local temp files
 tmp/
 
+# editors
+.idea/
+~*
+
 # Logs
 logs
 *.log
