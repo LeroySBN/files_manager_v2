@@ -5,15 +5,15 @@ import bodyParser from 'body-parser';
 
 require('@dotenvx/dotenvx').config()
 
-const app = express();
+const api = express();
 const port = parseInt(process.env.PORT, 10) || 5000;
 
-app.use(express.json());
-app.use(bodyParser.json({ limit: '800kb' }));
-app.use('/', router);
+api.use(express.json());
+api.use(bodyParser.json({ limit: '800kb' }));
+api.use('/', router);
 
-app.listen(port, () => {
+api.listen(port, () => {
   console.log(`Server is running on port: ${port}`);
 });
 
-module.exports = app;
+module.exports = api;
