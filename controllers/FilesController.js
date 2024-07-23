@@ -1,14 +1,15 @@
 /* eslint-disable import/no-named-as-default */
 /* eslint-disable no-unused-vars */
 
-import { promisify } from 'util';
-import { ObjectId } from 'mongodb';
-import fs, { existsSync, realpath } from 'fs';
-import { v4 as uuidv4 } from 'uuid';
-import { contentType } from 'mime-types';
-import Bull from 'bull';
+import {ObjectId} from 'mongodb';
+import fs from 'fs';
+import v4 from 'uuid';
+import {contentType} from 'mime-types';
 import redisClient from '../utils/redis';
 import dbClient from '../utils/db';
+import Queue from 'bull/lib/queue';
+
+require('@dotenvx/dotenvx').config()
 
 const ROOT_FOLDER_ID = 0;
 const NULL_ID = Buffer.alloc(24, '0').toString('utf-8');
@@ -20,9 +21,9 @@ const VALID_FILE_TYPES = {
   image: 'image',
 };
 
-const fileQueue = new Bull('fileQueue');
-const realPathAsync = promisify(realpath);
+const fileQueue = new Queue('thumbnail generation');
 
+console.log(`Storage directory: ${process.env.FOLDER_PATH}`);
 export default class FilesController {
   /**
    * Creates a new file document in the DB if the user is authenticated
@@ -71,7 +72,7 @@ export default class FilesController {
         fs.mkdirSync(folderPath, { recursive: true });
       }
 
-      localPath = `${folderPath}/${uuidv4()}`;
+      localPath = `${folderPath}/${v4()}`;
       const bufferData = Buffer.from(data, 'base64');
       fs.writeFileSync(localPath, bufferData);
     }
@@ -105,9 +106,13 @@ export default class FilesController {
 
     const insertedFile = await dbClient.db.collection('files').insertOne(fileDocument);
 
-    if (type === 'image') {
-      const fileId = insertedFile.insertedId.toString();
-      fileQueue.add({ fileId, userId });
+    const fileId = insertedFile.insertedId.toString();
+
+    // start thumbnail generation worker
+    if (type === VALID_FILE_TYPES.image) {
+      console.log('Image thumbnail generation workflow started');
+      const jobName = `Image thumbnail [${userId}-${fileId}]`;
+      fileQueue.add({ userId, fileId, name: jobName });
     }
 
     return res.status(201).json({
@@ -156,6 +161,7 @@ export default class FilesController {
       type: file.type,
       isPublic: file.isPublic,
       parentId: file.parentId,
+      localPath: file.localPath,
     });
   }
 
@@ -323,6 +329,7 @@ export default class FilesController {
     const token = req.header('X-Token');
     const userId = await redisClient.get(`auth_${token}`);
     const fileId = req.params.id;
+    const size = req.query.size || null;
 
     const queryFilter = {
       _id: ObjectId.isValid(fileId) ? new ObjectId(fileId) : NULL_ID,
@@ -349,11 +356,32 @@ export default class FilesController {
       return res.status(404).json({ error: 'Not found' });
     }
 
-    // Set the content type header
-    res.setHeader('Content-Type', contentType(file.name) || 'text/plain; charset=utf-8');
+    let filePath = file.localPath;
+    
+    if (size) {
+      filePath = `${file.localPath}_${size}`;
+    }
 
-    const filePath = file.localPath;
-    const absoluteFilePath = await realPathAsync(filePath);
-    return res.status(200).sendFile(absoluteFilePath);
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).json({ error: 'Not found' });
+    }
+
+    try {
+      const fileInfo = await fs.promises.stat(filePath);
+      if (!fileInfo.isFile()) {
+        return res.status(404).json({ error: 'Not found' });
+      }
+    } catch (error) {
+      return res.status(404).json({ error: 'Not found'});
+    }
+
+    // commenting out next line to avoid reading the file into memory. sendfile takes charge of this
+    // const fileData = fs.readFileSync(filePath);
+
+    const absoluteFilePath = await fs.promises.realpath(filePath);
+
+    res.setHeader('Content-Type', contentType(file.name) || 'text/plain; charset=utf-8');
+    // return res.status(200).sendFile(fileData);
+    return res.status(200).sendFile(absoluteFilePath, { root: '/'});
   }
 }
