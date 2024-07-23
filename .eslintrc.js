@@ -2,9 +2,11 @@ module.exports = {
   env: {
     browser: false,
     es6: true,
+    node: true,
     jest: true,
   },
   extends: [
+    'eslint:recommended',
     'airbnb-base',
     'plugin:jest/all',
   ],
