@@ -13,4 +13,6 @@ r_json = { 'name': file_name, 'type': 'image', 'isPublic': True, 'data': file_en
 r_headers = { 'X-Token': sys.argv[2] }
 
 r = requests.post("http://0.0.0.0:5000/files", json=r_json, headers=r_headers)
-print(r.json())
+# print(r.json())
+print(r.status_code)
+print(r.headers)
