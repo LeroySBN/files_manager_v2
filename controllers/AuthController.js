@@ -1,6 +1,6 @@
 // Authentication client
 import sha1 from 'sha1';
-import { v4 as uuidv4 } from 'uuid';
+import {v4} from 'uuid';
 import dbClient from '../utils/db';
 import redisClient from '../utils/redis';
 
@@ -21,7 +21,7 @@ class AuthController {
       const users = dbClient.db.collection('users');
       const user = await users.findOne({ email, password: sha1(password) });
       if (user) {
-        const token = uuidv4();
+        const token = v4();
         const key = `auth_${token}`;
         const expiryInSeconds = 60 * 60 * 24;
         // Store the user ID in Redis with the token as the key for 24 hours

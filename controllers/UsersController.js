@@ -2,7 +2,7 @@
 // Description: This controller is responsible for handling all the user related requests
 // and responses.
 import sha1 from 'sha1';
-import { ObjectID } from 'mongodb';
+import {ObjectId} from 'mongodb';
 import dbClient from '../utils/db';
 import redisClient from '../utils/redis';
 
@@ -44,7 +44,7 @@ class UsersController {
 
     if (userId) {
       const users = await dbClient.db.collection('users');
-      const userObj = new ObjectID(userId);
+      const userObj = new ObjectId(userId);
       const user = await users.findOne({ _id: userObj });
       if (user) {
         return res.status(200).json({ id: user._id, email: user.email });

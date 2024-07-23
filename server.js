@@ -3,6 +3,8 @@ import express from 'express';
 import router from './routes/index';
 import bodyParser from 'body-parser';
 
+require('@dotenvx/dotenvx').config()
+
 const app = express();
 const port = parseInt(process.env.PORT, 10) || 5000;
 

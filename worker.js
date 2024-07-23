@@ -1,7 +1,8 @@
-import { ObjectId } from 'mongodb';
+import {ObjectId} from 'mongodb';
 import dbClient from './utils/db';
 import Queue from 'bull/lib/queue';
-import { writeFile as writeFileAsync } from 'fs/promises';
+import {writeFile as writeFileAsync} from 'fs/promises';
+
 const imageThumbnail = require('image-thumbnail');
 
 const THUMBNAIL_SIZE = {
