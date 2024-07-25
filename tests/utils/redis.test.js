@@ -1,8 +1,8 @@
 import redisClient from "../../utils/redis";
 
 describe('redisClient test', () => {
-    it('should be connected to the database', () => {
-        expect(redisClient.isAlive()).to.be.true;
+    it('should be connected to the database', async() => {
+        expect(await redisClient.isAlive()).to.be.true;
     })
 
     it('should successfully set and get a value from Redis', async () => {
