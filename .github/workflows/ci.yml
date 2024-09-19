@@ -3,10 +3,10 @@ name: CI - Testing
 on:
   push:
     branches:
-      - main  # or the specific branch you want to monitor
-  pull_request:
-    branches:
-      - main  # or the specific branch you want to monitor
+      - main
+#  pull_request:
+#    branches:
+#      - main
 
 jobs:
   build:

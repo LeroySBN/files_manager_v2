@@ -16,11 +16,11 @@ router.post('/users', UsersController.postNew);
 // Authenticate user
 router.get('/connect', AuthController.getConnect);
 
-// Get Authenticated user
-router.get('/users/me', UsersController.getMe);
-
 // De-Authenticate user
 router.get('/disconnect', AuthController.getDisconnect);
+
+// Get Authenticated user
+router.get('/users/me', UsersController.getMe);
 
 // Add file or folder
 router.post('/files', FilesController.postUpload);
