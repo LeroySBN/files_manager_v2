@@ -1,0 +1,20 @@
+:root {
+  --primary-color: #e1003c;
+  --border-style: 3px solid var(--primary-color);
+  --primary-font: Courier New, Courier, monospace;
+  --secondary-font: Helvetica, sans-serif;
+  --tertiary-font: Lora, serif;
+}
+
+.App-footer {
+  position: static;
+  bottom: 0;
+  border-top: var(--border-style);
+  padding: 1.2rem;
+  font-size: 1rem;
+  text-align: center;
+  font-style: italic;
+  background-color: white;
+  z-index: 1;
+  width: calc(100% - 2em);
+}

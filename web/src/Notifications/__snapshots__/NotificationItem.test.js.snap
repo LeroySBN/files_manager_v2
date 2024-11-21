@@ -1,0 +1,13 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`NotificationItem component testing NotificationItem renders without crashing 1`] = `ShallowWrapper {}`;
+
+exports[`NotificationItem component testing renders the correct html 1`] = `ShallowWrapper {}`;
+
+exports[`NotificationItem component testing renders the correct html with type and value props 1`] = `ShallowWrapper {}`;
+
+exports[`Notifications component testing NotificationItem renders without crashing 1`] = `ShallowWrapper {}`;
+
+exports[`Notifications component testing renders the correct html 1`] = `ShallowWrapper {}`;
+
+exports[`Notifications component testing renders the correct html with type and value props 1`] = `ShallowWrapper {}`;

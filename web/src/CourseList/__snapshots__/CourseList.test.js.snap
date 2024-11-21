@@ -1,0 +1,7 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CourseList component testing CourseList renders without crashing 1`] = `ShallowWrapper {}`;
+
+exports[`CourseList component testing With CourseList Empty CourseList renders without crashing 1`] = `ShallowWrapper {}`;
+
+exports[`CourseList component testing With CourseList containing elements CourseList renders without crashing 1`] = `ShallowWrapper {}`;
