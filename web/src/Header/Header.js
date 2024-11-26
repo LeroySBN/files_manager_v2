@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
 import { StyleSheet, css } from 'aphrodite';
 import { AppContext } from '../App/AppContext';
-import logo from '../assets/holberton-logo.jpg';
+import logo from '../assets/logo.jpg';
 
 export default function Header() {
   const { user, logOut } = React.useContext(AppContext);
@@ -10,7 +10,7 @@ export default function Header() {
     <Fragment>
       <div className={css(styles['App-header'])} id='App-header'>
         <img src={logo} className={css(styles.headerLogo)} alt="logo"/>
-        <h1 className={css(styles.headerTitle)}>School dashboard</h1>
+        <h1 className={css(styles.headerTitle)}>File Push</h1>
       </div>
 
       {user.isLoggedIn && (
@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
   },
   headerLogo: {
     width: '200px',
-    height: '200px',
+    height: 'auto',
   },
   headerTitle: {
     fontWeight: 'bold',

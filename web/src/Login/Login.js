@@ -43,6 +43,7 @@ function Login(props) {
           <input className={css(styles.input)} type="password" id="password" name="password" value={password} onChange={handleChangePassword} />
           <input className={css(styles.button)} type='submit' value='Ok' disabled={!enableSubmit} />
         </form>
+        <p className={css(styles.redirect)}>Don't have an account? Sign up</p>
       </div>
     </React.Fragment>
   );
@@ -97,6 +98,12 @@ const styles = StyleSheet.create({
     padding: '4px',
     cursor: 'pointer',
   },
+  redirect: {
+    fontFamily: 'Lora, serif',
+    fontSize: '1rem',
+    color: '#000000',
+    textAlign: 'center',
+  }
 })
 
 Login.propTypes = {

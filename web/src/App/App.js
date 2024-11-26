@@ -108,7 +108,7 @@ export class App extends React.Component {
                 <Login logIn={this.logIn} />
               </BodySectionWithMarginBottom>
             ) }
-            <BodySection title="News from the school">
+            <BodySection title="About File Push">
               <p>
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
                 Donec mollis non risus quis semper. Donec ac lectus in magna 
