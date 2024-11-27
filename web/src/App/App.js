@@ -100,7 +100,7 @@ export class App extends React.Component {
           <div className={css(styles.App)}>
             <Header />
             {this.state.user.isLoggedIn ? ( 
-              <BodySectionWithMarginBottom title="Course list">
+              <BodySectionWithMarginBottom title="File list">
                 <CourseList listCourses={listCourses} />
               </BodySectionWithMarginBottom>
             ) : ( 

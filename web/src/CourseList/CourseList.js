@@ -8,14 +8,14 @@ export default function CourseList({ listCourses }) {
   return (
     <table id="CourseList"className={css(styles.courseTable)}>
       <thead>
-        <CourseListRow textFirstCell="Available courses" textSecondCell={null} isHeader={true} />
-        <CourseListRow textFirstCell="Course name" textSecondCell="Credit" isHeader={true} />
+        <CourseListRow textFirstCell="My files" textSecondCell={null} isHeader={true} />
+        <CourseListRow textFirstCell="File name" textSecondCell="Size" isHeader={true} />
       </thead>
       <tbody>
       {listCourses.length > 0 ? (
           listCourses.map(({ id, name, credit }) => <CourseListRow key={id} textFirstCell={name} textSecondCell={credit} />)
         ) : (
-          <CourseListRow textFirstCell="No course available yet" />
+          <CourseListRow textFirstCell="No Files available yet" />
         )}
       </tbody>
     </table>

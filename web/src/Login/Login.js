@@ -35,15 +35,15 @@ function Login(props) {
   return (
     <React.Fragment>
       <div className={css(styles['App-body'])}>
-        <p className={css(styles.title)} >Login to access the full dashboard</p>
+        <p className={css(styles.title)} >Sign in to File Push</p>
         <form className={css(styles.form)} onSubmit={handleLoginSubmit} >
           <label className={css(styles.label)} htmlFor='email'>Email:</label>
           <input className={css(styles.input)} type="email" id="email" name="email" value={email} onChange={handleChangeEmail} />
           <label className={css(styles.label)} htmlFor='password'>Password:</label>
           <input className={css(styles.input)} type="password" id="password" name="password" value={password} onChange={handleChangePassword} />
-          <input className={css(styles.button)} type='submit' value='Ok' disabled={!enableSubmit} />
+          <input className={css(styles.button)} type='submit' value='Sign In' disabled={!enableSubmit} />
         </form>
-        <p className={css(styles.redirect)}>Don't have an account? Sign up</p>
+        <p className={css(styles.redirect)}>Create free account</p>
       </div>
     </React.Fragment>
   );
@@ -53,55 +53,59 @@ const styles = StyleSheet.create({
   'App-body': {
     fontFamily: 'Helvetica, sans-serif',
     fontSize: '1rem',
-    '@media (max-width: 900px)': {
-      display: 'flex',
-      flexDirection: 'column',
-    },
+    width: '350px',
+    padding: '20px',
+    margin: 'auto',
+    borderRadius: '8px',
+    boxShadow: '2px 2px 10px #000000',
   },
   title: {
     fontFamily: 'Lora, serif',
-    fontSize: '1rem',
-    color: '#e1003c',
+    fontSize: '1.2rem',
+    fontWeight: 'bold',
+    color: '#000000',
+    textAlign: 'center',
   },  
   form: {
     display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: '0.5rem',
-    '@media (max-width: 768px)': {
-      flexDirection: 'column',
-      alignItems: 'flex-start',
-    },
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    gap: '0.9rem',
+    // '@media (max-width: 768px)': {
+    //   flexDirection: 'column',
+    //   alignItems: 'flex-start',
+    // },
   },
   label: {
     fontFamily: 'Lora, serif',
-    fontSize: '1rem',
-    color: '#000000',
+    fontSize: '0.8rem',
+    fontWeight: 'bold',
+    color: '#999999',
   },
   input: {
     fontFamily: 'Lora, serif',
-    fontSize: '1rem',
+    fontSize: '0.8rem',
     color: '#000000',
-    border: 'none',
+    border: 'solid 1px #999999',
     borderRadius: '0.5em',
     padding: '0.5em',
-    margin: '0.5em',
-    '@media (max-width: 900px)': {
-      margin: '0.5em 0',
-    },
+    width: '100%',
   },
   button: {
     fontFamily: 'Lora, serif',
-    fontSize: '1.2rem',
-    border: '2px solid gray',
+    fontSize: '0.9rem',
+    border: 'none',
     borderRadius: '8px',
-    padding: '4px',
+    padding: '6px 4px',
     cursor: 'pointer',
+    width: '100%',
+    background: '#3d85c6',
+    color: '#ffffff',
   },
   redirect: {
     fontFamily: 'Lora, serif',
     fontSize: '1rem',
-    color: '#000000',
+    color: '#cc0000',
     textAlign: 'center',
   }
 })
