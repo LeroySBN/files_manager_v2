@@ -1,7 +1,36 @@
 import { useDispatch } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import 'node-fetch';
-import { LOGIN, LOGOUT, DISPLAY_NOTIFICATION_DRAWER, HIDE_NOTIFICATION_DRAWER, LOGIN_SUCCESS, LOGIN_FAILURE } from "./uiActionTypes";
+import {
+  SIGNUP,
+  SIGNUP_SUCCESS,
+  SIGNUP_FAILURE,
+  LOGIN,
+  LOGIN_SUCCESS,
+  LOGIN_FAILURE,
+  LOGOUT,
+  DISPLAY_NOTIFICATION_DRAWER,
+  HIDE_NOTIFICATION_DRAWER,
+} from "./uiActionTypes";
+
+export const signup = (email, password) => {
+  return {
+    type: SIGNUP,
+    user: { email, password }
+  };
+}
+
+export const signupSuccess = () => {
+  return {
+    type: SIGNUP_SUCCESS,
+  };
+}
+
+export const signupFailure = () => {
+  return {
+    type: SIGNUP_FAILURE,
+  };
+}
 
 export const login = (email, password) => {
   return {
@@ -44,12 +73,15 @@ export const useUIActionCreators = () => {
   const dispatch = useDispatch();
 
   return {
+    boundSignup: bindActionCreators(signup, dispatch),
+    boundSignupSuccess: bindActionCreators(signupSuccess, dispatch),
+    boundSignupFailure: bindActionCreators(signupFailure, dispatch),
     boundLogin: bindActionCreators(login, dispatch),
+    boundLoginSuccess: bindActionCreators(loginSuccess, dispatch),
+    boundLoginFailure: bindActionCreators(loginFailure, dispatch),
     boundLogout: bindActionCreators(logout, dispatch),
     boundDisplayNotificationDrawer: bindActionCreators(displayNotificationDrawer, dispatch),
     boundHideNotificationDrawer: bindActionCreators(hideNotificationDrawer, dispatch),
-    boundLoginSuccess: bindActionCreators(loginSuccess, dispatch),
-    boundLoginFailure: bindActionCreators(loginFailure, dispatch),
   };
 };
 

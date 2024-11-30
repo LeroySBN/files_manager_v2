@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
     zIndex: '2',
   },
   headerLogo: {
-    width: '200px',
+    width: '70px',
     height: 'auto',
   },
   headerTitle: {
@@ -39,5 +39,6 @@ const styles = StyleSheet.create({
     fontSize: '1.5rem',
     color: '#e1003c',
     verticalAlign: 'center',
+    marginLeft: '8px',
   },
 });

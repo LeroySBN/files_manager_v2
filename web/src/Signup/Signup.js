@@ -3,14 +3,18 @@ import { StyleSheet, css } from 'aphrodite';
 import PropTypes from 'prop-types';
 import WithLogging from '../HOC/WithLogging';
 
-function Login(props) {
+function Signup(props) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [enableSubmit, setEnableSubmit] = useState(false);
 
-    const handleLoginSubmit = (event) => {
+    const handleShowLogin = () => {
+        props.handleShowLogin();
+    }
+
+    const handleSignupSubmit = (event) => {
         event.preventDefault();
-        props.logIn(
+        props.signUp(
             event.target.elements.email.value,
             event.target.elements.password.value
         );
@@ -34,32 +38,38 @@ function Login(props) {
 
     return (
         <React.Fragment>
-            <div className={css(styles['App-body'])}>
-                <p className={css(styles.title)} >Create File Push account</p>
-                <form className={css(styles.form)} onSubmit={handleLoginSubmit} >
+            <div className={css(styles['Signup-container'])}>
+                <p className={css(styles.title)}>Create File Push account</p>
+                <form className={css(styles.form)} onSubmit={handleSignupSubmit}>
                     <label className={css(styles.label)} htmlFor='email'>Email:</label>
-                    <input className={css(styles.input)} type="email" id="email" name="email" value={email} onChange={handleChangeEmail} />
+                    <input className={css(styles.input)} type="email" id="email" name="email" value={email}
+                           onChange={handleChangeEmail}/>
                     <label className={css(styles.label)} htmlFor='password'>Password:</label>
-                    <input className={css(styles.input)} type="password" id="password" name="password" value={password} onChange={handleChangePassword} />
-                    <input className={css(styles.button)} type='submit' value='Create Free Account' disabled={!enableSubmit} />
+                    <input className={css(styles.input)} type="password" id="password" name="password" value={password}
+                           onChange={handleChangePassword}/>
+                    <input className={css(styles.button)} type='submit' value='Sign In' disabled={!enableSubmit}/>
                 </form>
-                <p className={css(styles.redirect)}>Already have an account? Sign in</p>
+            </div>
+            <div className={css(styles.redirects)}>
+                <a className={css(styles['redirect'])} href="#" onClick={handleShowLogin}>Already have an account? Sign in</a>
             </div>
         </React.Fragment>
     );
 }
 
 const styles = StyleSheet.create({
-    'App-body': {
+    'Signup-container': {
         fontFamily: 'Helvetica, sans-serif',
         fontSize: '1rem',
-        margin: '0 400px',
-        padding: '20px',
-        border: '1px solid #e4e4e4',
+        padding: '2rem 1.5rem',
+        margin: 'auto',
         borderRadius: '8px',
-        '@media (max-width: 900px)': {
-            display: 'flex',
-            flexDirection: 'column',
+        boxShadow: '2px 2px 10px #000000',
+        maxWidth: '350px',
+        backgroundColor: '#ffffff',
+        '@media (max-width: 432px)': {
+            maxWidth: '100%',
+            margin: '2vw',
         },
     },
     title: {
@@ -73,17 +83,14 @@ const styles = StyleSheet.create({
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'flex-start',
-        gap: '0.9rem',
-        // '@media (max-width: 768px)': {
-        //   flexDirection: 'column',
-        //   alignItems: 'flex-start',
-        // },
+        width: '100%',
     },
     label: {
         fontFamily: 'Lora, serif',
         fontSize: '0.8rem',
         fontWeight: 'bold',
         color: '#999999',
+        paddingBottom: 0,
     },
     input: {
         fontFamily: 'Lora, serif',
@@ -91,8 +98,9 @@ const styles = StyleSheet.create({
         color: '#000000',
         border: 'solid 1px #999999',
         borderRadius: '0.5em',
-        padding: '0.5em',
+        padding: '0.5rem 0',
         width: '100%',
+        marginBottom: '2rem',
     },
     button: {
         fontFamily: 'Lora, serif',
@@ -105,18 +113,26 @@ const styles = StyleSheet.create({
         background: '#3d85c6',
         color: '#ffffff',
     },
-    redirect: {
+    'redirects': {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        marginTop: '2rem',
+    },
+    'redirect': {
         fontFamily: 'Lora, serif',
         fontSize: '1rem',
         color: '#cc0000',
-        textAlign: 'center',
-    }
+        background: 'transparent',
+        border: 'none',
+        textDecoration: 'none',
+    },
 })
 
-Login.propTypes = {
-    logIn: PropTypes.func,
+Signup.propTypes = {
+    signUp: PropTypes.func,
 };
 
-const LoginWithLogging = WithLogging(Login);
+const SignupWithLogging = WithLogging(Signup);
 
-export { Login, LoginWithLogging };
+export { Signup, SignupWithLogging };
