@@ -39,7 +39,7 @@ function Login(props) {
   return (
       <React.Fragment>
           <div className={css(styles['Login-container'])}>
-            <p className={css(styles.title)}>Sign in to File Push</p>
+            <p className={css(styles.title)}>Sign in to Files</p>
             <form className={css(styles.form)} onSubmit={handleLoginSubmit}>
               <label className={css(styles.label)} htmlFor='email'>Email:</label>
               <input className={css(styles.input)} type="email" id="email" name="email" value={email}
@@ -47,6 +47,10 @@ function Login(props) {
               <label className={css(styles.label)} htmlFor='password'>Password:</label>
               <input className={css(styles.input)} type="password" id="password" name="password" value={password}
                      onChange={handleChangePassword}/>
+              <span>
+                <input type={"checkbox"} id='jwt-cookie' value='true'/>
+                <label className={css(styles.checkbox)} htmlFor='marketing'>Stay signed in</label>
+              </span>
               <input className={css(styles.button)} type='submit' value='Sign In' disabled={!enableSubmit}/>
             </form>
           </div>
@@ -70,6 +74,7 @@ const styles = StyleSheet.create({
     '@media (max-width: 432px)': {
       maxWidth: '100%',
       margin: '2vw',
+      padding: '2rem 1rem',
     },
   },
   title: {
@@ -112,6 +117,12 @@ const styles = StyleSheet.create({
     width: '100%',
     background: '#3d85c6',
     color: '#ffffff',
+    marginTop: '2rem',
+  },
+  checkbox: {
+    fontFamily: 'Lora, serif',
+    fontSize: '0.9rem',
+    color: '#000000',
   },
   'redirects': {
     display: 'flex',

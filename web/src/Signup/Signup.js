@@ -39,7 +39,7 @@ function Signup(props) {
     return (
         <React.Fragment>
             <div className={css(styles['Signup-container'])}>
-                <p className={css(styles.title)}>Create File Push account</p>
+                <p className={css(styles.title)}>Create Files account</p>
                 <form className={css(styles.form)} onSubmit={handleSignupSubmit}>
                     <label className={css(styles.label)} htmlFor='email'>Email:</label>
                     <input className={css(styles.input)} type="email" id="email" name="email" value={email}
@@ -47,11 +47,23 @@ function Signup(props) {
                     <label className={css(styles.label)} htmlFor='password'>Password:</label>
                     <input className={css(styles.input)} type="password" id="password" name="password" value={password}
                            onChange={handleChangePassword}/>
-                    <input className={css(styles.button)} type='submit' value='Sign In' disabled={!enableSubmit}/>
+                    <span>
+                        <input type={"checkbox"} id='marketing' value='true'/>
+                        <label className={css(styles.checkbox)}
+                           htmlFor='marketing'>Receive product updates, news, and other marketing communications</label>
+                    </span>
+                    <span>
+                        <input type={"checkbox"} id='jwt-cookie' value='true'/>
+                        <label className={css(styles.checkbox)} htmlFor='marketing'>Stay signed in</label>
+                    </span>
+                    <input className={css(styles.button)} type='submit' value='Create Free Account'
+                           disabled={!enableSubmit}/>
                 </form>
             </div>
             <div className={css(styles.redirects)}>
-                <a className={css(styles['redirect'])} href="#" onClick={handleShowLogin}>Already have an account? Sign in</a>
+                <p className={css(styles.redirectHeader)}>Already have an account?
+                    <a className={css(styles['redirect'])} href="#" onClick={handleShowLogin}> Sign in</a>
+                </p>
             </div>
         </React.Fragment>
     );
@@ -70,6 +82,7 @@ const styles = StyleSheet.create({
         '@media (max-width: 432px)': {
             maxWidth: '100%',
             margin: '2vw',
+            padding: '2rem 1rem',
         },
     },
     title: {
@@ -112,12 +125,23 @@ const styles = StyleSheet.create({
         width: '100%',
         background: '#3d85c6',
         color: '#ffffff',
+        marginTop: '2rem',
+    },
+    checkbox: {
+        fontFamily: 'Lora, serif',
+        fontSize: '0.9rem',
+        color: '#000000',
     },
     'redirects': {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         marginTop: '2rem',
+    },
+    'redirectHeader': {
+        fontFamily: 'Lora, serif',
+        color: '#000000',
+        fonSize: '1rem',
     },
     'redirect': {
         fontFamily: 'Lora, serif',
