@@ -49,7 +49,7 @@ function Login(props) {
                      onChange={handleChangePassword}/>
               <span>
                 <input type={"checkbox"} id='jwt-cookie' value='true'/>
-                <label className={css(styles.checkbox)} htmlFor='marketing'>Stay signed in</label>
+                <label className={css(styles.checkbox)} htmlFor='jwt-cookie'>Stay signed in</label>
               </span>
               <input className={css(styles.button)} type='submit' value='Sign In' disabled={!enableSubmit}/>
             </form>
@@ -69,10 +69,10 @@ const styles = StyleSheet.create({
     margin: 'auto',
     borderRadius: '8px',
     boxShadow: '2px 2px 10px #000000',
-    maxWidth: '350px',
+    width: '350px',
     backgroundColor: '#ffffff',
     '@media (max-width: 432px)': {
-      maxWidth: '100%',
+      width: '100%',
       margin: '2vw',
       padding: '2rem 1rem',
     },
@@ -123,6 +123,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Lora, serif',
     fontSize: '0.9rem',
     color: '#000000',
+    cursor: 'pointer',
   },
   'redirects': {
     display: 'flex',
