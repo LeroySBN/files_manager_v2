@@ -38,22 +38,22 @@ function Login(props) {
 
   return (
       <React.Fragment>
-          <div className={css(styles['Login-container'])}>
+        <div className={css(styles['Login-container'])}>
             <p className={css(styles.title)}>Sign in to Files</p>
             <form className={css(styles.form)} onSubmit={handleLoginSubmit}>
               <label className={css(styles.label)} htmlFor='email'>Email:</label>
               <input className={css(styles.input)} type="email" id="email" name="email" value={email}
-                     onChange={handleChangeEmail}/>
+                     onChange={handleChangeEmail} required />
               <label className={css(styles.label)} htmlFor='password'>Password:</label>
               <input className={css(styles.input)} type="password" id="password" name="password" value={password}
-                     onChange={handleChangePassword}/>
+                     onChange={handleChangePassword} required />
               <span>
                 <input type={"checkbox"} id='jwt-cookie' value='true'/>
                 <label className={css(styles.checkbox)} htmlFor='jwt-cookie'>Stay signed in</label>
               </span>
               <input className={css(styles.button)} type='submit' value='Sign In' disabled={!enableSubmit}/>
             </form>
-          </div>
+        </div>
         <div className={css(styles.redirects)}>
           <a className={css(styles['redirect'])} href="#" onClick={handleShowSignup}>Create free account</a>
         </div>
@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
   },
   input: {
     fontFamily: 'Lora, serif',
-    fontSize: '0.8rem',
+    fontSize: '0.9rem',
     color: '#000000',
     border: 'solid 1px #999999',
     borderRadius: '0.5em',
@@ -124,12 +124,12 @@ const styles = StyleSheet.create({
     fontSize: '0.9rem',
     color: '#000000',
     cursor: 'pointer',
+    paddingLeft: '6px',
   },
   'redirects': {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    marginTop: '2rem',
   },
   'redirect': {
     fontFamily: 'Lora, serif',

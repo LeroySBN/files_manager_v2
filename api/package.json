@@ -1,6 +1,6 @@
 {
-  "name": "files_manager",
-  "version": "1.0.0",
+  "name": "files_manager_api",
+  "version": "0.1.0",
   "description": "",
   "main": "index.js",
   "scripts": {

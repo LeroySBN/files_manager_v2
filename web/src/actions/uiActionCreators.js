@@ -88,7 +88,8 @@ export const useUIActionCreators = () => {
 export async function loginRequest(email, password) {
   return (dispatch) => {
     dispatch(login(email, password));
-    return fetch('http://localhost:8564/login-success.json')
+    return fetch('http://localhost:5000/login-success.json')
+    // return fetch('http://localhost:8564/login-success.json')
       .then((res) => res.json())
       .then((data) => {
         if (data.email) {

@@ -43,15 +43,16 @@ function Signup(props) {
                 <form className={css(styles.form)} onSubmit={handleSignupSubmit}>
                     <label className={css(styles.label)} htmlFor='email'>Email:</label>
                     <input className={css(styles.input)} type="email" id="email" name="email" value={email}
-                           onChange={handleChangeEmail}/>
+                           onChange={handleChangeEmail} required />
                     <label className={css(styles.label)} htmlFor='password'>Password:</label>
                     <input className={css(styles.input)} type="password" id="password" name="password" value={password}
-                           onChange={handleChangePassword}/>
+                           onChange={handleChangePassword} required />
                     <span>
                         <input type={"checkbox"} id='marketing' value='true'/>
                         <label className={css(styles.checkbox)}
                            htmlFor='marketing'>Receive product updates, news, and other marketing communications</label>
                     </span>
+                    <br/>
                     <span>
                         <input type={"checkbox"} id='jwt-cookie' value='true'/>
                         <label className={css(styles.checkbox)} htmlFor='jwt-cookie'>Stay signed in</label>
@@ -132,17 +133,17 @@ const styles = StyleSheet.create({
         fontSize: '0.9rem',
         color: '#000000',
         cursor: 'pointer',
+        paddingLeft: '6px',
     },
     'redirects': {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        marginTop: '2rem',
     },
     'redirectHeader': {
         fontFamily: 'Lora, serif',
         color: '#000000',
-        fonSize: '1rem',
+        fontSize: '1rem',
     },
     'redirect': {
         fontFamily: 'Lora, serif',

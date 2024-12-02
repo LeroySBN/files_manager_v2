@@ -10,7 +10,7 @@ export default function Header() {
     <Fragment>
       <div className={css(styles['App-header'])} id='App-header'>
         <img src={logo} className={css(styles.headerLogo)} alt="logo"/>
-        <h1 className={css(styles.headerTitle)}>File Push</h1>
+        <h1 className={css(styles.headerTitle)}>Files by Leroy</h1>
       </div>
 
       {user.isLoggedIn && (

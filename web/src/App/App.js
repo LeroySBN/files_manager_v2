@@ -147,8 +147,8 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'space-between',
-    gap: '5rem',
-    marginTop: '7rem',
+    gap: '50px',
+    marginTop: '50px',
   },
 })
 
