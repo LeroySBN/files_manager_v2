@@ -2,7 +2,7 @@ import { bindActionCreators } from 'redux';
 import { useDispatch } from 'react-redux';
 import { MARK_AS_READ, SET_TYPE_FILTER, FETCH_NOTIFICATIONS_SUCCESS } from "./notificationActionTypes";
 
-export const markAsAread = (index) => {
+export const markAsRead = (index) => {
     return {
         type: MARK_AS_READ,
         index
@@ -27,7 +27,7 @@ export const useNotificationActionCreators = () => {
     const dispatch = useDispatch();
 
     return {
-        boundMarkAsAread: bindActionCreators(markAsAread, dispatch),
+        boundMarkAsRead: bindActionCreators(markAsRead, dispatch),
         boundSetNotificationFilter: bindActionCreators(setNotificationFilter, dispatch),
         boundFetchNotificationsSuccess: bindActionCreators(fetchNotificationsSuccess, dispatch)
     };

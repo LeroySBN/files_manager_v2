@@ -1,16 +1,19 @@
 import React from 'react';
-import { connect } from 'react-redux';
+import PropTypes from "prop-types";
 import $ from 'jquery';
-import { StyleSheet, css } from 'aphrodite';
+import {css, StyleSheet} from 'aphrodite';
 import Footer from '../Footer/Footer';
 import CourseList from '../CourseList/CourseList';
-import { getLatestNotification } from '../utils/utils';
+import {getLatestNotification} from '../utils/utils';
 import BodySectionWithMarginBottom from '../BodySection/BodySectionWithMarginBottom';
-import { user, AppContext } from './AppContext';
+import {AppContext, user} from './AppContext';
 import Logo from "../Logo/Logo";
-import { Login } from "../Login/Login";
-import { Signup } from "../Signup/Signup";
+import {Login} from "../Login/Login";
+import {Signup} from "../Signup/Signup";
 import Header from "../Header/Header";
+import Notifications from "../Notifications/Notifications";
+import {displayNotificationDrawer, hideNotificationDrawer} from "../actions/uiActionCreators";
+import {connect} from "react-redux";
 
 const listCourses = [
   { id: 1, name: "ES6", credit: 60 },
@@ -29,16 +32,13 @@ export class App extends React.Component {
     super(props);
 
     this.state = {
-      displayDrawer: false,
+      hasJoined: true,
       user: user,
       logOut: this.logOut,
       listNotifications: listNotifications,
-      hasJoined: true,
-    };
+    }
 
     this.handleKeyPress = this.handleKeyPress.bind(this);
-    this.handleDisplayDrawer = this.handleDisplayDrawer.bind(this);
-    this.handleHideDrawer = this.handleHideDrawer.bind(this);
     this.logIn = this.logIn.bind(this);
     this.logOut = this.logOut.bind(this);
     this.markNotificationAsRead = this.markNotificationAsRead.bind(this);
@@ -53,30 +53,19 @@ export class App extends React.Component {
   componentWillUnmount() {
     $(document).off('keydown', this.handleKeyPress);
   }
-  
-  handleKeyPress = (event)=> {
+
+  handleKeyPress(event) {
     if (event.ctrlKey && event.key === 'h') {
       alert('Logging you out');
       this.state.logOut();
     }
   }
 
-  handleDisplayDrawer = ()=> {
-    // console.log('handleDisplayDrawer called');
-    this.setState({ displayDrawer: true });
-  }
-
-  handleHideDrawer = ()=> {
-    this.setState({ displayDrawer: false });
-  }
-
   handleShowSignup = () => {
-    console.log('handleShowSignup called');
     this.setState({ hasJoined: false });
   }
 
   handleShowLogin = () => {
-    console.log('handleShowLogin called');
     this.setState({ hasJoined: true });
   }
 
@@ -94,12 +83,16 @@ export class App extends React.Component {
 
   markNotificationAsRead = (id)=> {
     this.setState({
-      listNotifications: this.state.listNotifications.filter((notification)=> notification.id !== id)
+      listNotifications: this.state.listNotifications.filter(
+          (notification)=> notification.id !== id
+      )
     });
   };
 
-  render() {
-    return (
+render() {
+  console.log('App props:', this.props);
+
+  return (
       <AppContext.Provider value={{
         user: this.state.user,
         logOut: this.state.logOut,
@@ -107,7 +100,14 @@ export class App extends React.Component {
         <React.Fragment>
           <div className={css(styles.App)}>
             {this.state.user.isLoggedIn ? (
-                <div className={css(styles.pageContainer)}>
+                <div className={css(styles.Dashboard)}>
+                  <Notifications
+                      displayDrawer={this.props.displayDrawer}
+                      listNotifications={this.state.listNotifications}
+                      handleDisplayDrawer={this.props.displayNotificationDrawer}
+                      handleHideDrawer={this.props.hideNotificationDrawer}
+                      markNotificationAsRead={this.markNotificationAsRead}
+                  />
                   <Header />
                   <BodySectionWithMarginBottom title="File list">
                     <CourseList listCourses={listCourses} />
@@ -138,10 +138,8 @@ const styles = StyleSheet.create({
     overflowY: 'hidden',
     background: 'linear-gradient(0deg, #3d85c677, #fff8f8)',
   },
-  pageContainer: {
-    minHeight: '100vh',
+  Dashboard: {
     position: 'relative',
-    background: '#ffffff',
   },
   ['Access-container']: {
     display: 'flex',
@@ -149,13 +147,36 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     gap: '50px',
     marginTop: '50px',
+    '@media (max-width: 432px)': {
+      marginTop: '15vh',
+    },
   },
 })
 
-export function mapStateToProps (state) {
+App.propTypes = {
+  isLoggedIn: PropTypes.bool.isRequired,
+  displayDrawer: PropTypes.bool,
+  displayNotificationDrawer: PropTypes.func,
+  hideNotificationDrawer: PropTypes.func,
+};
+
+App.defaultProps = {
+  isLoggedIn: false,
+  displayDrawer: false,
+  displayNotificationDrawer: () => {},
+  hideNotificationDrawer: () => {},
+}
+
+const mapStateToProps = (state) => {
   return {
-    isLoggedIn: state.ui.isUserLoggedIn,
+    isLoggedIn: state.ui.get('isUserLoggedIn'),
+    displayDrawer: state.ui.get('isNotificationDrawerVisible'),
   };
 }
 
-export default connect(mapStateToProps, null)(App);
+const mapDispatchToProps = (dispatch) => ({
+  displayNotificationDrawer: () => dispatch(displayNotificationDrawer()),
+  hideNotificationDrawer: () => dispatch(hideNotificationDrawer()),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);

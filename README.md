@@ -1,17 +1,16 @@
 # Files manager
 The objective is to build a simple platform to upload and view files. Some of the features include:
 * User authentication via a token
-* List all files
-* Upload a new file
-* Change permission of a file
-* View a file
-* Generate thumbnails for images
+* Upload, list, and view a file/s
+* Change file permissions between private and public
+* Generate thumbnails for images through background processing
 
-## API Requirements
+## Requirements
+### API Backend Requirements
 - Node version 12.x.x
 - npm version 6.x.x
 
-## Web Requirements
+### Web Frontend Requirements
 - Node version 18.20.5
 - npm version 10.8.2
 

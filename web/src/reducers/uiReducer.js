@@ -12,15 +12,18 @@ import {
 } from "../actions/uiActionTypes";
 
 export const initialState = Map({
-    isNotificationDrawerVisible: false,
     isUserLoggedIn: false,
+    isNotificationDrawerVisible: false,
     user: Map({}),
 });
 
 const uiReducer = (state = initialState, action) => {
+    console.log('Reducer received action:', action.type);
+    console.log('State before update:', state.toJS());
+
     switch (action.type) {
         case SIGNUP:
-            return {}
+            return state.merge({ isUserLoggedIn: true, user: Map({}) });
 
         case SIGNUP_SUCCESS:
             return state.set('isUserLoggedIn', true);
@@ -29,7 +32,7 @@ const uiReducer = (state = initialState, action) => {
             return state.set('isUserLoggedIn', false);
 
         case LOGIN:
-            return {}
+            return state.merge({ isUserLoggedIn: true, user: Map({}) });
 
         case LOGIN_SUCCESS:
             return state.set('isUserLoggedIn', true);

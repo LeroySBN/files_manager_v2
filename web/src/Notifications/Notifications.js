@@ -1,9 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { StyleSheet, css } from 'aphrodite';
+import {css, StyleSheet} from 'aphrodite';
 import closeIcon from '../assets/close-icon.png';
+import unreadNotificationsIcon from '../assets/notifications_unread.png';
+import readNotificationsIcon from '../assets/notifications.png';
 import NotificationItem from './NotificationItem';
-import { NotificationItemShape } from './NotificationItemShape';
+import {NotificationItemShape} from './NotificationItemShape';
+import {notification} from "../schema/notifications";
 
 class Notifications extends React.PureComponent {
   constructor(props) {
@@ -11,16 +14,20 @@ class Notifications extends React.PureComponent {
   }
 
   render() {
+    console.log('Notifications props:', this.props);
+
     return (
       <React.Fragment>
         {!this.props.displayDrawer ? (
           <div
             className={css(styles.menuItem)}
             onClick={()=> {
+              console.log('handleDisplayDrawer called');
+              console.log(this.props.handleDisplayDrawer);
               this.props.handleDisplayDrawer();
             }}
           >
-            <p>Your notifications</p>
+            <img className={css(styles.notificationIcon)} src={unreadNotificationsIcon} alt="unread notifications" />
           </div>
         ) : (
           <div className={css(styles.Notifications)}>
@@ -88,12 +95,13 @@ const translateKeyframes = {
 const styles = StyleSheet.create({
   menuItem: {
     position: 'absolute',
-    top: '0.5rem',
-    right: '0.5rem',
-    padding: '4px 16px',
+    top: '0',
+    right: '0',
+    padding: '4px',
     ':hover': {
       cursor: 'pointer',
-      backgroundColor: '#fff8f8',
+      // backgroundColor: '#fff8f8',
+      background: 'transparent',
       animationName: [opacityKeyframes, translateKeyframes],
       animationDuration: '1s, 0.5s',
       animationIterationCount: '3',
@@ -102,7 +110,7 @@ const styles = StyleSheet.create({
   Notifications: {
     position: 'absolute',
     top: '1rem',
-    right: '1em',
+    right: '1rem',
     padding: '8px 16px',
     border: '2px #e1003c dotted',
     color: '#000000',
@@ -120,6 +128,10 @@ const styles = StyleSheet.create({
       border: 'none',
       zIndex: '3',
     },
+  },
+  notificationIcon: {
+    width: '30px',
+    height: '30px',
   },
   closeIcon: {
     margin: '0',

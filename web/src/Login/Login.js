@@ -72,9 +72,8 @@ const styles = StyleSheet.create({
     width: '350px',
     backgroundColor: '#ffffff',
     '@media (max-width: 432px)': {
-      width: '100%',
-      margin: '2vw',
       padding: '2rem 1rem',
+      width: '300px',
     },
   },
   title: {
