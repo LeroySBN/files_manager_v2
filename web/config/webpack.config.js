@@ -6,9 +6,6 @@ module.exports = {
   mode: 'development',
   devtool: 'inline-source-map',
   entry: './src/index.js',
-  output: {
-    filename: 'bundle.js',
-  },
   devServer: {
     static: './dist',
     compress: true,
@@ -78,7 +75,7 @@ module.exports = {
     ]
   },
   resolve: {
-    extensions: ['*', '.js', '.jsx'],
+    extensions: ['*', '.js', '.jsx', '.ts', '.tsx'],
     modules: [
       'node_modules',
     ],
@@ -98,4 +95,7 @@ module.exports = {
     }),
     // new CleanWebpackPlugin(),
   ],
+  output: {
+    filename: 'bundle.js',
+  },
 };
