@@ -1,7 +1,7 @@
 {
-  "name": "files_ui",
+  "name": "Files by Leroy Web Frontend",
   "version": "0.1.0",
-  "description": "",
+  "description": "Organise your photos and markdown files",
   "main": "index.js",
   "scripts": {
     "build": "webpack build --config ./config/webpack.config.js",
@@ -9,9 +9,31 @@
     "test": "jest",
     "test-watch": "jest --watch"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LeroySBN/files_manager_v2.git"
+  },
   "keywords": [],
-  "author": "",
+  "author": "Leroy Nazoi",
   "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/LeroySBN/files_manager_v2/issues"
+  },
+  "dependencies": {
+    "@reduxjs/toolkit": "^2.0.1",
+    "aphrodite": "^2.4.0",
+    "immutable": "^5.0.0-beta.4",
+    "inline-source-map": "^0.6.2",
+    "jquery": "^3.7.1",
+    "node-fetch": "^2.7.0",
+    "normalizr": "^3.6.2",
+    "prop-types": "^15.8.1",
+    "react": "^16.14.0",
+    "react-dom": "^16.14.0",
+    "react-redux": "^8.1.2",
+    "redux": "^5.0.1",
+    "redux-thunk": "^3.1.0"
+  },
   "devDependencies": {
     "@babel/core": "^7.23.2",
     "@babel/plugin-transform-runtime": "^7.23.2",
@@ -38,24 +60,12 @@
     "react-test-renderer": "^16.14.0",
     "redux-mock-store": "^1.5.4",
     "style-loader": "^3.3.3",
+    "ts-loader": "^9.5.2",
+    "typescript": "^5.7.3",
     "webpack": "^5.89.0",
     "webpack-cli": "^5.1.4",
-    "webpack-dev-server": "^4.15.1"
-  },
-  "dependencies": {
-    "@reduxjs/toolkit": "^2.0.1",
-    "aphrodite": "^2.4.0",
-    "immutable": "^5.0.0-beta.4",
-    "inline-source-map": "^0.6.2",
-    "jquery": "^3.7.1",
-    "node-fetch": "^2.7.0",
-    "normalizr": "^3.6.2",
-    "prop-types": "^15.8.1",
-    "react": "^16.14.0",
-    "react-dom": "^16.14.0",
-    "react-redux": "^8.1.2",
-    "redux": "^5.0.1",
-    "redux-thunk": "^3.1.0"
+    "webpack-dev-server": "^4.15.1",
+    "workbox-webpack-plugin": "^7.3.0"
   },
   "jest": {
     "testEnvironment": "jsdom",
