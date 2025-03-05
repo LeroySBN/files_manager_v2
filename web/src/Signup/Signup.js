@@ -62,9 +62,9 @@ function Signup(props) {
                 </form>
             </div>
             <div className={css(styles.redirects)}>
-                <p className={css(styles.redirectHeader)}>Already have an account?
-                    <a className={css(styles['redirect'])} href="#" onClick={handleShowLogin}> Sign in</a>
-                </p>
+                <span className={css(styles.redirectHeader)}>Already have an account?
+                    <button className={css(styles.authSwitchButton)} onClick={handleShowLogin}> Sign in</button>
+                </span>
             </div>
         </React.Fragment>
     );
@@ -143,18 +143,21 @@ const styles = StyleSheet.create({
         color: '#000000',
         fontSize: '1rem',
     },
-    'redirect': {
+    authSwitchButton: {
         fontFamily: 'Lora, serif',
         fontSize: '1rem',
         color: '#cc0000',
         background: 'transparent',
         border: 'none',
         textDecoration: 'none',
+        cursor: 'pointer',
+        width: 'fit-content',
+        paddingLeft: '5px'
     },
 })
 
 Signup.propTypes = {
-    signUp: PropTypes.func,
+    signUp: PropTypes.func.isRequired,
 };
 
 const SignupWithLogging = WithLogging(Signup);

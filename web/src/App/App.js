@@ -2,48 +2,38 @@ import React from 'react';
 import PropTypes from "prop-types";
 import $ from 'jquery';
 import {css, StyleSheet} from 'aphrodite';
+import {connect} from "react-redux";
+
+// Import components
 import Footer from '../Footer/Footer';
 import CourseList from '../CourseList/CourseList';
-import {getLatestNotification} from '../utils/utils';
 import BodySectionWithMarginBottom from '../BodySection/BodySectionWithMarginBottom';
-import {AppContext, user} from './AppContext';
+import {AppContext} from './AppContext';
 import Logo from "../Logo/Logo";
 import {Login} from "../Login/Login";
 import {Signup} from "../Signup/Signup";
 import Header from "../Header/Header";
 import Notifications from "../Notifications/Notifications";
-import {displayNotificationDrawer, hideNotificationDrawer} from "../actions/uiActionCreators";
-import {connect} from "react-redux";
 
-const listCourses = [
-  { id: 1, name: "ES6", credit: 60 },
-  { id: 2, name: "Webpack", credit: 20 },
-  { id: 3, name: "React", credit: 40 },
-];
-
-const listNotifications = [
-  { id: 1, type: "default", value: "New course available" },
-  { id: 2, type: "urgent", value: "New resume available" },
-  { id: 3, type: "urgent", html: getLatestNotification() },
-];
+// Import action creators
+import {
+  displayNotificationDrawer,
+  hideNotificationDrawer,
+  login,
+  logout,
+  signup
+} from "../actions/uiActionCreators";
 
 export class App extends React.Component {
   constructor(props) {
     super(props);
-
     this.state = {
-      hasJoined: true,
-      user: user,
-      logOut: this.logOut,
-      listNotifications: listNotifications,
-    }
+      isLoginView: true  // Default to log in view
+    };
 
+    // Bind methods for event handling
     this.handleKeyPress = this.handleKeyPress.bind(this);
-    this.logIn = this.logIn.bind(this);
-    this.logOut = this.logOut.bind(this);
     this.markNotificationAsRead = this.markNotificationAsRead.bind(this);
-    this.handleShowSignup = this.handleShowSignup.bind(this);
-    this.handleShowLogin = this.handleShowLogin.bind(this);
   }
 
   componentDidMount() {
@@ -54,75 +44,97 @@ export class App extends React.Component {
     $(document).off('keydown', this.handleKeyPress);
   }
 
+  // Logout shortcut
   handleKeyPress(event) {
     if (event.ctrlKey && event.key === 'h') {
       alert('Logging you out');
-      this.state.logOut();
+      this.props.logOut();
     }
   }
 
-  handleShowSignup = () => {
-    this.setState({ hasJoined: false });
+  // Toggle between Login and Signup views
+  toggleToSignup = () => {
+    this.setState({ isLoginView: false });
   }
 
-  handleShowLogin = () => {
-    this.setState({ hasJoined: true });
+  toggleToLogin = () => {
+    this.setState({ isLoginView: true });
   }
 
-  signUp = (email, password)=> {
-    this.setState({ user: { email, password, isLoggedIn: true }})
-  }
+  //
+  // logIn = (email, password) =>  {
+  //   this.props.logIn(email, password);
+  // }
+  //
+  // signUp = (email, password)=> {
+  //   this.props.signUp(email, password);
+  // }
+  //
+  // logOut = ()=> {
+  //   this.props.logout();
+  // }
 
-  logIn = (email, password)=> {
-    this.setState({ user: { email, password, isLoggedIn: true }})
-  }
-
-  logOut = ()=> {
-    this.setState({ user: user})
-  }
-
+  // Notification management
   markNotificationAsRead = (id)=> {
     this.setState({
-      listNotifications: this.state.listNotifications.filter(
-          (notification)=> notification.id !== id
+      listNotifications: this.props.listNotifications.filter(
+        (notification)=> notification.id !== id
       )
     });
   };
 
 render() {
-  console.log('App props:', this.props);
+  const {
+    isLoggedIn,
+    logIn,
+    signUp,
+    user,
+    displayDrawer,
+    listNotifications,
+    listCourses,
+    displayNotificationDrawer,
+    hideNotificationDrawer
+  } = this.props;
 
   return (
-      <AppContext.Provider value={{
-        user: this.state.user,
-        logOut: this.state.logOut,
-      }}>
+      <AppContext.Provider 
+        value={{
+          user,
+          logOut: this.props.logOut,
+        }}
+      >
         <React.Fragment>
           <div className={css(styles.App)}>
-            {this.state.user.isLoggedIn ? (
-                <div className={css(styles.Dashboard)}>
-                  <Notifications
-                      displayDrawer={this.props.displayDrawer}
-                      listNotifications={this.state.listNotifications}
-                      handleDisplayDrawer={this.props.displayNotificationDrawer}
-                      handleHideDrawer={this.props.hideNotificationDrawer}
-                      markNotificationAsRead={this.markNotificationAsRead}
-                  />
-                  <Header />
-                  <BodySectionWithMarginBottom title="File list">
-                    <CourseList listCourses={listCourses} />
-                  </BodySectionWithMarginBottom>
-                  <Footer/>
-                </div>
+            {isLoggedIn ? (
+              <div className={css(styles.Dashboard)}>
+                <Header />
+                <Notifications
+                    displayDrawer={displayDrawer}
+                    listNotifications={listNotifications}
+                    handleDisplayDrawer={displayNotificationDrawer}
+                    handleHideDrawer={hideNotificationDrawer}
+                    markNotificationAsRead={this.markNotificationAsRead}
+                />
+                <BodySectionWithMarginBottom title="File list">
+                  <CourseList listCourses={listCourses} />
+                </BodySectionWithMarginBottom>
+                <Footer/>
+              </div>
             ) : (
-                <div className={css(styles['Access-container'])}>
-                  <Logo />
-                  {this.state.hasJoined ? (
-                      <Login logIn={this.logIn} handleShowSignup={this.handleShowSignup} />
-                  ) : (
-                      <Signup signUp={this.signUp} handleShowLogin={this.handleShowLogin} />
-                  )}
-                </div>
+              <div className={css(styles['Access-container'])}>
+                <Logo />
+                {this.state.isLoginView ? (
+                    <Login
+                        logIn={logIn}
+                        showSignup={this.toggleToSignup}
+                    />
+                ) : (
+                    <Signup
+                        signUp={signUp}
+                        handleShowLogin={this.toggleToLogin}
+                    />
+                )}
+              </div>
             )}
           </div>
         </React.Fragment>
@@ -133,50 +145,74 @@ render() {
 
 const styles = StyleSheet.create({
   App: {
-    minHeight: '100vh',
     fontFamily: 'Courier New, Courier, monospace',
-    overflowY: 'hidden',
     background: 'linear-gradient(0deg, #3d85c677, #fff8f8)',
+    height: '100vh',
   },
   Dashboard: {
     position: 'relative',
   },
   ['Access-container']: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'space-between',
     gap: '50px',
-    marginTop: '50px',
-    '@media (max-width: 432px)': {
-      marginTop: '15vh',
-    },
   },
 })
 
 App.propTypes = {
   isLoggedIn: PropTypes.bool.isRequired,
+  logIn: PropTypes.func.isRequired,
+  signUp: PropTypes.func,
+  logOut: PropTypes.func,
+  user: PropTypes.object,
   displayDrawer: PropTypes.bool,
-  displayNotificationDrawer: PropTypes.func,
-  hideNotificationDrawer: PropTypes.func,
+  // displayNotificationDrawer: PropTypes.func,
+  listCourses: PropTypes.array,
+  // hideNotificationDrawer: PropTypes.func,
+  listNotifications: PropTypes.array,
 };
 
 App.defaultProps = {
   isLoggedIn: false,
+  logIn: () => {},
+  signUp: () => {},
+  logOut: () => {},
+  user: null,
   displayDrawer: false,
-  displayNotificationDrawer: () => {},
-  hideNotificationDrawer: () => {},
+  listCourses: [],
+  listNotifications: [],
+  // displayNotificationDrawer: () => {},
+  // hideNotificationDrawer: () => {},
 }
 
-const mapStateToProps = (state) => {
-  return {
-    isLoggedIn: state.ui.get('isUserLoggedIn'),
-    displayDrawer: state.ui.get('isNotificationDrawerVisible'),
-  };
-}
-
-const mapDispatchToProps = (dispatch) => ({
-  displayNotificationDrawer: () => dispatch(displayNotificationDrawer()),
-  hideNotificationDrawer: () => dispatch(hideNotificationDrawer()),
+const mapStateToProps = (state) => ({
+  isLoggedIn: state.ui.get('isUserLoggedIn'),
+  displayDrawer: state.ui.get('isNotificationDrawerVisible'),
+  user: state.ui.get('user'),
+  listCourses: state.ui.get('listCourses'),
+  listNotifications: state.ui.get('listNotifications'),
 });
+
+// const mapDispatchToProps = (dispatch) => ({
+//   logIn: (email, password) => dispatch(login(email, password)),
+//   // logIn: (email, password) => dispatch(loginRequest(email, password)),
+//   signUp: (email, password) => dispatch(signup(email, password)),
+//   logOut: () => dispatch(logout()),
+//   displayNotificationDrawer: () => dispatch(displayNotificationDrawer()),
+//   hideNotificationDrawer: () => dispatch(hideNotificationDrawer()),
+// });
+
+const mapDispatchToProps = {
+  logIn: login,
+  signUp: signup,
+  logOut: logout,
+  displayNotificationDrawer,
+  hideNotificationDrawer,
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

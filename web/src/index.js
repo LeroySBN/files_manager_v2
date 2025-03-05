@@ -1,34 +1,24 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
+import { Provider } from 'react-redux';
+import { configureStore } from '@reduxjs/toolkit';
 import './index.css';
-import {App} from './App/App';
-import {Provider} from 'react-redux';
-import {configureStore} from '@reduxjs/toolkit';
-import uiReducer, {initialState} from './reducers/uiReducer';
+
+import { App } from './App/App';
+import uiReducer, { initialState } from './reducers/uiReducer';
 
 const store = configureStore({
     reducer: { ui: uiReducer },
     preloadedState: { ui: initialState },
 });
 
-console.log('Redux Store', store);
+console.log('Initial Redux Store State:', store.getState().ui);
 
-// React 16
-ReactDOM.render(
-  <React.StrictMode>
-    <Provider store={store}>
-      <App />
-    </Provider>
-  </React.StrictMode>,
-  document.getElementById('root')
+const root = createRoot(document.getElementById('root'));
+root.render(
+    <React.StrictMode>
+        <Provider store={store}>
+            <App />
+        </Provider>
+    </React.StrictMode>
 );
-  
-// React 18
-// ReactDOM.createRoot(document.getElementById('root')).render(
-//   <React.StrictMode>
-//     <Provider store={store}>
-//       <App />
-//     </Provider>
-//   </React.StrictMode>
-// );
-

@@ -18,13 +18,13 @@ class Notifications extends React.PureComponent {
 
     return (
       <React.Fragment>
-        {!this.props.displayDrawer ? (
+        { !this.props.displayDrawer ? (
           <div
             className={css(styles.menuItem)}
             onClick={()=> {
               console.log('handleDisplayDrawer called');
               console.log(this.props.handleDisplayDrawer);
-              this.props.handleDisplayDrawer();
+              this.props.handleDisplayDrawer;
             }}
           >
             <img className={css(styles.notificationIcon)} src={unreadNotificationsIcon} alt="unread notifications" />
@@ -61,8 +61,7 @@ class Notifications extends React.PureComponent {
             <p>No new notification for now</p>
             )}
           </div>
-        )
-        }
+        )}
       </React.Fragment>
     );
   }

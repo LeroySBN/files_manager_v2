@@ -16,7 +16,7 @@ class NotificationItem extends React.PureComponent {
             onClick={()=> markAsRead(id)}
             data-notification-type={type} >{value}
           </li>
-        : null}
+        : null }
         {html ?
           <li
             className={css(styles.urgent)}
@@ -24,7 +24,7 @@ class NotificationItem extends React.PureComponent {
             data-notification-type="urgent"
             dangerouslySetInnerHTML={{__html: html}}
           />
-        : null}
+        : null }
       </React.Fragment>
     );
   }

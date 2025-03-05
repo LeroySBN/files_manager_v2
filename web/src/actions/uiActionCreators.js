@@ -1,65 +1,133 @@
-import {useDispatch} from 'react-redux';
-import {bindActionCreators} from 'redux';
+import { useDispatch } from 'react-redux';
 import 'node-fetch';
 import {
-  DISPLAY_NOTIFICATION_DRAWER,
-  HIDE_NOTIFICATION_DRAWER,
   LOGIN,
   LOGIN_FAILURE,
   LOGIN_SUCCESS,
-  LOGOUT,
   SIGNUP,
   SIGNUP_FAILURE,
   SIGNUP_SUCCESS,
+  LOGOUT,
+  DISPLAY_NOTIFICATION_DRAWER,
+  HIDE_NOTIFICATION_DRAWER,
 } from "./uiActionTypes";
 
-export const signup = (email, password) => ({
-  type: SIGNUP,
-  user: { email, password }
-})
-
-export const login = (email, password) => ({
-  type: LOGIN,
-  user: { email, password }
-})
-
-export const signupSuccess = () => ({ type: SIGNUP_SUCCESS })
-export const signupFailure = () => ({ type: SIGNUP_FAILURE })
-export const loginSuccess = () => ({ type: LOGIN_SUCCESS })
-export const loginFailure = () => ({ type: LOGIN_FAILURE })
-export const logout = ()=> ({ type: LOGOUT })
-export const displayNotificationDrawer = () => ({ type: DISPLAY_NOTIFICATION_DRAWER })
-export const hideNotificationDrawer = () => ({ type: HIDE_NOTIFICATION_DRAWER })
-
-export const useUIActionCreators = () => {
-  const dispatch = useDispatch();
-
-  return {
-    boundSignup: bindActionCreators(signup, dispatch),
-    boundSignupSuccess: bindActionCreators(signupSuccess, dispatch),
-    boundSignupFailure: bindActionCreators(signupFailure, dispatch),
-    boundLogin: bindActionCreators(login, dispatch),
-    boundLoginSuccess: bindActionCreators(loginSuccess, dispatch),
-    boundLoginFailure: bindActionCreators(loginFailure, dispatch),
-    boundLogout: bindActionCreators(logout, dispatch),
-    boundDisplayNotificationDrawer: bindActionCreators(displayNotificationDrawer, dispatch),
-    boundHideNotificationDrawer: bindActionCreators(hideNotificationDrawer, dispatch),
-  };
+// Simple validation function
+const validateCredentials = (email, password) => {
+    // Basic email and password validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email) && password.length >= 6;
 };
 
-export async function loginRequest(email, password) {
-  return (dispatch) => {
-    dispatch(login(email, password));
-    // return fetch('http://localhost:5000/login-success.json')
-    return fetch('http://localhost:8564/login-success.json')
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.email) {
-          dispatch(loginSuccess());
-        } else {
-          dispatch(loginFailure());
-        }
-      })
-      .catch((err) => console.log(err));
-  };
-}
+export const login = (email, password) => ({
+    type: LOGIN,
+    payload: { email, password }
+});
+
+export const loginSuccess = (user) => ({
+    type: LOGIN_SUCCESS,
+    payload: { user }
+});
+
+export const loginFailure = (error) => ({
+    type: LOGIN_FAILURE,
+    payload: { error }
+});
+
+export const signup = (email, password) => ({
+    type: SIGNUP,
+    payload: { email, password }
+});
+
+export const signupSuccess = (user) => ({
+    type: SIGNUP_SUCCESS,
+    payload: { user }
+});
+
+export const signupFailure = (error) => ({
+    type: SIGNUP_FAILURE,
+    payload: { error }
+});
+
+export const logout = () => ({ type: LOGOUT });
+export const displayNotificationDrawer = () => ({ type: DISPLAY_NOTIFICATION_DRAWER });
+export const hideNotificationDrawer = () => ({ type: HIDE_NOTIFICATION_DRAWER });
+
+export const useUIActionCreators = () => {
+    const dispatch = useDispatch();
+
+    return {
+        login: (email, password) => {
+            // Dispatch initial login action
+            dispatch(login(email, password));
+
+            // Simulate login logic
+            return new Promise((resolve, reject) => {
+                // Simulate async operation
+                setTimeout(() => {
+                    if (validateCredentials(email, password)) {
+                        // Successful login
+                        const user = {
+                            email,
+                            lastLogin: new Date().toISOString()
+                        };
+
+                        dispatch(loginSuccess(user));
+                        resolve(user);
+                    } else {
+                        // Failed login
+                        const error = 'Invalid email or password';
+                        dispatch(loginFailure(error));
+                        reject(error);
+                    }
+                }, 500); // Simulate network delay
+            });
+        },
+        signup: (email, password) => {
+            // Dispatch initial signup action
+            dispatch(signup(email, password));
+
+            // Simulate signup logic
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    if (validateCredentials(email, password)) {
+                        const user = {
+                            email,
+                            registeredAt: new Date().toISOString()
+                        };
+
+                        dispatch(signupSuccess(user));
+                        resolve(user);
+                    } else {
+                        const error = 'Invalid email or password';
+                        dispatch(signupFailure(error));
+                        reject(error);
+                    }
+                }, 500);
+            });
+        },
+        logout,
+        displayNotificationDrawer,
+        hideNotificationDrawer
+    };
+};
+
+// export async function loginRequest(email, password) {
+//   return (dispatch) => {
+//     dispatch(login(email, password));
+//     return fetch('http://localhost:5000/users/me')
+//       .then((res) => res.json())
+//       .then((data) => {
+//         if (data.email) {
+//           dispatch(loginSuccess());
+//         } else {
+//           dispatch(loginFailure());
+//         }
+//       })
+//       .catch((err) =>
+//       {
+//           dispatch(loginFailure());
+//           console.log(err);
+//       });
+//   };
+// }

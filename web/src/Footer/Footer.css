@@ -7,7 +7,7 @@
 }
 
 .App-footer {
-  position: fixed;
+  position: sticky;
   bottom: 0;
   border-top: var(--border-style);
   padding: 1rem;
@@ -16,5 +16,5 @@
   font-style: italic;
   background-color: white;
   z-index: 1;
-  width: calc(100% - 16px);
+  width: 100%;
 }
