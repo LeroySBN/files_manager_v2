@@ -102,14 +102,3 @@ If you encounter any issues:
 ## 📜 License
 
 This project is licensed under the **ISC License**.
-```
-
----
-
-### **🔧 What’s Improved?**
-✅ **Added Docker Setup Instructions** → Since we now use Docker, installation and running the app are simplified.  
-✅ **Updated Project Structure** → Reflects the new folder organization, including `docker/`.  
-✅ **Updated API Documentation Section** → Keeps the Postman link intact but improves formatting.  
-✅ **Added Troubleshooting & Contributing Sections** → Helps with debugging and encourages contributions.  
-
-Now, this README is **clean, informative, and easy to follow**! 🚀 Let me know if you'd like any changes. 😃
