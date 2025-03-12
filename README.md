@@ -34,7 +34,7 @@ This project is fully containerized using **Docker** and **Docker Compose**, mak
 3. **Build and run the services**:
    ```sh
    cd docker
-   docker compose --env-file docker/.env up --build -d
+   docker compose up --build -d
    ```
 4. **Verify running containers**:
    ```sh
