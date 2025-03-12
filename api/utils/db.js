@@ -4,11 +4,13 @@ const { MongoClient } = require('mongodb');
 
 require('@dotenvx/dotenvx').config()
 
-const host = process.env.DB_HOST || 'localhost';
-const port = process.env.DB_PORT || 27017;
-const database = process.env.DB_DATABASE || 'files_manager';
+// const host = process.env.DB_HOST || 'localhost';
+// const port = process.env.DB_PORT || 27017;
+// const database = process.env.DB_DATABASE || 'files_manager';
+//
+// const url = `mongodb://${host}:${port}`;
 
-const url = `mongodb://${host}:${port}`;
+const url = process.env.MONGO_URI;
 
 class DBClient {
   constructor() {

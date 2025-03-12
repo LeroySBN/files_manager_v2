@@ -1,6 +1,6 @@
 {
-  "name": "files",
-  "version": "1.0.0",
+  "name": "files_web_app",
+  "version": "0.2.0",
   "description": "Organise your photos and markdown files",
   "main": "index.js",
   "scripts": {
