@@ -101,4 +101,4 @@ If you encounter any issues:
 
 ## 📜 License
 
-This project is licensed under the **ISC License**.
+This project is licensed under the [**Apache License**](./LICENSE).
