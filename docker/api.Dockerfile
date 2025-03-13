@@ -14,7 +14,7 @@ RUN npm install
 COPY ../api/ ./
 
 # Expose the application port (Change if needed)
-#EXPOSE ${API_PORT}
+EXPOSE 5000
 
 # Start the server
 CMD ["npm", "run", "start-server"]

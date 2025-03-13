@@ -8,7 +8,13 @@ services:
     container_name: files-api
     restart: always
     ports:
-      - "${API_ENDPOINT_PORT}:5323"
+      - name: web
+        target: 5000
+        host_ip: 127.0.0.1
+        published: 5232
+        protocol: tcp
+        app_protocol: http
+        mode: host
     environment:
       NODE_ENV: production
       PORT: 5323
@@ -19,7 +25,6 @@ services:
       - mongodb
       - redis
     networks:
-      - files-backend-network
       - files-database-network
     volumes:
       - ../api:/data/api
@@ -32,18 +37,16 @@ services:
     restart: always
     ports:
       - name: web
-        target: "80"
+        target: 80
         host_ip: 127.0.0.1
-        published: "8080"
+        published: 8080
         protocol: tcp
         app_protocol: http
         mode: host
     environment:
-      REACT_APP_BACKEND_API_ENDPOINT: http://localhost:5323/
+      REACT_APP_BACKEND_API_ENDPOINT: http://localhost:5000/
     depends_on:
       - api
-    networks:
-      - files-backend-network
     volumes:
       - ../webapp:/data/web
 
@@ -77,8 +80,6 @@ services:
 networks:
   files-database-network:
     driver: bridge
-  files-backend-network:
-    driver: host
 
 volumes:
   mongodb-data:
