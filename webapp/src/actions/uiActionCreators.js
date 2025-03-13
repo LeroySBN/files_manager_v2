@@ -12,6 +12,8 @@ import {
   HIDE_NOTIFICATION_DRAWER,
 } from "./uiActionTypes";
 
+const uri=process.env.FILES_API_SERVICE_URI;
+
 // Simple validation function
 const validateCredentials = (email, password) => {
     // Basic email and password validation

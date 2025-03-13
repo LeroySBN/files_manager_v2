@@ -2,9 +2,13 @@
 const redis = require('redis');
 const { promisify } = require('util');
 
+const redisURL = process.env.REDIS_URL;
+
 class RedisClient {
   constructor() {
-    this.client = redis.createClient();
+    this.client = redis.createClient({
+      url: redisURL
+    });
     this.client.on('error', (err) => {
       console.log(`Redis client not connected to the server: ${err.message}`);
     });

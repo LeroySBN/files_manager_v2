@@ -6,7 +6,7 @@ import bodyParser from 'body-parser';
 require('@dotenvx/dotenvx').config()
 
 const api = express();
-const port = parseInt(process.env.API_PORT, 10) || 5000;
+const port = parseInt(process.env.PORT, 10) || 5000;
 
 api.use(express.json());
 api.use(bodyParser.json({ limit: '800kb' }));

@@ -6,11 +6,11 @@ require('@dotenvx/dotenvx').config()
 
 // const host = process.env.DB_HOST || 'localhost';
 // const port = process.env.DB_PORT || 27017;
-// const database = process.env.DB_DATABASE || 'files_manager';
-//
+const database = process.env.DB_DATABASE || 'files_manager';
+
 // const url = `mongodb://${host}:${port}`;
 
-const url = process.env.MONGO_URI;
+const url = process.env.MONGO_URL;
 
 class DBClient {
   constructor() {
