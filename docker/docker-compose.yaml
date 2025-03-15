@@ -17,9 +17,9 @@ services:
         mode: host
     environment:
       NODE_ENV: production
-      PORT: 5323
-      MONGO_URL: mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongodb:27071
-      REDIS_URL: redis://redis:6397
+      PORT: 5000
+      MONGO_URL: mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongodb:27017
+      REDIS_URL: redis://redis:6379
 #      REDIS_URL: redis://default:${REDIS_INITDB_PASSWORD}@${REDIS_HOST}:6397
     depends_on:
       - mongodb
@@ -52,13 +52,13 @@ services:
 
   mongodb:
     image: mongo:latest
-    container_name: files-mongodb-container
+    container_name: files-mongodb
     restart: on-failure
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
     ports:
-      - "27071/tcp"
+      - "27017"
     volumes:
       - mongodb-data:/data/db/mongo
     networks:
@@ -66,12 +66,12 @@ services:
 
   redis:
     image: redis:7.4
-    container_name: files-redis-container
+    container_name: files-redis
     restart: unless-stopped
 #    command: ["redis-server", "--requirepass", ${REDIS_INITDB_PASSWORD}]
 #    command: [ "redis-server", "/configs/redis.conf" ]
     ports:
-      - "6397/tcp"
+      - "6379"
     volumes:
       - redis-data:/data/db/redis
     networks:
