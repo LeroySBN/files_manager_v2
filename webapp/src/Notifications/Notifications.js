@@ -24,7 +24,7 @@ class Notifications extends React.PureComponent {
             onClick={()=> {
               console.log('handleDisplayDrawer called');
               console.log(this.props.handleDisplayDrawer);
-              this.props.handleDisplayDrawer;
+              this.props.handleDisplayDrawer();
             }}
           >
             <img className={css(styles.notificationIcon)} src={unreadNotificationsIcon} alt="unread notifications" />

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { StyleSheet, css } from 'aphrodite';
 import PropTypes from 'prop-types';
 import WithLogging from '../HOC/WithLogging';
+import {useUIActionCreators} from '../actions/uiActionCreators';
 
 function Login(props) {
   const [email, setEmail] = useState('');
@@ -9,25 +10,22 @@ function Login(props) {
   const [enableSubmit, setEnableSubmit] = useState(false);
   const [error, setError] = useState('');
 
+  const { boundLogin } = useUIActionCreators();
+
   const showSignup = () => {
     props.showSignup();
   }
 
   const handleLoginSubmit = async (event) => {
     event.preventDefault();
-    setError(''); // Clear any previous errors
+    setError('');
 
     try {
-      // Use the async login method
-      console.log({'Credentials': {email: email, password: password}});
-      console.log(props)
-      await props.logIn(
+      boundLogin(
           event.target.elements.email.value,
           event.target.elements.password.value
       );
-      // Success is handled by Redux, which will update isLoggedIn
     } catch (err) {
-      // Handle login failure
       setError(err || 'Login failed. Please try again.');
       console.error('Login error:', err);
     }
@@ -169,7 +167,6 @@ const styles = StyleSheet.create({
 })
 
 Login.propTypes = {
-  logIn: PropTypes.func.isRequired,
   showSignup: PropTypes.func.isRequired,
 };
 

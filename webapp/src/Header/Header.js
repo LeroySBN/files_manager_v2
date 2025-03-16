@@ -1,10 +1,10 @@
-import React, { Fragment } from 'react';
+import {useContext, Fragment} from 'react';
 import { StyleSheet, css } from 'aphrodite';
 import { AppContext } from '../App/AppContext';
 import logo from '../assets/logo.jpg';
 
 export default function Header() {
-  const { user, logOut } = React.useContext(AppContext);
+  const { user, logOut } = useContext(AppContext);
 
   return (
     <Fragment>

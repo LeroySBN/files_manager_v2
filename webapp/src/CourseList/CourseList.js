@@ -26,10 +26,6 @@ CourseList.propTypes = {
   listCourses: PropTypes.arrayOf(CourseShape),
 };
 
-CourseList.defaultProps = {
-  listCourses: [],
-};
-
 const styles = StyleSheet.create({
   courseTable: {
     marginTop: "2em",

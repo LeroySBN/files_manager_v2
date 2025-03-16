@@ -1,23 +1,37 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, css } from 'aphrodite';
 import PropTypes from 'prop-types';
+
 import WithLogging from '../HOC/WithLogging';
+import {useUIActionCreators} from '../actions/uiActionCreators';
 
 function Signup(props) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [enableSubmit, setEnableSubmit] = useState(false);
+    const [error, setError] = useState('');
 
     const handleShowLogin = () => {
-        props.handleShowLogin();
+        props.showLogin();
     }
 
-    const handleSignupSubmit = (event) => {
+    const {boundSignup} = useUIActionCreators();
+
+    const handleSignupSubmit = async (event) => {
         event.preventDefault();
-        props.signUp(
-            event.target.elements.email.value,
-            event.target.elements.password.value
-        );
+        setError(''); // Clear any previous errors
+
+        try {
+            boundSignup(
+                event.target.elements.email.value,
+                event.target.elements.password.value
+            );
+            // Success is handled by Redux, which will update isLoggedIn
+        } catch (err) {
+            // Handle login failure
+            setError(err || 'Login failed. Please try again.');
+            console.error('Login error:', err);
+        }
     };
 
     const handleChangeEmail = (event) => {
@@ -40,6 +54,11 @@ function Signup(props) {
         <React.Fragment>
             <div className={css(styles['Signup-container'])}>
                 <p className={css(styles.title)}>Create Files account</p>
+                {error && (
+                    <div className={css(styles.errorMessage)}>
+                        {error}
+                    </div>
+                )}
                 <form className={css(styles.form)} onSubmit={handleSignupSubmit}>
                     <label className={css(styles.label)} htmlFor='email'>Email:</label>
                     <input className={css(styles.input)} type="email" id="email" name="email" value={email}
@@ -154,10 +173,19 @@ const styles = StyleSheet.create({
         width: 'fit-content',
         paddingLeft: '5px'
     },
+    errorMessage: {
+        color: '#cc0000',
+        textAlign: 'center',
+        marginBottom: '1rem',
+        width: '100%',
+        padding: '10px',
+        backgroundColor: '#ffeeee',
+        borderRadius: '4px',
+    },
 })
 
 Signup.propTypes = {
-    signUp: PropTypes.func.isRequired,
+    showLogin: PropTypes.func.isRequired,
 };
 
 const SignupWithLogging = WithLogging(Signup);

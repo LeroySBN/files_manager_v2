@@ -1,7 +1,7 @@
 {
-  "name": "files_web_app",
+  "name": "files_webapp",
   "version": "0.2.0",
-  "description": "Organise your photos and markdown files",
+  "description": "Organise your files",
   "main": "index.js",
   "scripts": {
     "build": "webpack build --config ./config/webpack.config.js",

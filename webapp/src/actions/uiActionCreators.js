@@ -1,5 +1,7 @@
+import {bindActionCreators} from 'redux';
 import { useDispatch } from 'react-redux';
 import 'node-fetch';
+
 import {
   LOGIN,
   LOGIN_FAILURE,
@@ -11,125 +13,130 @@ import {
   DISPLAY_NOTIFICATION_DRAWER,
   HIDE_NOTIFICATION_DRAWER,
 } from "./uiActionTypes";
+// import { validateCredentials} from "../utils/utils";
 
-const uri=process.env.FILES_API_SERVICE_URI;
+// const apiEndpoint = process.env.REACT_APP_BACKEND_API_ENDPOINT || 'http://localhost:5000';
 
-// Simple validation function
-const validateCredentials = (email, password) => {
-    // Basic email and password validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email) && password.length >= 6;
-};
+function login(email, password) {
+    return {
+        type: LOGIN,
+        // payload: { email, password },
+        user: { email, password, isLoggedIn: true }
+    }
+}
 
-export const login = (email, password) => ({
-    type: LOGIN,
-    payload: { email, password }
-});
-
-export const loginSuccess = (user) => ({
+const loginSuccess = (user) => ({
     type: LOGIN_SUCCESS,
     payload: { user }
 });
 
-export const loginFailure = (error) => ({
+const loginFailure = (error) => ({
     type: LOGIN_FAILURE,
     payload: { error }
 });
 
-export const signup = (email, password) => ({
-    type: SIGNUP,
-    payload: { email, password }
-});
+function signup(email, password) {
+    return {
+        type: SIGNUP,
+        payload: { email, password }
+    }
+}
 
-export const signupSuccess = (user) => ({
+const signupSuccess = (user) => ({
     type: SIGNUP_SUCCESS,
     payload: { user }
 });
 
-export const signupFailure = (error) => ({
+const signupFailure = (error) => ({
     type: SIGNUP_FAILURE,
     payload: { error }
 });
 
-export const logout = () => ({ type: LOGOUT });
-export const displayNotificationDrawer = () => ({ type: DISPLAY_NOTIFICATION_DRAWER });
-export const hideNotificationDrawer = () => ({ type: HIDE_NOTIFICATION_DRAWER });
+export function logout() {
+    return {
+        type: LOGOUT
+    }
+}
+
+export function displayNotificationDrawer() {
+    return {
+        type: DISPLAY_NOTIFICATION_DRAWER
+    }
+}
+
+export function hideNotificationDrawer() {
+    return {
+        type: HIDE_NOTIFICATION_DRAWER
+    }
+}
+
+// const dispatch = useDispatch();
+//
+// export const logIn = useCallback(
+//     ({ email, password }) => dispatch(login(email, password)),
+//     [dispatch]
+// )
+//
+// export const signUp = useCallback(
+//     ({ email, password }) => dispatch(signup(email, password)),
+//     [dispatch]
+// )
+//
+// export const logOut = useCallback(
+//     () => dispatch(logout()),
+//     [dispatch]
+// )
+//
+// export const displayNotificationDrawer = useCallback(
+//     () => dispatch(showNotificationDrawer()),
+//     [dispatch]
+// )
+//
+// export const hideNotificationDrawer = useCallback(
+//     () => dispatch(removeNotificationDrawer()),
+//     [dispatch]
+// )
 
 export const useUIActionCreators = () => {
     const dispatch = useDispatch();
 
     return {
-        login: (email, password) => {
-            // Dispatch initial login action
-            dispatch(login(email, password));
-
-            // Simulate login logic
-            return new Promise((resolve, reject) => {
-                // Simulate async operation
-                setTimeout(() => {
-                    if (validateCredentials(email, password)) {
-                        // Successful login
-                        const user = {
-                            email,
-                            lastLogin: new Date().toISOString()
-                        };
-
-                        dispatch(loginSuccess(user));
-                        resolve(user);
-                    } else {
-                        // Failed login
-                        const error = 'Invalid email or password';
-                        dispatch(loginFailure(error));
-                        reject(error);
-                    }
-                }, 500); // Simulate network delay
-            });
-        },
-        signup: (email, password) => {
-            // Dispatch initial signup action
-            dispatch(signup(email, password));
-
-            // Simulate signup logic
-            return new Promise((resolve, reject) => {
-                setTimeout(() => {
-                    if (validateCredentials(email, password)) {
-                        const user = {
-                            email,
-                            registeredAt: new Date().toISOString()
-                        };
-
-                        dispatch(signupSuccess(user));
-                        resolve(user);
-                    } else {
-                        const error = 'Invalid email or password';
-                        dispatch(signupFailure(error));
-                        reject(error);
-                    }
-                }, 500);
-            });
-        },
-        logout,
-        displayNotificationDrawer,
-        hideNotificationDrawer
+        boundLogin: bindActionCreators(login, dispatch),
+        boundSignup: bindActionCreators(signup, dispatch),
+        boundLogout: bindActionCreators(logout, dispatch),
+        boundDisplayNotificationDrawer: bindActionCreators(displayNotificationDrawer, dispatch),
+        boundHideNotificationDrawer: bindActionCreators(hideNotificationDrawer, dispatch),
     };
 };
 
-// export async function loginRequest(email, password) {
+// async function loginRequest(email, password) {
 //   return (dispatch) => {
 //     dispatch(login(email, password));
-//     return fetch('http://localhost:5000/users/me')
-//       .then((res) => res.json())
-//       .then((data) => {
-//         if (data.email) {
-//           dispatch(loginSuccess());
-//         } else {
-//           dispatch(loginFailure());
+//
+//     const credentials = `${email}:${password}`;
+//     const base64Credentials = Buffer.from(credentials, 'utf-8').toString('base64');
+//
+//     console.log(`user encoded credential: ${base64Credentials}`);
+//
+//     return fetch(`${apiEndpoint}connect`, {
+//         method: 'GET',
+//         headers: {
+//             'Content-Type': 'application/json',
+//             'Authorization': `Basic ${base64Credentials})`
 //         }
-//       })
-//       .catch((err) =>
-//       {
-//           dispatch(loginFailure());
-//           console.log(err);
-//       });
+//     })
+//     .then((res) => res.json())
+//     .then((data) => {
+//     if (data.email) {
+//       dispatch(loginSuccess());
+//     } else {
+//       dispatch(loginFailure());
+//     }
+//     })
+//     .catch((err) =>
+//     {
+//       dispatch(loginFailure());
+//       console.log(err);
+//     });
 //   };
 // }
