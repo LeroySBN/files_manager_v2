@@ -6,81 +6,72 @@ services:
       context: ..
       dockerfile: docker/api.Dockerfile
     container_name: files-api
-    restart: always
+    restart: unless-stopped
     ports:
-      - name: web
-        target: 5000
-        host_ip: 127.0.0.1
-        published: 5232
-        protocol: tcp
-        app_protocol: http
-        mode: host
+      - "5232:5000"
     environment:
-      NODE_ENV: production
-      PORT: 5000
-      MONGO_URL: mongodb://${MONGO_INITDB_ROOT_USERNAME}:${MONGO_INITDB_ROOT_PASSWORD}@mongodb:27017
-      REDIS_URL: redis://redis:6379
-#      REDIS_URL: redis://default:${REDIS_INITDB_PASSWORD}@${REDIS_HOST}:6397
+      - NODE_ENV=production
+      - PORT=5000
+      - MONGO_URL=mongodb://admin:admin_password@mongodb:27017/files_db?authSource=admin
+      - REDIS_URL=redis://:redis_password@redis:6379
+      - STORAGE_DIR=/data/storage
+    volumes:
+      - files-storage:/data/storage
     depends_on:
       - mongodb
       - redis
     networks:
-      - files-database-network
-    volumes:
-      - ../api:/data/api
+      - files-network
 
   webapp:
     build:
       context: ..
       dockerfile: docker/webapp.Dockerfile
     container_name: files-webapp
-    restart: always
+    restart: unless-stopped
     ports:
-      - name: web
-        target: 80
-        host_ip: 127.0.0.1
-        published: 8080
-        protocol: tcp
-        app_protocol: http
-        mode: host
-    environment:
-      REACT_APP_BACKEND_API_ENDPOINT: http://localhost:5000/
+      - "8080:80"
     depends_on:
       - api
-    volumes:
-      - ../webapp:/data/web
+    networks:
+      - files-network
 
   mongodb:
     image: mongo:latest
     container_name: files-mongodb
-    restart: on-failure
+    restart: unless-stopped
     environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
-    ports:
-      - "27017"
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=admin_password
+      - MONGO_INITDB_DATABASE=files_db
     volumes:
-      - mongodb-data:/data/db/mongo
+      - mongodb-data:/data/db
     networks:
-      - files-database-network
+      - files-network
 
   redis:
-    image: redis:7.4
+    image: redis:7.4-alpine
     container_name: files-redis
     restart: unless-stopped
-#    command: ["redis-server", "--requirepass", ${REDIS_INITDB_PASSWORD}]
-#    command: [ "redis-server", "/configs/redis.conf" ]
-    ports:
-      - "6379"
+    command: ["redis-server", "/etc/redis/redis.conf"]
+    environment:
+      REDIS_PASSWORD: redis_password
+    user: redis
     volumes:
-      - redis-data:/data/db/redis
+      - redis-data:/data
+      - ./configs/redis.conf:/etc/redis/redis.conf:ro
+      - type: tmpfs
+        target: /tmp
+        tmpfs:
+          size: 100M
     networks:
-      - files-database-network
+      - files-network
 
 networks:
-  files-database-network:
+  files-network:
     driver: bridge
 
 volumes:
   mongodb-data:
   redis-data:
+  files-storage:

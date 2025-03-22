@@ -1,16 +1,16 @@
 # Stage 1: Build the React App
-FROM node:22.14.0 AS build
+FROM node:20-alpine AS build
 
-WORKDIR /data/www
-COPY ../webapp/package*.json ./
+WORKDIR /usr/src/app
+COPY webapp/package*.json ./
 RUN npm install
-COPY ../webapp/ ./
+COPY webapp/ ./
 RUN npm run build
 
 # Stage 2: Serve with Nginx
-FROM nginx:latest
+FROM nginx:alpine
 
-COPY /configs/nginx.conf /etc/nginx/conf.d/default.conf
-COPY --from=build /data/www/dist/ /data/nginx/html
+COPY docker/configs/nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=build /usr/src/app/dist/ /usr/share/nginx/html
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
