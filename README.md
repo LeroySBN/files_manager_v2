@@ -25,18 +25,12 @@ This project is fully containerized using **Docker** and **Docker Compose**, mak
    git clone https://github.com/LeroySBN/files_manager_v2.git
    cd files_manager_v2
    ```
-2. **Copy the environment variables template and configure**:
-   ```sh
-   cp .env.example .env
-   ```
-    - Update `.env` with your desired configuration.
-
-3. **Build and run the services**:
+2. **Build and run the services**:
    ```sh
    cd docker
    docker compose up --build -d
    ```
-4. **Verify running containers**:
+3**Verify running containers**:
    ```sh
    docker ps
    ```
