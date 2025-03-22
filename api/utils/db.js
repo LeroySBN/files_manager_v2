@@ -1,44 +1,80 @@
 // MongoDB utils
-const { MongoClient } = require('mongodb');
-// import {MongoClient} from 'mongodb';
+import { MongoClient } from 'mongodb';
 
-require('@dotenvx/dotenvx').config()
+// Load environment variables if .env exists, but don't fail if it doesn't
+try {
+  require('@dotenvx/dotenvx').config();
+} catch (error) {
+  console.log('No .env file found, using environment variables from Docker');
+}
 
-// const host = process.env.DB_HOST || 'localhost';
-// const port = process.env.DB_PORT || 27017;
-const database = process.env.DB_DATABASE || 'files_manager';
-
-// const url = `mongodb://${host}:${port}`;
-
-const url = process.env.MONGO_URL;
+const database = process.env.DB_DATABASE || 'files_db';
+const url = process.env.MONGO_URL || 'mongodb://admin:admin_password@mongodb:27017/files_db?authSource=admin';
 
 class DBClient {
   constructor() {
-    this.client = new MongoClient(url, { useUnifiedTopology: true, useNewUrlParser: true });
-    this.client.connect().then(() => {
-      this.db = this.client.db(`${database}`);
-    }).catch((err) => {
-      console.log(err);
+    this.client = new MongoClient(url, {
+      useUnifiedTopology: true,
+      connectTimeoutMS: 5000,
+      serverSelectionTimeoutMS: 5000,
     });
+
+    this.connected = false;
+    this.connecting = false;
+
+    // Initial connection
+    this.connect();
+  }
+
+  async connect() {
+    if (this.connected || this.connecting) return;
+
+    try {
+      this.connecting = true;
+      await this.client.connect();
+      this.db = this.client.db(database);
+      this.connected = true;
+      this.connecting = false;
+      console.log('Successfully connected to MongoDB');
+    } catch (err) {
+      console.error('MongoDB connection error:', err.message);
+      this.connected = false;
+      this.connecting = false;
+      // Retry connection after 5 seconds
+      setTimeout(() => this.connect(), 5000);
+    }
   }
 
   isAlive() {
-    return this.client.isConnected();
+    return this.connected;
   }
 
   async nbUsers() {
-    const usersCollection = this.db.collection('users');
-    const userCount = await usersCollection.countDocuments();
-    return userCount;
+    if (!this.connected) {
+      await this.connect();
+    }
+    try {
+      const usersCollection = this.db.collection('users');
+      return await usersCollection.countDocuments();
+    } catch (err) {
+      console.error('Error counting users:', err.message);
+      return 0;
+    }
   }
 
   async nbFiles() {
-    const filesCollection = this.db.collection('files');
-    const fileCount = await filesCollection.countDocuments();
-    return fileCount;
+    if (!this.connected) {
+      await this.connect();
+    }
+    try {
+      const filesCollection = this.db.collection('files');
+      return await filesCollection.countDocuments();
+    } catch (err) {
+      console.error('Error counting files:', err.message);
+      return 0;
+    }
   }
 }
 
 const dbClient = new DBClient();
-
 export default dbClient;
