@@ -8,8 +8,7 @@ import {contentType} from 'mime-types';
 import redisClient from '../utils/redis';
 import dbClient from '../utils/db';
 import Queue from 'bull/lib/queue';
-
-require('@dotenvx/dotenvx').config()
+import 'dotenv/config';
 
 const ROOT_FOLDER_ID = 0;
 const NULL_ID = Buffer.alloc(24, '0').toString('utf-8');

@@ -1,36 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, css } from 'aphrodite';
 import PropTypes from 'prop-types';
-
+import { connect } from 'react-redux';
 import WithLogging from '../HOC/WithLogging';
-import {useUIActionCreators} from '../actions/uiActionCreators';
+import { signup, clearAuthMessage } from '../actions/authActions';
 
-function Signup(props) {
+function Signup({ showLogin, signup, loading, error, message, signupEmail, clearAuthMessage }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [enableSubmit, setEnableSubmit] = useState(false);
-    const [error, setError] = useState('');
-
-    const handleShowLogin = () => {
-        props.showLogin();
-    }
-
-    const {boundSignup} = useUIActionCreators();
+    const [localError, setLocalError] = useState('');
 
     const handleSignupSubmit = async (event) => {
         event.preventDefault();
-        setError(''); // Clear any previous errors
+        setLocalError('');
 
         try {
-            boundSignup(
-                event.target.elements.email.value,
-                event.target.elements.password.value
-            );
-            // Success is handled by Redux, which will update isLoggedIn
+            await signup(email, password);
         } catch (err) {
-            // Handle login failure
-            setError(err || 'Login failed. Please try again.');
-            console.error('Login error:', err);
+            setLocalError(err.toString());
         }
     };
 
@@ -39,7 +27,7 @@ function Signup(props) {
     };
 
     const handleChangePassword = (event) => {
-        setPassword(event.target.value)
+        setPassword(event.target.value);
     };
 
     useEffect(() => {
@@ -50,39 +38,81 @@ function Signup(props) {
         }
     }, [email, password]);
 
+    useEffect(() => {
+        // If signup was successful, redirect to login after 2 seconds
+        if (message) {
+            const timer = setTimeout(() => {
+                clearAuthMessage();
+                showLogin();
+            }, 2000);
+            return () => clearTimeout(timer);
+        }
+    }, [message, showLogin, clearAuthMessage]);
+
+    // Show success message if present
+    if (message) {
+        return (
+            <div className={css(styles.successContainer)}>
+                <div className={css(styles.successMessage)}>
+                    {message}
+                </div>
+                <div className={css(styles.redirectMessage)}>
+                    Redirecting to login...
+                </div>
+            </div>
+        );
+    }
+
     return (
         <React.Fragment>
             <div className={css(styles['Signup-container'])}>
                 <p className={css(styles.title)}>Create Files account</p>
-                {error && (
+                {(error || localError) && (
                     <div className={css(styles.errorMessage)}>
-                        {error}
+                        {error || localError}
                     </div>
                 )}
                 <form className={css(styles.form)} onSubmit={handleSignupSubmit}>
                     <label className={css(styles.label)} htmlFor='email'>Email:</label>
-                    <input className={css(styles.input)} type="email" id="email" name="email" value={email}
-                           onChange={handleChangeEmail} required />
+                    <input
+                        className={css(styles.input)}
+                        type="email"
+                        id="email"
+                        name="email"
+                        value={email}
+                        onChange={handleChangeEmail}
+                        required
+                        disabled={loading}
+                    />
                     <label className={css(styles.label)} htmlFor='password'>Password:</label>
-                    <input className={css(styles.input)} type="password" id="password" name="password" value={password}
-                           onChange={handleChangePassword} required />
-                    <span>
-                        <input type={"checkbox"} id='marketing' value='true'/>
-                        <label className={css(styles.checkbox)}
-                           htmlFor='marketing'>Receive product updates, news, and other marketing communications</label>
-                    </span>
-                    <br/>
-                    <span>
-                        <input type={"checkbox"} id='jwt-cookie' value='true'/>
-                        <label className={css(styles.checkbox)} htmlFor='jwt-cookie'>Stay signed in</label>
-                    </span>
-                    <input className={css(styles.button)} type='submit' value='Create Free Account'
-                           disabled={!enableSubmit}/>
+                    <input
+                        className={css(styles.input)}
+                        type="password"
+                        id="password"
+                        name="password"
+                        value={password}
+                        onChange={handleChangePassword}
+                        required
+                        disabled={loading}
+                    />
+                    <input
+                        className={css(styles.button)}
+                        type='submit'
+                        value={loading ? 'Creating account...' : 'Create Free Account'}
+                        disabled={!enableSubmit || loading}
+                    />
                 </form>
             </div>
             <div className={css(styles.redirects)}>
-                <span className={css(styles.redirectHeader)}>Already have an account?
-                    <button className={css(styles.authSwitchButton)} onClick={handleShowLogin}> Sign in</button>
+                <span className={css(styles.redirectHeader)}>
+                    Already have an account?
+                    <button
+                        className={css(styles.authSwitchButton)}
+                        onClick={showLogin}
+                        disabled={loading}
+                    >
+                        Sign in
+                    </button>
                 </span>
             </div>
         </React.Fragment>
@@ -91,103 +121,167 @@ function Signup(props) {
 
 const styles = StyleSheet.create({
     'Signup-container': {
-        fontFamily: 'Helvetica, sans-serif',
+        fontFamily: 'Inter, sans-serif',
         fontSize: '1rem',
-        padding: '2rem 1.5rem',
+        padding: '40px 20px',
         margin: 'auto',
         borderRadius: '8px',
-        boxShadow: '2px 2px 10px #000000',
+        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
         width: '350px',
         backgroundColor: '#ffffff',
         '@media (max-width: 432px)': {
-            padding: '2rem 1rem',
+            width: '300px',
         },
     },
+    successContainer: {
+        fontFamily: 'Inter, sans-serif',
+        fontSize: '1rem',
+        padding: '40px 20px',
+        margin: 'auto',
+        borderRadius: '8px',
+        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+        width: '350px',
+        backgroundColor: '#ffffff',
+        textAlign: 'center',
+        '@media (max-width: 432px)': {
+            width: '300px',
+        },
+    },
+    successMessage: {
+        color: '#059669',
+        fontSize: '1.125rem',
+        fontWeight: '500',
+        marginBottom: '1rem',
+    },
+    redirectMessage: {
+        color: '#6B7280',
+        fontSize: '0.875rem',
+    },
     title: {
-        fontFamily: 'Lora, serif',
-        fontSize: '1.2rem',
+        fontFamily: 'Inter, sans-serif',
+        fontSize: '1.5rem',
         fontWeight: 'bold',
         color: '#000000',
         textAlign: 'center',
+        marginBottom: '2rem',
     },
     form: {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'flex-start',
         width: '100%',
+        gap: '1rem',
     },
     label: {
-        fontFamily: 'Lora, serif',
-        fontSize: '0.8rem',
-        fontWeight: 'bold',
-        color: '#999999',
-        paddingBottom: 0,
+        fontFamily: 'Inter, sans-serif',
+        fontSize: '0.9rem',
+        fontWeight: '500',
+        color: '#4B5563',
     },
     input: {
-        fontFamily: 'Lora, serif',
-        fontSize: '0.8rem',
-        color: '#000000',
-        border: 'solid 1px #999999',
-        borderRadius: '0.5em',
-        padding: '0.5rem 0',
+        fontFamily: 'Inter, sans-serif',
+        fontSize: '1rem',
+        color: '#1F2937',
+        border: '1px solid #D1D5DB',
+        borderRadius: '0.375rem',
+        padding: '0.75rem',
         width: '100%',
-        marginBottom: '2rem',
+        transition: 'border-color 0.15s ease-in-out',
+        ':focus': {
+            outline: 'none',
+            borderColor: '#3B82F6',
+            boxShadow: '0 0 0 3px rgba(59, 130, 246, 0.1)',
+        },
+        ':disabled': {
+            backgroundColor: '#F3F4F6',
+            cursor: 'not-allowed',
+        },
     },
     button: {
-        fontFamily: 'Lora, serif',
-        fontSize: '0.9rem',
+        fontFamily: 'Inter, sans-serif',
+        fontSize: '1rem',
+        fontWeight: '500',
         border: 'none',
-        borderRadius: '8px',
-        padding: '6px 4px',
+        borderRadius: '0.375rem',
+        padding: '0.75rem',
         cursor: 'pointer',
         width: '100%',
-        background: '#3d85c6',
+        background: '#3B82F6',
         color: '#ffffff',
-        marginTop: '2rem',
+        marginTop: '1rem',
+        transition: 'background-color 0.15s ease-in-out',
+        ':hover:not(:disabled)': {
+            backgroundColor: '#2563EB',
+        },
+        ':disabled': {
+            backgroundColor: '#93C5FD',
+            cursor: 'not-allowed',
+        },
     },
-    checkbox: {
-        fontFamily: 'Lora, serif',
-        fontSize: '0.9rem',
-        color: '#000000',
-        cursor: 'pointer',
-        paddingLeft: '6px',
-    },
-    'redirects': {
+    redirects: {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
+        marginTop: '1.5rem',
     },
-    'redirectHeader': {
-        fontFamily: 'Lora, serif',
-        color: '#000000',
-        fontSize: '1rem',
+    redirectHeader: {
+        fontFamily: 'Inter, sans-serif',
+        color: '#4B5563',
+        fontSize: '0.875rem',
     },
     authSwitchButton: {
-        fontFamily: 'Lora, serif',
-        fontSize: '1rem',
-        color: '#cc0000',
+        fontFamily: 'Inter, sans-serif',
+        fontSize: '0.875rem',
+        color: '#3B82F6',
         background: 'transparent',
         border: 'none',
-        textDecoration: 'none',
+        padding: '0.5rem 1rem',
         cursor: 'pointer',
-        width: 'fit-content',
-        paddingLeft: '5px'
+        transition: 'color 0.15s ease-in-out',
+        ':hover:not(:disabled)': {
+            color: '#2563EB',
+            textDecoration: 'underline',
+        },
+        ':disabled': {
+            color: '#93C5FD',
+            cursor: 'not-allowed',
+        },
     },
     errorMessage: {
-        color: '#cc0000',
+        color: '#DC2626',
         textAlign: 'center',
         marginBottom: '1rem',
         width: '100%',
-        padding: '10px',
-        backgroundColor: '#ffeeee',
-        borderRadius: '4px',
+        padding: '0.75rem',
+        backgroundColor: '#FEE2E2',
+        borderRadius: '0.375rem',
+        fontSize: '0.875rem',
     },
-})
+});
 
 Signup.propTypes = {
     showLogin: PropTypes.func.isRequired,
+    signup: PropTypes.func.isRequired,
+    loading: PropTypes.bool,
+    error: PropTypes.string,
+    message: PropTypes.string,
+    signupEmail: PropTypes.string,
+    clearAuthMessage: PropTypes.func.isRequired,
 };
 
-const SignupWithLogging = WithLogging(Signup);
+const mapStateToProps = (state) => ({
+    loading: state.auth.loading,
+    error: state.auth.error,
+    message: state.auth.message,
+    signupEmail: state.auth.signupEmail,
+});
+
+const mapDispatchToProps = {
+    signup,
+    clearAuthMessage,
+};
+
+const ConnectedSignup = connect(mapStateToProps, mapDispatchToProps)(Signup);
+const SignupWithLogging = WithLogging(ConnectedSignup);
 
 export { Signup, SignupWithLogging };

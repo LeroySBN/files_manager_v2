@@ -1,12 +1,6 @@
 // MongoDB utils
-import { MongoClient } from 'mongodb';
-
-// Load environment variables if .env exists, but don't fail if it doesn't
-try {
-  require('@dotenvx/dotenvx').config();
-} catch (error) {
-  console.log('No .env file found, using environment variables from Docker');
-}
+import {MongoClient} from 'mongodb';
+import 'dotenv/config';
 
 const database = process.env.DB_DATABASE || 'files_db';
 const url = process.env.MONGO_URL || 'mongodb://admin:admin_password@mongodb:27017/files_db?authSource=admin';

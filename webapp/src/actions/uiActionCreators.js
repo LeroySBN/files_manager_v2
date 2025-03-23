@@ -15,7 +15,7 @@ import {
 } from "./uiActionTypes";
 // import { validateCredentials} from "../utils/utils";
 
-// const apiEndpoint = process.env.REACT_APP_BACKEND_API_ENDPOINT || 'http://localhost:5000';
+// const apiEndpoint = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 function login(email, password) {
     return {

@@ -13,7 +13,7 @@ services:
       - NODE_ENV=production
       - PORT=5000
       - MONGO_URL=mongodb://admin:admin_password@mongodb:27017/files_db?authSource=admin
-      - REDIS_URL=redis://:redis_password@redis:6379
+      - REDIS_URL=redis://default:redis_password@redis:6379
       - STORAGE_DIR=/data/storage
     volumes:
       - files-storage:/data/storage
@@ -53,17 +53,13 @@ services:
     image: redis:7.4-alpine
     container_name: files-redis
     restart: unless-stopped
-    command: ["redis-server", "/etc/redis/redis.conf"]
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]
     environment:
       REDIS_PASSWORD: redis_password
     user: redis
     volumes:
       - redis-data:/data
-      - ./configs/redis.conf:/etc/redis/redis.conf:ro
-      - type: tmpfs
-        target: /tmp
-        tmpfs:
-          size: 100M
+      - ./docker/configs/redis.conf:/usr/local/etc/redis/redis.conf:ro
     networks:
       - files-network
 

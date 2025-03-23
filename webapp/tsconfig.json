@@ -6,11 +6,6 @@
     "paths": {
       "*": ["node_modules/*"]
     },
-    "include": [
-      "src/*.ts",
-      "src/**/*.ts"
-    ],
-    "exclude": ["node_modules", "dist", "tests"],
     "allowArbitraryExtensions": true,
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
@@ -19,22 +14,21 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "jsx": "react",
-    "module": "nodenext",
-    "moduleResolution": "bundler",
+    "module": "es2022",
+    "moduleResolution": "node",
     "noFallthroughCasesInSwitch": true,
     "noImplicitOverride": true,
     "noImplicitReturns": true,
     "noPropertyAccessFromIndexSignature": true,
     "noUncheckedIndexedAccess": false,
-    "noUncheckedSideEffectImports": true, // enable css and scss imports
+    "noUncheckedSideEffectImports": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "skipLibCheck": true,
     "sourceMap": true,
     "strict": true,
-    //    "noImplicitAny": true,
-    //    "noImplicitThis": true,
-    //    "strictNullChecks": true,
-    "target": "ES6"
-  }
+    "target": "es2022"
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.spec.ts"]
 }

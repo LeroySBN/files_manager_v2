@@ -1,38 +1,25 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-// const WorkboxPlugin = require('workbox-webpack-plugin');
-// const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const path = require('path');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const webpack = require('webpack');
 
 module.exports = {
-  mode: 'development',
-  devtool: 'inline-source-map',
+  mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
+  devtool: process.env.NODE_ENV === 'production' ? 'source-map' : 'inline-source-map',
   entry: './src/index.js',
   devServer: {
     static: './dist',
     compress: true,
     host: '0.0.0.0',
-    port: 8564,
-    // open: true,
+    port: 8080,
     hot: true,
     liveReload: true,
-    watchFiles: [
-      'src/*.js',
-      'src/*.jsx',
-      'src/*.ts',
-      'src/*.tsx',
-      'src/*.css',
-      'src/**/*.js',
-      'src/**/*.jsx',
-      'src/**/*.ts',
-      'src/**/*.tsx',
-      'src/**/*.css',
-    ],
-    onListening: function (devServer) {
-      if (!devServer) {
-        throw new Error('webpack-dev-server is not defined');
-      }
-
-      const port = devServer.server.address().port;
-      console.log('Listening on port:', port);
+    historyApiFallback: true,
+    proxy: {
+      '/api': {
+        target: process.env.REACT_APP_API_URL || 'http://localhost:5232',
+        pathRewrite: { '^/api': '' },
+      },
     },
   },
   performance: {
@@ -44,64 +31,64 @@ module.exports = {
       {
         test: /\.jsx?$/,
         exclude: /node_modules/,
-        loader: 'babel-loader',
+        use: {
+          loader: 'babel-loader',
+          options: {
+            cacheDirectory: true,
+          },
+        },
       },
       {
         test: /\.tsx?$/,
         exclude: /node_modules/,
-        loader: 'ts-loader',
-        options: {
-          transpileOnly: true,
-        }
+        use: {
+          loader: 'ts-loader',
+          options: {
+            transpileOnly: true,
+          },
+        },
       },
       {
         test: /\.css$/i,
         use: ['style-loader', 'css-loader'],
       },
-      { 
-        test: /\.(?:ico|gif|png|jpg|jpeg)$/i,
-        // type: 'asset/resource',
-        use: [
-          "file-loader",
-          {
-            loader: 'image-webpack-loader',
-            options: {
-              disable: true,
-              bypassOnDebug: true,
-            }
-          }
-        ]
+      {
+        test: /\.(png|svg|jpg|jpeg|gif|ico)$/i,
+        type: 'asset',
+        parser: {
+          dataUrlCondition: {
+            maxSize: 8 * 1024, // 8kb
+          },
+        },
       },
-    ]
-  },
-  resolve: {
-    extensions: ['*', '.js', '.jsx', '.ts', '.tsx'],
-    modules: [
-      'node_modules',
     ],
   },
+  resolve: {
+    extensions: ['.tsx', '.ts', '.jsx', '.js'],
+    modules: ['node_modules'],
+  },
   plugins: [
+    new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
-      name: 'index.html',
-      template: './dist/index.html',
-      title: 'Dashboard',
-      inject: false,
+      template: './src/index.html',
+      title: 'Files Manager',
+      favicon: './src/assets/favicon.ico',
     }),
-    // new WorkboxPlugin.GenerateSW({
-    //   // these options encourage the ServiceWorkers to get in there fast
-    //   // and not allow any straggling "old" SWs to hang around
-    //   clientsClaim: true,
-    //   skipWaiting: true,
-    //   maximumFileSizeToCacheInBytes: 6 * 1024 * 1024, // 6MB limit
-    // }),
-    // new CleanWebpackPlugin(),
+    new webpack.DefinePlugin({
+      'process.env.REACT_APP_API_URL': JSON.stringify('http://localhost:5232'),
+    }),
   ],
   output: {
-    filename: 'bundle.js',
+    filename: '[name].[contenthash].js',
+    path: path.resolve(__dirname, '../dist'),
+    publicPath: '/',
+    clean: true,
   },
-  // optimization: {
-  //   splitChunks: {
-  //     chunks: 'all',
-  //   },
-  // },
+  optimization: {
+    splitChunks: {
+      chunks: 'all',
+      name: false,
+    },
+    runtimeChunk: 'single',
+  },
 };

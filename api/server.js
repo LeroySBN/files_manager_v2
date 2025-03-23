@@ -2,13 +2,7 @@
 import express from 'express';
 import router from './routes/index';
 import bodyParser from 'body-parser';
-
-// Load environment variables if .env exists, but don't fail if it doesn't
-try {
-  require('@dotenvx/dotenvx').config();
-} catch (error) {
-  console.log('No .env file found, using environment variables from Docker');
-}
+import 'dotenv/config';
 
 const api = express();
 const port = parseInt(process.env.PORT, 10) || 5000;

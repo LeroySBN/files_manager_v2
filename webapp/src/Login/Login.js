@@ -1,175 +1,234 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, css } from 'aphrodite';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 import WithLogging from '../HOC/WithLogging';
-import {useUIActionCreators} from '../actions/uiActionCreators';
+import { login } from '../actions/authActions';
 
-function Login(props) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [enableSubmit, setEnableSubmit] = useState(false);
-  const [error, setError] = useState('');
+function Login({ showSignup, login, loading, error, signupEmail }) {
+    const [email, setEmail] = useState(signupEmail || '');
+    const [password, setPassword] = useState('');
+    const [enableSubmit, setEnableSubmit] = useState(false);
+    const [localError, setLocalError] = useState('');
 
-  const { boundLogin } = useUIActionCreators();
+    const handleLoginSubmit = async (event) => {
+        event.preventDefault();
+        setLocalError('');
 
-  const showSignup = () => {
-    props.showSignup();
-  }
+        try {
+            await login(email, password);
+        } catch (err) {
+            setLocalError(err.toString());
+        }
+    };
 
-  const handleLoginSubmit = async (event) => {
-    event.preventDefault();
-    setError('');
+    const handleChangeEmail = (event) => {
+        setEmail(event.target.value);
+    };
 
-    try {
-      boundLogin(
-          event.target.elements.email.value,
-          event.target.elements.password.value
-      );
-    } catch (err) {
-      setError(err || 'Login failed. Please try again.');
-      console.error('Login error:', err);
-    }
-  };
+    const handleChangePassword = (event) => {
+        setPassword(event.target.value);
+    };
 
-  const handleChangeEmail = (event) => {
-    setEmail(event.target.value);
-  };
+    useEffect(() => {
+        if (email !== '' && password !== '') {
+            setEnableSubmit(true);
+        } else {
+            setEnableSubmit(false);
+        }
+    }, [email, password]);
 
-  const handleChangePassword = (event) => {
-    setPassword(event.target.value);
-  };
-
-  useEffect(() => {
-    if (email !== '' && password !== '') {
-      setEnableSubmit(true);
-    } else {
-      setEnableSubmit(false);
-    }
-  }, [email, password]);
-
-  return (
-      <React.Fragment>
-        <div className={css(styles['Login-container'])}>
-            <p className={css(styles.title)}>Sign in to Files</p>
-            {error && (
-                <div className={css(styles.errorMessage)}>
-                  {error}
-                </div>
-            )}
-            <form className={css(styles.form)} onSubmit={handleLoginSubmit}>
-              <label className={css(styles.label)} htmlFor='email'>Email:</label>
-              <input className={css(styles.input)} type="email" id="email" name="email" value={email}
-                     onChange={handleChangeEmail} required />
-              <label className={css(styles.label)} htmlFor='password'>Password:</label>
-              <input className={css(styles.input)} type="password" id="password" name="password" value={password}
-                     onChange={handleChangePassword} required />
-              <span>
-                <input type={"checkbox"} id='jwt-cookie' value='true'/>
-                <label className={css(styles.checkbox)} htmlFor='jwt-cookie'>Stay signed in</label>
-              </span>
-              <input className={css(styles.submitButton)} type='submit' value='Sign In' disabled={!enableSubmit}/>
-            </form>
-        </div>
-        <div className={css(styles.redirects)}>
-          <button className={css(styles.authSwitchButton)} onClick={showSignup}>Create free account</button>
-        </div>
-      </React.Fragment>
-  );
+    return (
+        <React.Fragment>
+            <div className={css(styles['Login-container'])}>
+                <p className={css(styles.title)}>Sign in to Files</p>
+                {(error || localError) && (
+                    <div className={css(styles.errorMessage)}>
+                        {error || localError}
+                    </div>
+                )}
+                <form className={css(styles.form)} onSubmit={handleLoginSubmit}>
+                    <label className={css(styles.label)} htmlFor='email'>Email:</label>
+                    <input
+                        className={css(styles.input)}
+                        type="email"
+                        id="email"
+                        name="email"
+                        value={email}
+                        onChange={handleChangeEmail}
+                        required
+                        disabled={loading}
+                    />
+                    <label className={css(styles.label)} htmlFor='password'>Password:</label>
+                    <input
+                        className={css(styles.input)}
+                        type="password"
+                        id="password"
+                        name="password"
+                        value={password}
+                        onChange={handleChangePassword}
+                        required
+                        disabled={loading}
+                    />
+                    <input
+                        className={css(styles.button)}
+                        type='submit'
+                        value={loading ? 'Signing in...' : 'Sign in'}
+                        disabled={!enableSubmit || loading}
+                    />
+                </form>
+            </div>
+            <div className={css(styles.redirects)}>
+                <span className={css(styles.redirectHeader)}>
+                    Don't have an account?
+                    <button
+                        className={css(styles.authSwitchButton)}
+                        onClick={showSignup}
+                        disabled={loading}
+                    >
+                        Create free account
+                    </button>
+                </span>
+            </div>
+        </React.Fragment>
+    );
 }
 
 const styles = StyleSheet.create({
-  'Login-container': {
-    fontFamily: 'Helvetica, sans-serif',
-    fontSize: '1rem',
-    padding: '40px 20px',
-    margin: 'auto',
-    borderRadius: '8px',
-    boxShadow: '2px 2px 10px #000000',
-    width: '350px',
-    backgroundColor: '#ffffff',
-    '@media (max-width: 432px)': {
-      width: '300px',
+    'Login-container': {
+        fontFamily: 'Inter, sans-serif',
+        fontSize: '1rem',
+        padding: '40px 20px',
+        margin: 'auto',
+        borderRadius: '8px',
+        boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+        width: '350px',
+        backgroundColor: '#ffffff',
+        '@media (max-width: 432px)': {
+            width: '300px',
+        },
     },
-  },
-  title: {
-    fontFamily: 'Lora, serif',
-    fontSize: '1.2rem',
-    fontWeight: 'bold',
-    color: '#000000',
-    textAlign: 'center',
-  },
-  form: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-    width: '100%',
-  },
-  label: {
-    fontFamily: 'Lora, serif',
-    fontSize: '0.8rem',
-    fontWeight: 'bold',
-    color: '#999999',
-    paddingBottom: 0,
-  },
-  input: {
-    fontFamily: 'Lora, serif',
-    fontSize: '0.9rem',
-    color: '#000000',
-    border: 'solid 1px #999999',
-    borderRadius: '0.5em',
-    padding: '0.5rem 0',
-    width: '100%',
-    marginBottom: '2rem',
-  },
-  submitButton: {
-    fontFamily: 'Lora, serif',
-    fontSize: '0.9rem',
-    border: 'none',
-    borderRadius: '8px',
-    padding: '6px 4px',
-    cursor: 'pointer',
-    width: '100%',
-    background: '#3d85c6',
-    color: '#ffffff',
-    marginTop: '2rem',
-  },
-  checkbox: {
-    fontFamily: 'Lora, serif',
-    fontSize: '0.9rem',
-    color: '#000000',
-    cursor: 'pointer',
-    paddingLeft: '6px',
-  },
-  'redirects': {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-  },
-  authSwitchButton: {
-    fontFamily: 'Lora, serif',
-    fontSize: '1rem',
-    color: '#cc0000',
-    background: 'transparent',
-    border: 'none',
-    textDecoration: 'none',
-    cursor: 'pointer',
-    width: 'fit-content',
-  },
-  errorMessage: {
-    color: '#cc0000',
-    textAlign: 'center',
-    marginBottom: '1rem',
-    width: '100%',
-    padding: '10px',
-    backgroundColor: '#ffeeee',
-    borderRadius: '4px',
-  },
-})
+    title: {
+        fontFamily: 'Inter, sans-serif',
+        fontSize: '1.5rem',
+        fontWeight: 'bold',
+        color: '#000000',
+        textAlign: 'center',
+        marginBottom: '2rem',
+    },
+    form: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'flex-start',
+        width: '100%',
+        gap: '1rem',
+    },
+    label: {
+        fontFamily: 'Inter, sans-serif',
+        fontSize: '0.9rem',
+        fontWeight: '500',
+        color: '#4B5563',
+    },
+    input: {
+        fontFamily: 'Inter, sans-serif',
+        fontSize: '1rem',
+        color: '#1F2937',
+        border: '1px solid #D1D5DB',
+        borderRadius: '0.375rem',
+        padding: '0.75rem',
+        width: '100%',
+        transition: 'border-color 0.15s ease-in-out',
+        ':focus': {
+            outline: 'none',
+            borderColor: '#3B82F6',
+            boxShadow: '0 0 0 3px rgba(59, 130, 246, 0.1)',
+        },
+        ':disabled': {
+            backgroundColor: '#F3F4F6',
+            cursor: 'not-allowed',
+        },
+    },
+    button: {
+        fontFamily: 'Inter, sans-serif',
+        fontSize: '1rem',
+        fontWeight: '500',
+        border: 'none',
+        borderRadius: '0.375rem',
+        padding: '0.75rem',
+        cursor: 'pointer',
+        width: '100%',
+        background: '#3B82F6',
+        color: '#ffffff',
+        marginTop: '1rem',
+        transition: 'background-color 0.15s ease-in-out',
+        ':hover:not(:disabled)': {
+            backgroundColor: '#2563EB',
+        },
+        ':disabled': {
+            backgroundColor: '#93C5FD',
+            cursor: 'not-allowed',
+        },
+    },
+    redirects: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        marginTop: '1.5rem',
+    },
+    redirectHeader: {
+        fontFamily: 'Inter, sans-serif',
+        color: '#4B5563',
+        fontSize: '0.875rem',
+    },
+    authSwitchButton: {
+        fontFamily: 'Inter, sans-serif',
+        fontSize: '0.875rem',
+        color: '#3B82F6',
+        background: 'transparent',
+        border: 'none',
+        padding: '0.5rem 1rem',
+        cursor: 'pointer',
+        transition: 'color 0.15s ease-in-out',
+        ':hover:not(:disabled)': {
+            color: '#2563EB',
+            textDecoration: 'underline',
+        },
+        ':disabled': {
+            color: '#93C5FD',
+            cursor: 'not-allowed',
+        },
+    },
+    errorMessage: {
+        color: '#DC2626',
+        textAlign: 'center',
+        marginBottom: '1rem',
+        width: '100%',
+        padding: '0.75rem',
+        backgroundColor: '#FEE2E2',
+        borderRadius: '0.375rem',
+        fontSize: '0.875rem',
+    },
+});
 
 Login.propTypes = {
-  showSignup: PropTypes.func.isRequired,
+    showSignup: PropTypes.func.isRequired,
+    login: PropTypes.func.isRequired,
+    loading: PropTypes.bool,
+    error: PropTypes.string,
+    signupEmail: PropTypes.string,
 };
 
-const LoginWithLogging = WithLogging(Login);
+const mapStateToProps = (state) => ({
+    loading: state.auth.loading,
+    error: state.auth.error,
+    signupEmail: state.auth.signupEmail,
+});
 
-export { Login, LoginWithLogging };
+const mapDispatchToProps = {
+    login,
+};
+
+connect(mapStateToProps, mapDispatchToProps)(Login);
+WithLogging(Login);
+
+export { Login };
