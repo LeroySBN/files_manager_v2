@@ -228,7 +228,7 @@ const mapDispatchToProps = {
     login,
 };
 
-connect(mapStateToProps, mapDispatchToProps)(Login);
-WithLogging(Login);
+const ConnectedLogin = connect(mapStateToProps, mapDispatchToProps)(Login);
+const LoggedLogin = WithLogging(ConnectedLogin);
 
-export { Login };
+export { LoggedLogin as Login };
