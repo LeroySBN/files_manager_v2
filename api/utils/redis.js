@@ -2,7 +2,7 @@
 import { createClient } from 'redis';
 import 'dotenv/config';
 
-const { promisify } = require('util');
+// const { promisify } = require('util');
 
 const redisURL = process.env.REDIS_URL;
 
@@ -22,9 +22,10 @@ class RedisClient {
   }
 
   async get(key) {
-    const asyncGet = promisify(this.client.get).bind(this.client);
+    // const asyncGet = promisify(this.client.get).bind(this.client);
     try {
-      const value = await asyncGet(key);
+      // const value = await asyncGet(key);
+      const value = await this.client.get(key);
       return value;
     } catch (error) {
       return null;
