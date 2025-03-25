@@ -1,8 +1,6 @@
 // Redis utils
-import { createClient } from 'redis';
+import {createClient} from 'redis';
 import 'dotenv/config';
-
-// const { promisify } = require('util');
 
 const redisURL = process.env.REDIS_URL;
 
@@ -14,7 +12,9 @@ class RedisClient {
     this.client.on('error', (err) => {
       console.log(`Redis client not connected to the server: ${err.message}`);
     });
-    this.client.connect();
+    this.client.connect().then( r=> {
+      console.log('Redis client connected to the server -', r);
+    });
   }
 
   isAlive() {
@@ -22,11 +22,8 @@ class RedisClient {
   }
 
   async get(key) {
-    // const asyncGet = promisify(this.client.get).bind(this.client);
     try {
-      // const value = await asyncGet(key);
-      const value = await this.client.get(key);
-      return value;
+      return await this.client.get(key);
     } catch (error) {
       return null;
     }
