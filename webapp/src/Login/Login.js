@@ -31,11 +31,7 @@ function Login({ showSignup, login, loading, error, signupEmail }) {
     };
 
     useEffect(() => {
-        if (email !== '' && password !== '') {
-            setEnableSubmit(true);
-        } else {
-            setEnableSubmit(false);
-        }
+        setEnableSubmit(email !== '' && password !== '');
     }, [email, password]);
 
     return (
@@ -70,12 +66,13 @@ function Login({ showSignup, login, loading, error, signupEmail }) {
                         required
                         disabled={loading}
                     />
-                    <input
+                    <button
                         className={css(styles.button)}
                         type='submit'
-                        value={loading ? 'Signing in...' : 'Sign in'}
                         disabled={!enableSubmit || loading}
-                    />
+                    >
+                        {loading ? 'Signing in...' : 'Sign in'}
+                    </button>
                 </form>
             </div>
             <div className={css(styles.redirects)}>
@@ -212,16 +209,16 @@ const styles = StyleSheet.create({
 
 Login.propTypes = {
     showSignup: PropTypes.func.isRequired,
-    login: PropTypes.func.isRequired,
+    login: PropTypes.func,
     loading: PropTypes.bool,
     error: PropTypes.string,
     signupEmail: PropTypes.string,
 };
 
 const mapStateToProps = (state) => ({
-    loading: state.auth.loading,
-    error: state.auth.error,
-    signupEmail: state.auth.signupEmail,
+    loading: state.auth.get('loading'),
+    error: state.auth.get('error'),
+    signupEmail: state.auth.get('signupEmail'),
 });
 
 const mapDispatchToProps = {

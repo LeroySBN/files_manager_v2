@@ -3,7 +3,7 @@ import { AUTH_ACTIONS } from '../actions/authActions';
 
 const initialState = Map({
   isLoggedIn: false,
-  user: null,
+  user: Map({}) || null,
   loading: false,
   error: null,
   message: null,
@@ -23,7 +23,7 @@ const authReducer = (state = initialState, action) => {
     case AUTH_ACTIONS.LOGIN_SUCCESS:
       return state.merge({
         isLoggedIn: true,
-        user: action.payload,
+        user: Map(action.payload),
         loading: false,
         error: null,
         message: null,
@@ -48,29 +48,20 @@ const authReducer = (state = initialState, action) => {
         signupEmail: action.payload.email,
       });
 
-    // case AUTH_ACTIONS.LOGOUT:
-    //   return state.merge({
-    //     isLoggedIn: false,
-    //     user: null,
-    //     loading: false,
-    //     error: null,
-    //     message: null,
-    //     signupEmail: null,
-    //   });
-
     case AUTH_ACTIONS.SET_USER:
       return state.merge({
-        isLoggedIn: true,
         user: action.payload,
-        loading: false,
-        error: null,
+        isLoggedIn: true,
       });
 
     case AUTH_ACTIONS.CLEAR_AUTH_MESSAGE:
       return state.merge({
         message: null,
-        signupEmail: null,
+        error: null,
       });
+
+    case AUTH_ACTIONS.LOGOUT:
+      return initialState;
 
     default:
       return state;

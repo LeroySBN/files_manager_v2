@@ -2,9 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { css, StyleSheet } from 'aphrodite';
 import { connect } from 'react-redux';
-import { logout, checkAuth } from '../actions/authActions';
+import { logout, checkAuth, clearAuthMessage } from '../actions/authActions';
 import { Login } from '../Login/Login';
-import { SignupWithLogging as Signup } from '../Signup/Signup';
+import { Signup } from '../Signup/Signup';
 import Logo from '../Logo/Logo';
 
 class App extends React.Component {
@@ -32,15 +32,17 @@ class App extends React.Component {
   };
 
   toggleToSignup = () => {
+    this.props.clearAuthMessage();
     this.setState({ isLoginView: false });
   };
 
   toggleToLogin = () => {
+    this.props.clearAuthMessage();
     this.setState({ isLoginView: true });
   };
 
   render() {
-    const { isLoggedIn } = this.props;
+    const { isLoggedIn, logout } = this.props;
     const { isLoginView } = this.state;
 
     return (
@@ -48,7 +50,7 @@ class App extends React.Component {
         {isLoggedIn ? (
           <div className={css(styles.Dashboard)}>
             <h1>Files Dashboard</h1>
-            <button onClick={this.props.logout}>Logout</button>
+            <button onClick={logout}>Logout</button>
           </div>
         ) : (
           <div className={css(styles.AccessContainer)}>
@@ -96,9 +98,10 @@ const styles = StyleSheet.create({
 });
 
 App.propTypes = {
-  isLoggedIn: PropTypes.bool,
+  isLoggedIn: PropTypes.bool.isRequired,
   logout: PropTypes.func.isRequired,
-  checkAuth: PropTypes.func.isRequired,
+  checkAuth: PropTypes.func,
+  clearAuthMessage: PropTypes.func,
 };
 
 App.defaultProps = {
@@ -106,12 +109,13 @@ App.defaultProps = {
 };
 
 const mapStateToProps = (state) => ({
-  isLoggedIn: state.auth.isLoggedIn,
+  isLoggedIn: state.auth.get('isLoggedIn'),
 });
 
 const mapDispatchToProps = {
   logout,
   checkAuth,
+  clearAuthMessage,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

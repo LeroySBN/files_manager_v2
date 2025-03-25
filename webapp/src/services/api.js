@@ -1,35 +1,42 @@
 import axios from 'axios';
 
-const API_BASE_URL = process.env.REACT_APP_API_URL
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
+  headers: {
+    'Content-Type': 'application/json'
+  },
   withCredentials: true,
 });
 
-// Add token to requests if it exists
-api.interceptors.request.use((config) => {
-  // Skip token for /connect endpoint since it uses Basic auth
-  if (config.url === '/connect') {
-    return config;
-  }
-
-  const token = localStorage.getItem('token');
-  // if (token && !config.headers.Authorization) {
-  //   config.headers.Authorization = `Bearer ${token}`;
-  if (token) {
-    config.headers['X-Token'] = token;
-  }
-  return config;
-});
-
-// Add interceptor for 401 responses
+// Add response interceptor for token handling
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
+      // Clear token on unauthorized response
       localStorage.removeItem('token');
     }
+    return Promise.reject(error);
+  }
+);
+
+// Add request interceptor for token
+api.interceptors.request.use(
+  (config) => {
+    // Skip token for /connect endpoint since it uses Basic auth
+    if (config.url === '/connect') {
+      return config;
+    }
+
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers['X-Token'] = token;
+    }
+    return config;
+  },
+  (error) => {
     return Promise.reject(error);
   }
 );

@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import WithLogging from '../HOC/WithLogging';
 import { signup, clearAuthMessage } from '../actions/authActions';
 
-function Signup({ showLogin, signup, loading, error, message, signupEmail, clearAuthMessage }) {
+function Signup({ showLogin, signup, loading, error, message, clearAuthMessage }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [enableSubmit, setEnableSubmit] = useState(false);
@@ -17,6 +17,7 @@ function Signup({ showLogin, signup, loading, error, message, signupEmail, clear
 
         try {
             await signup(email, password);
+            // Don't call showLogin here, let the useEffect handle it
         } catch (err) {
             setLocalError(err.toString());
         }
@@ -31,20 +32,16 @@ function Signup({ showLogin, signup, loading, error, message, signupEmail, clear
     };
 
     useEffect(() => {
-        if (email !== '' && password !== '') {
-            setEnableSubmit(true);
-        } else {
-            setEnableSubmit(false);
-        }
+        setEnableSubmit(email !== '' && password !== '');
     }, [email, password]);
 
     useEffect(() => {
-        // If signup was successful, redirect to login after 2 seconds
+        // If signup was successful, redirect to login after 10 seconds
         if (message) {
             const timer = setTimeout(() => {
                 clearAuthMessage();
                 showLogin();
-            }, 2000);
+            }, 10000);
             return () => clearTimeout(timer);
         }
     }, [message, showLogin, clearAuthMessage]);
@@ -95,12 +92,13 @@ function Signup({ showLogin, signup, loading, error, message, signupEmail, clear
                         required
                         disabled={loading}
                     />
-                    <input
+                    <button
                         className={css(styles.button)}
                         type='submit'
-                        value={loading ? 'Creating account...' : 'Create Free Account'}
                         disabled={!enableSubmit || loading}
-                    />
+                    >
+                        {loading ? 'Creating account...' : 'Create Free Account'}
+                    </button>
                 </form>
             </div>
             <div className={css(styles.redirects)}>
@@ -261,19 +259,17 @@ const styles = StyleSheet.create({
 
 Signup.propTypes = {
     showLogin: PropTypes.func.isRequired,
-    signup: PropTypes.func.isRequired,
+    signup: PropTypes.func,
     loading: PropTypes.bool,
     error: PropTypes.string,
     message: PropTypes.string,
-    signupEmail: PropTypes.string,
-    clearAuthMessage: PropTypes.func.isRequired,
+    clearAuthMessage: PropTypes.func,
 };
 
 const mapStateToProps = (state) => ({
-    loading: state.auth.loading,
-    error: state.auth.error,
-    message: state.auth.message,
-    signupEmail: state.auth.signupEmail,
+    message: state.auth.get('message'),
+    loading: state.auth.get('loading'),
+    error: state.auth.get('error'),
 });
 
 const mapDispatchToProps = {
@@ -282,6 +278,6 @@ const mapDispatchToProps = {
 };
 
 const ConnectedSignup = connect(mapStateToProps, mapDispatchToProps)(Signup);
-const SignupWithLogging = WithLogging(ConnectedSignup);
+const LoggedSignup = WithLogging(ConnectedSignup);
 
-export { Signup, SignupWithLogging };
+export { LoggedSignup as Signup };

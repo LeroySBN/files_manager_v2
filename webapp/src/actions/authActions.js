@@ -16,7 +16,7 @@ export const AUTH_ACTIONS = {
 
 // Action Creators
 const loginRequest = createAction(AUTH_ACTIONS.LOGIN_REQUEST);
-const loginSuccess = createAction(AUTH_ACTIONS.LOGIN_SUCCESS, (user) => ({ payload: user }));
+const loginSuccess = createAction(AUTH_ACTIONS.LOGIN_SUCCESS, (email) => ({ payload: { email } }));
 const loginFailure = createAction(AUTH_ACTIONS.LOGIN_FAILURE, (error) => ({ payload: error }));
 const signupRequest = createAction(AUTH_ACTIONS.SIGNUP_REQUEST);
 const signupSuccess = createAction(AUTH_ACTIONS.SIGNUP_SUCCESS, (data) => ({ payload: data }));
@@ -29,10 +29,10 @@ export const clearAuthMessage = createAction(AUTH_ACTIONS.CLEAR_AUTH_MESSAGE);
 export const login = (email, password) => async (dispatch) => {
   dispatch(loginRequest());
   try {
-    const data = await authService.login(email, password);
-    dispatch(loginSuccess(data));
-    return data;
+    await authService.login(email, password);
+    dispatch(loginSuccess(email));
   } catch (error) {
+    // const errorMessage = error.response?.data?.error || error.message || 'Login failed';
     dispatch(loginFailure(error));
     throw error;
   }
@@ -41,13 +41,13 @@ export const login = (email, password) => async (dispatch) => {
 export const signup = (email, password) => async (dispatch) => {
   dispatch(signupRequest());
   try {
-    const data = await authService.signup(email, password);
+    await authService.signup(email, password);
     dispatch(signupSuccess({
       message: 'Account created successfully! Please sign in.',
       email
     }));
-    return data;
   } catch (error) {
+    // const errorMessage = error.response?.data?.error || error.message || 'Signup failed';
     dispatch(signupFailure(error));
     throw error;
   }
@@ -56,10 +56,10 @@ export const signup = (email, password) => async (dispatch) => {
 export const logout = () => async (dispatch) => {
   try {
     await authService.logout();
-  } catch (error) {
-    console.error('Logout error:', error);
-  } finally {
     dispatch(logoutAction());
+  } catch (error) {
+    console.log('Logout error:', error);
+    console.error('Logout error:', error);
   }
 };
 
@@ -68,6 +68,7 @@ export const checkAuth = () => async (dispatch) => {
     const user = await authService.getCurrentUser();
     dispatch(setUser(user));
   } catch (error) {
+    // Silent failure for auth check
     dispatch(logoutAction());
   }
 };
