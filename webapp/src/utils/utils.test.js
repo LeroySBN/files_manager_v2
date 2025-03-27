@@ -5,8 +5,8 @@ test("Returns correct year", () => {
 });
 
 test("Returns expected footer copy", () => {
-  expect(getFooterCopy(false)).toBe("Holberton School main dashboard");
-  expect(getFooterCopy(true)).toBe("Holberton School");
+  expect(getFooterCopy(false)).toBe("Files by Buliro main dashboard");
+  expect(getFooterCopy(true)).toBe("Files by Buliro");
 });
 
 test("Returns expected Notification", () => {

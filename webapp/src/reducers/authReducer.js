@@ -3,7 +3,7 @@ import { AUTH_ACTIONS } from '../actions/authActions';
 
 const initialState = Map({
   isLoggedIn: false,
-  user: Map({}) || null,
+  user: Map({}),
   loading: false,
   error: null,
   message: null,

@@ -102,4 +102,15 @@ export const authService = {
   }
 };
 
+export const fileService = {
+  listFiles: async () => {
+    try {
+      const response = await api.get('/files');
+      return response.data;
+    } catch (error) {
+      throw error.response?.data?.error || 'Failed to list files';
+    }
+  },
+};
+
 export default api;

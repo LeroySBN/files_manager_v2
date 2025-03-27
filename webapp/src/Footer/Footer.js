@@ -1,16 +1,29 @@
 import React from 'react';
 import './Footer.css';
-import { getFooterCopy, getFullYear } from '../utils/utils';
-import { AppContext } from '../App/AppContext';
+import {getFullYear} from '../utils/utils';
+import PropTypes from "prop-types";
+import {connect} from "react-redux";
+import WithLogging from "../HOC/WithLogging";
 
-export default function Footer() {
-  const { user } = React.useContext(AppContext);
+function Footer({appName}) {
   return (
     <>
       <div className="App-footer">
-        {user.isLoggedIn && <a href='#'>Contact us</a>}
-        <p>Copyright {getFullYear()} - {getFooterCopy()}</p>
+        <p>Copyright {getFullYear()} - {appName}</p>
         </div>
     </>
   );
 }
+
+Footer.propTypes = {
+  appName: PropTypes.string.isRequired,
+}
+
+const mapStateToProps = (state) => ({
+  appName: state.ui.get('appName'),
+});
+
+const ConnectedFooter = connect(mapStateToProps, null)(Footer);
+const LoggedFooter = WithLogging(ConnectedFooter);
+
+export { LoggedFooter as Footer };

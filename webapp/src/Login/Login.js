@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, css } from 'aphrodite';
+import React, {useEffect, useState} from 'react';
+import {css, StyleSheet} from 'aphrodite';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
 import WithLogging from '../HOC/WithLogging';
-import { login } from '../actions/authActions';
+import {login} from '../actions/authActions';
 
 function Login({ showSignup, login, loading, error, signupEmail }) {
     const [email, setEmail] = useState(signupEmail || '');

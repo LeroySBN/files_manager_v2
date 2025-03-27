@@ -50,8 +50,8 @@ describe('App component tests', () => {
     expect(wrapper.find(Footer).exists()).toBe(true);
   });
 
-  it('CourseList not displayed when isLoggedIn is false', () => {
-    expect(component.find('CourseList')).toHaveLength(0);
+  it('FileList not displayed when isLoggedIn is false', () => {
+    expect(component.find('FileList')).toHaveLength(0);
   });
 });
 

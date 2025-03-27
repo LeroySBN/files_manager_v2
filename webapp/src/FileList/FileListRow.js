@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, {useState} from 'react';
 import PropTypes from 'prop-types';
-import { StyleSheet, css } from 'aphrodite';
+import {css, StyleSheet} from 'aphrodite';
 
-export default function CourseListRow({ isHeader, textFirstCell, textSecondCell }) {
+export default function FileListRow({ isHeader, textFirstCell, textSecondCell, textThirdCell }) {
   const [isChecked, setIsChecked] = useState(false);
 
   const handleCheckbox = () => {
@@ -12,27 +12,27 @@ export default function CourseListRow({ isHeader, textFirstCell, textSecondCell 
   return (
     <tr className={isHeader ? css(styles.header) : css(styles.normal, isChecked && styles.rowChecked)}>
       {isHeader ? (
-        textSecondCell === null ? (
-          <th colSpan={2}>{textFirstCell}</th>
+        textSecondCell === null && textThirdCell === "" ? (
+          <th colSpan={3}>{textFirstCell}</th>
         ) : (
           <>
             <th>{textFirstCell}</th>
             <th>{textSecondCell}</th>
+            <th>{textThirdCell}</th>
           </>
         )
       ) : (
         <>
           <td className={css(styles.td)} >
-            {/* {isChecked && ( */}
               <input
                 type="checkbox"
                 onChange={handleCheckbox}
                 checked={isChecked}
               />
-            {/* )} */}
             {textFirstCell}
           </td>
-          <td className={css(styles.td)} >{textSecondCell}</td>
+          <td className={css(styles.tdMeta)} >{textSecondCell}</td>
+          <td className={css(styles.tdMeta)} >{textThirdCell}</td>
         </>
       )}
     </tr>
@@ -42,6 +42,12 @@ export default function CourseListRow({ isHeader, textFirstCell, textSecondCell 
 const styles = StyleSheet.create({
   td: {
     paddingLeft: "4px",
+    display: "flex",
+    gap: "8px",
+  },
+  tdMeta: {
+    paddingLeft: "4px",
+    color: "gray",
   },
   header: {
     backgroundColor: "#deb5b545",
@@ -56,16 +62,12 @@ const styles = StyleSheet.create({
   },
 });
 
-CourseListRow.propTypes = {
-    isHeader: PropTypes.bool,
-    textFirstCell: PropTypes.string.isRequired,
-    textSecondCell: PropTypes.oneOfType([
-      PropTypes.number,
-      PropTypes.string,
-    ]),
-}
-
-CourseListRow.defaultProps = {
-    isHeader: false,
-    textSecondCell: null,
+FileListRow.propTypes = {
+  isHeader: PropTypes.bool,
+  textFirstCell: PropTypes.string.isRequired,
+  textSecondCell: PropTypes.oneOfType([
+    PropTypes.number,
+    PropTypes.string,
+  ]),
+  textThirdCell: PropTypes.string,
 }

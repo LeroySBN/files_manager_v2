@@ -1,11 +1,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { css, StyleSheet } from 'aphrodite';
-import { connect } from 'react-redux';
-import { logout, checkAuth, clearAuthMessage } from '../actions/authActions';
-import { Login } from '../Login/Login';
-import { Signup } from '../Signup/Signup';
+import {css, StyleSheet} from 'aphrodite';
+import {connect} from 'react-redux';
+import {checkAuth, clearAuthMessage} from '../actions/authActions';
+import {toggleNotificationDrawer} from "../actions/uiActions";
+import {Login} from '../Login/Login';
+import {Signup} from '../Signup/Signup';
 import Logo from '../Logo/Logo';
+import {Header} from "../Header/Header";
+import {Footer} from "../Footer/Footer";
+// import Notifications from "../Notifications/Notifications";
+import BodySectionWithMarginBottom from "../BodySection/BodySectionWithMarginBottom";
+import {FileList} from "../FileList/FileList";
 
 class App extends React.Component {
   constructor(props) {
@@ -42,16 +48,27 @@ class App extends React.Component {
   };
 
   render() {
-    const { isLoggedIn, logout } = this.props;
+    const { isLoggedIn, dashboardTitle } = this.props;
     const { isLoginView } = this.state;
 
     return (
       <div className={css(styles.App)}>
         {isLoggedIn ? (
-          <div className={css(styles.Dashboard)}>
-            <h1>Files Dashboard</h1>
-            <button onClick={logout}>Logout</button>
-          </div>
+            <React.Fragment>
+              {/*<Notifications*/}
+              {/*    displayDrawer={this.state.displayDrawer}*/}
+              {/*    handleDisplayDrawer={this.handleDisplayDrawer}*/}
+              {/*    handleHideDrawer={this.handleHideDrawer}*/}
+              {/*    markNotificationAsRead={this.markNotificationAsRead}*/}
+              {/*/>*/}
+              <div className={css(styles.App)}>
+                <Header />
+                <BodySectionWithMarginBottom title={dashboardTitle}>
+                  <FileList />
+                </BodySectionWithMarginBottom>
+                <Footer />
+              </div>
+            </React.Fragment>
         ) : (
           <div className={css(styles.AccessContainer)}>
             <Logo />
@@ -99,9 +116,10 @@ const styles = StyleSheet.create({
 
 App.propTypes = {
   isLoggedIn: PropTypes.bool.isRequired,
-  logout: PropTypes.func.isRequired,
   checkAuth: PropTypes.func,
   clearAuthMessage: PropTypes.func,
+  toggleNotificationDrawer: PropTypes.func,
+  dashboardTitle: PropTypes.string.isRequired
 };
 
 App.defaultProps = {
@@ -110,12 +128,14 @@ App.defaultProps = {
 
 const mapStateToProps = (state) => ({
   isLoggedIn: state.auth.get('isLoggedIn'),
+  displayDrawer: state.ui.get('isNotificationDrawerVisible'),
+  dashboardTitle: state.ui.get('dashboardFocus')
 });
 
 const mapDispatchToProps = {
-  logout,
   checkAuth,
   clearAuthMessage,
+  toggleNotificationDrawer
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

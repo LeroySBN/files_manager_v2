@@ -1,50 +1,31 @@
-import { Map } from 'immutable';
-import {
-    LOGIN,
-    LOGIN_SUCCESS,
-    LOGIN_FAILURE,
-    SIGNUP,
-    SIGNUP_SUCCESS,
-    SIGNUP_FAILURE,
-    LOGOUT,
-    DISPLAY_NOTIFICATION_DRAWER,
-    HIDE_NOTIFICATION_DRAWER,
-} from "../actions/uiActionTypes";
+import {Map} from 'immutable';
+import {UI_ACTIONS} from "../actions/uiActions";
 
 export const initialState = Map({
-    isUserLoggedIn: false,
+    appName: "FileCore",
     isNotificationDrawerVisible: false,
-    user: Map({}),
+    dashboardFocus: "Home"
 });
 
 const uiReducer = (state = initialState, action) => {
     switch (action.type) {
-        case LOGIN:
-            return state.merge({isUserLoggedIn: true, user: Map(action.user) });
-
-        case LOGIN_SUCCESS:
-            return state.merge({isUserLoggedIn: true, user: Map(action.payload.user) });
-
-        case LOGIN_FAILURE:
-            return state.set('isUserLoggedIn', false);
-
-        case LOGOUT:
-            return state.set('isUserLoggedIn', false).set('user', null);
-
-        case SIGNUP:
-            return state.merge({ isUserLoggedIn: true, user: Map({}) });
-
-        case SIGNUP_SUCCESS:
-            return state.set('isUserLoggedIn', true);
-
-        case SIGNUP_FAILURE:
-            return state.set('isUserLoggedIn', false);
-
-        case DISPLAY_NOTIFICATION_DRAWER:
+        case UI_ACTIONS.DISPLAY_NOTIFICATION_DRAWER:
             return state.set('isNotificationDrawerVisible', true);
 
-        case HIDE_NOTIFICATION_DRAWER:
+        case UI_ACTIONS.HIDE_NOTIFICATION_DRAWER:
             return state.set('isNotificationDrawerVisible', false);
+
+        case UI_ACTIONS.DASHBOARD_SHOW_HOME:
+            return state.set('dashboardFocus', "Home");
+
+        case UI_ACTIONS.DASHBOARD_SHOW_FILES:
+            return state.set('dashboardFocus', "My Files");
+
+        case UI_ACTIONS.DASHBOARD_SHOW_PHOTOS:
+            return state.set('dashboardFocus', "Photos");
+
+        case UI_ACTIONS.DASHBOARD_SHOW_SHARED:
+            return state.set('dashboardFocus', "Shared");
 
         default:
             return state;

@@ -1,14 +1,14 @@
-import courseReducer from './courseReducer';
+import fileReducer from './fileReducer';
 import { Map } from 'immutable';
 import {
   FETCH_COURSE_SUCCESS,
   SELECT_COURSE,
   UNSELECT_COURSE
-} from '../actions/courseActionTypes';
+} from '../actions/fileActionTypes';
 
-// describe('courseReducer', () => {
+// describe('fileReducer', () => {
 //   it('should return the initial state', () => {
-//     const initialState = courseReducer(undefined, {});
+//     const initialState = fileReducer(undefined, {});
 //     expect(initialState).toEqual([]);
 //   });
 
@@ -33,7 +33,7 @@ import {
 //       data: mockData,
 //     };
 
-//     const state = courseReducer([], action);
+//     const state = fileReducer([], action);
 //     expect(state).toEqual(mockData);
 //   });
 
@@ -58,7 +58,7 @@ import {
 //       index: 1,
 //     };
 
-//     const state = courseReducer(initialState, action);
+//     const state = fileReducer(initialState, action);
 //     expect(state[1].isSelected).toEqual(true);
 //   });
 
@@ -83,14 +83,14 @@ import {
 //       index: 0,
 //     };
 
-//     const state = courseReducer(initialState, action);
+//     const state = fileReducer(initialState, action);
 //     expect(state[0].isSelected).toEqual(false);
 //   });
 // });
 
 describe('courseReducer', () => {
   it('should return the initial state', () => {
-    const initialState = courseReducer(undefined, {});
+    const initialState = fileReducer(undefined, {});
     expect(initialState).toEqual(Map([]));
   });
 
@@ -115,7 +115,7 @@ describe('courseReducer', () => {
       data: mockData
     };
 
-    const state = courseReducer(Map([]), action);
+    const state = fileReducer(Map([]), action);
     expect(state).toEqual(
       Map({
         entities: {
@@ -165,7 +165,7 @@ describe('courseReducer', () => {
       index: 1
     };
 
-    const state = courseReducer(initialState, action);
+    const state = fileReducer(initialState, action);
 
     expect(state).toEqual(
       Map({
@@ -216,7 +216,7 @@ describe('courseReducer', () => {
       index: 1
     };
 
-    const state = courseReducer(initialState, action);
+    const state = fileReducer(initialState, action);
     expect(state).toEqual(
       Map({
         entities: {

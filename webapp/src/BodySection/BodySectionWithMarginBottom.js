@@ -2,7 +2,7 @@ import PropTypes from "prop-types";
 import React from "react";
 import { StyleSheet, css } from "aphrodite";
 import BodySection from "./BodySection";
-import NavigationPane from "../NavigationPane/NavigationPane";
+import {NavigationPane} from "../NavigationPane/NavigationPane";
 
 class BodySectionWithMarginBottom extends React.Component {
   constructor(props) {
@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
     display: "grid",
     gridTemplateColumns: "1fr 4fr",
     minHeight: "100vh",
-    background: '#dfdede',
+    background: 'transparent',
     '@media (max-width: 432px)': {
       gridTemplateColumns: "1fr 5fr",
     },

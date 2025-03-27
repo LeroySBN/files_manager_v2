@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 
-export const CourseShape = PropTypes.shape({
+export const FileShape = PropTypes.shape({
   id: PropTypes.number.isRequired,
   name: PropTypes.string.isRequired,
-  credit: PropTypes.number.isRequired,
+  type: PropTypes.number.isRequired,
 });

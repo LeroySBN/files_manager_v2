@@ -1,21 +1,22 @@
-import {useContext, Fragment} from 'react';
-import { StyleSheet, css } from 'aphrodite';
-import { AppContext } from '../App/AppContext';
+import {Fragment} from 'react';
+import {css, StyleSheet} from 'aphrodite';
 import logo from '../assets/logo.jpg';
+import {logout} from '../actions/authActions';
+import PropTypes from "prop-types";
+import {connect} from "react-redux";
+import WithLogging from "../HOC/WithLogging";
 
-export default function Header() {
-  const { user, logOut } = useContext(AppContext);
-
+function Header({ appName, user, logout }) {
   return (
     <Fragment>
       <div className={css(styles['App-header'])} id='App-header'>
         <img src={logo} className={css(styles.headerLogo)} alt="logo"/>
-        <h1 className={css(styles.headerTitle)}>Files by Leroy</h1>
+        <h1 className={css(styles.headerTitle)}>{appName}</h1>
       </div>
 
-      {user.isLoggedIn && (
-        <p id="logoutSection">
-          Welcome <b>{user.email}</b> (<a href="#" onClick={logOut}>logout</a>)
+      {user && (
+        <p className={css(styles.logoutSection)} >
+          Welcome <b>{user.email}</b> (<a href="#" onClick={logout}>logout</a>)
         </p>
       )}
     </Fragment>
@@ -41,4 +42,28 @@ const styles = StyleSheet.create({
     verticalAlign: 'center',
     marginLeft: '8px',
   },
+  logoutSection: {
+    padding: '20px',
+    fontSize: '1rem',
+  },
 });
+
+Header.propTypes = {
+  appName: PropTypes.string.isRequired,
+  logout: PropTypes.func.isRequired,
+  user: PropTypes.object.isRequired,
+}
+
+const mapStateToProps = (state) => ({
+  appName: state.ui.get('appName'),
+  user: state.auth.get('user'),
+});
+
+const mapDispatchToProps = {
+  logout,
+};
+
+const ConnectedHeader = connect(mapStateToProps, mapDispatchToProps)(Header);
+const LoggedHeader = WithLogging(ConnectedHeader);
+
+export { LoggedHeader as Header };

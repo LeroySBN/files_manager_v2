@@ -18,15 +18,21 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  max-width: var(--max-content-width);
   margin: auto;
   overflow: hidden;
-}
-@media (max-width: var(--max-content-width)) {
-  width: 100%;
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+.container {
+  width: var(--max-content-width);
+  padding: 20px 0;
+}
+@media (max-width: 1024px) {
+  .container {
+    max-width: 100%;
+  }
 }

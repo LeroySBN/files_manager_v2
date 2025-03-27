@@ -2,9 +2,6 @@ import uiReducer from '../reducers/uiReducer';
 import {
   DISPLAY_NOTIFICATION_DRAWER,
   HIDE_NOTIFICATION_DRAWER,
-  LOGIN_SUCCESS,
-  LOGIN_FAILURE,
-  LOGOUT,
 } from '../actions/uiActionTypes';
 
 describe('uiReducer tests', () => {

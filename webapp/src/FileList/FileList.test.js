@@ -1,6 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import CourseList from './CourseList';
+import FileList from './FileList';
 import { StyleSheetTestUtils } from "aphrodite";
 
 beforeEach(() => {
@@ -11,23 +11,23 @@ afterEach(() => {
   StyleSheetTestUtils.clearBufferAndResumeStyleInjection();
 });
 
-describe('CourseList component testing', () => {
-  it('CourseList renders without crashing', () => {
-    const component = shallow(<CourseList />);
+describe('FileList component testing', () => {
+  it('FileList renders without crashing', () => {
+    const component = shallow(<FileList />);
     expect(component).toMatchSnapshot();
   });
 
   it('renders a table', () => {
-    const wrapper = shallow(<CourseList />);
+    const wrapper = shallow(<FileList />);
     expect(wrapper.find('table')).toHaveLength(1);
-    expect(wrapper.find('CourseListRow')).toHaveLength(3);
+    expect(wrapper.find('FileListRow')).toHaveLength(3);
   });
 
   it('renders the correct html when listCourses is empty', () => {
     const listCourses = [];
-    const wrapper = shallow(<CourseList listCourses={listCourses} />);
+    const wrapper = shallow(<FileList listCourses={listCourses} />);
     expect(wrapper.find('table')).toHaveLength(1);
-    expect(wrapper.find('CourseListRow')).toHaveLength(3);
+    expect(wrapper.find('FileListRow')).toHaveLength(3);
   });
 
   it('renders the correct html when listCourses is not empty', () => {
@@ -36,39 +36,39 @@ describe('CourseList component testing', () => {
       { id: 2, name: "Webpack", credit: 20 },
       { id: 3, name: "React", credit: 40 },
     ];
-    const wrapper = shallow(<CourseList listCourses={listCourses}/>);
+    const wrapper = shallow(<FileList listCourses={listCourses}/>);
     expect(wrapper.find('table')).toHaveLength(1);
-    expect(wrapper.find('CourseListRow')).toHaveLength(5);
+    expect(wrapper.find('FileListRow')).toHaveLength(5);
   });
 });
 
 
 // This is an improve version of the previous test file
 
-describe('CourseList component testing', () => {
-  describe('With CourseList Empty', () => {
+describe('FileList component testing', () => {
+  describe('With FileList Empty', () => {
     let wrapper;
 
     beforeEach(() => {
-      wrapper = shallow(<CourseList listCourses={[]} />);
+      wrapper = shallow(<FileList listCourses={[]} />);
     });
 
-    it('CourseList renders without crashing', () => {
+    it('FileList renders without crashing', () => {
       expect(wrapper).toMatchSnapshot();
     });
 
     it('renders a table', () => {
       expect(wrapper.find('table')).toHaveLength(1);
-      expect(wrapper.find('CourseListRow')).toHaveLength(3);
+      expect(wrapper.find('FileListRow')).toHaveLength(3);
     });
 
     it('renders the correct html when listCourses is empty', () => {
       expect(wrapper.find('table')).toHaveLength(1);
-      expect(wrapper.find('CourseListRow')).toHaveLength(3);
+      expect(wrapper.find('FileListRow')).toHaveLength(3);
     });
   });
 
-  describe('With CourseList containing elements', () => {
+  describe('With FileList containing elements', () => {
     let wrapper;
 
     beforeEach(() => {
@@ -77,21 +77,21 @@ describe('CourseList component testing', () => {
         { id: 2, name: "Webpack", credit: 20 },
         { id: 3, name: "React", credit: 40 },
       ];
-      wrapper = shallow(<CourseList listCourses={listCourses} />);
+      wrapper = shallow(<FileList listCourses={listCourses} />);
     });
 
-    it('CourseList renders without crashing', () => {
+    it('FileList renders without crashing', () => {
       expect(wrapper).toMatchSnapshot();
     });
 
     it('renders a table', () => {
       expect(wrapper.find('table')).toHaveLength(1);
-      expect(wrapper.find('CourseListRow')).toHaveLength(5);
+      expect(wrapper.find('FileListRow')).toHaveLength(5);
     });
 
     it('renders the correct html when listCourses is not empty', () => {
       expect(wrapper.find('table')).toHaveLength(1);
-      expect(wrapper.find('CourseListRow')).toHaveLength(5);
+      expect(wrapper.find('FileListRow')).toHaveLength(5);
     });
   });
 });
