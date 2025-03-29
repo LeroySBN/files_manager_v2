@@ -4,12 +4,15 @@ import {getFullYear} from '../utils/utils';
 import PropTypes from "prop-types";
 import {connect} from "react-redux";
 import WithLogging from "../HOC/WithLogging";
+import {css} from "aphrodite";
 
 function Footer({appName}) {
   return (
     <>
       <div className="App-footer">
-        <p>Copyright {getFullYear()} - {appName}</p>
+        <div className="footerContainer container">
+          <p>Copyright {getFullYear()} - {appName}</p>
+        </div>
         </div>
     </>
   );

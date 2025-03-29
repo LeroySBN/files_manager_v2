@@ -6,7 +6,6 @@ import {checkAuth, clearAuthMessage} from '../actions/authActions';
 import {toggleNotificationDrawer} from "../actions/uiActions";
 import {Login} from '../Login/Login';
 import {Signup} from '../Signup/Signup';
-import Logo from '../Logo/Logo';
 import {Header} from "../Header/Header";
 import {Footer} from "../Footer/Footer";
 // import Notifications from "../Notifications/Notifications";
@@ -54,24 +53,23 @@ class App extends React.Component {
     return (
       <div className={css(styles.App)}>
         {isLoggedIn ? (
-            <React.Fragment>
-              {/*<Notifications*/}
-              {/*    displayDrawer={this.state.displayDrawer}*/}
-              {/*    handleDisplayDrawer={this.handleDisplayDrawer}*/}
-              {/*    handleHideDrawer={this.handleHideDrawer}*/}
-              {/*    markNotificationAsRead={this.markNotificationAsRead}*/}
-              {/*/>*/}
-              <div className={css(styles.App)}>
-                <Header />
-                <BodySectionWithMarginBottom title={dashboardTitle}>
-                  <FileList />
-                </BodySectionWithMarginBottom>
-                <Footer />
-              </div>
-            </React.Fragment>
+          <React.Fragment>
+            {/*<Notifications*/}
+            {/*    displayDrawer={this.state.displayDrawer}*/}
+            {/*    handleDisplayDrawer={this.handleDisplayDrawer}*/}
+            {/*    handleHideDrawer={this.handleHideDrawer}*/}
+            {/*    markNotificationAsRead={this.markNotificationAsRead}*/}
+            {/*/>*/}
+            <div className={css(styles.Dashboard)}>
+              <Header />
+              <BodySectionWithMarginBottom title={dashboardTitle}>
+                <FileList />
+              </BodySectionWithMarginBottom>
+              <Footer />
+            </div>
+          </React.Fragment>
         ) : (
-          <div className={css(styles.AccessContainer)}>
-            <Logo />
+          <div className={css(styles.AppAccess)}>
             {isLoginView ? (
               <Login showSignup={this.toggleToSignup} />
             ) : (
@@ -89,16 +87,11 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter, sans-serif',
     background: 'linear-gradient(0deg, #3d85c677, #fff8f8)',
     minHeight: '100vh',
-    margin: 0,
-    padding: 0,
   },
   Dashboard: {
     position: 'relative',
-    maxWidth: '1200px',
-    margin: '0 auto',
-    padding: '20px',
   },
-  AccessContainer: {
+  AppAccess: {
     position: 'absolute',
     top: '50%',
     left: '50%',

@@ -16,7 +16,7 @@ export const FILE_ACTIONS = {
 const fetchFileSuccess = createAction(FILE_ACTIONS.FETCH_FILE_SUCCESS, (files) => ({ payload: files }));
 const selectFile = createAction(FILE_ACTIONS.SELECT_FILE, (index) => ({payload: index,}));
 const unSelectFile = createAction(FILE_ACTIONS.UNSELECT_FILE, (index) => ({payload: index,}));
-const clearFile = createAction(FILE_ACTIONS.CLEAR_FILE);
+export const clearFile = createAction(FILE_ACTIONS.CLEAR_FILE);
 
 // Thunk actions
 export const fetchFilesAction = () => async (dispatch) => {

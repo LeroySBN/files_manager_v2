@@ -10,11 +10,14 @@
   position: sticky;
   bottom: 0;
   border-top: var(--border-style);
-  padding: 1rem;
-  font-size: 0.8rem;
-  text-align: center;
   font-style: italic;
   background-color: white;
   z-index: 1;
   width: 100%;
+}
+
+.footerContainer {
+  font-size: 0.8rem;
+  text-align: center;
+  padding: 1rem;
 }

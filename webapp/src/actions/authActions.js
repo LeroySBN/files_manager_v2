@@ -1,6 +1,6 @@
 import {createAction} from '@reduxjs/toolkit';
 import {authService} from '../services/api';
-import {fetchFilesAction, clearFilesAction} from "./fileActions";
+import {clearFile} from "./fileActions";
 
 // Action Types
 export const AUTH_ACTIONS = {
@@ -32,7 +32,6 @@ export const login = (email, password) => async (dispatch) => {
   try {
     await authService.login(email, password);
     dispatch(loginSuccess(email));
-    dispatch(fetchFilesAction());
   } catch (error) {
     // const errorMessage = error.response?.data?.error || error.message || 'Login failed';
     dispatch(loginFailure(error));
@@ -58,7 +57,7 @@ export const signup = (email, password) => async (dispatch) => {
 export const logout = () => async (dispatch) => {
   try {
     await authService.logout();
-    dispatch(clearFilesAction());
+    dispatch(clearFile());
     dispatch(logoutAction());
   } catch (error) {
     console.log('Logout error:', error);

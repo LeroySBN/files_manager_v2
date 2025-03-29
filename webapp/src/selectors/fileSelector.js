@@ -10,6 +10,7 @@ export const fileSelector = createSelector(
         if (!allFiles || !listIds) {
             return List();
         }
-        return listIds.map((id) => allFiles.get(id)).toList();
+        return listIds.map((id) => allFiles.get(id.toString())).filter(Boolean);
+        // return listIds.map((id) => allFiles.get(id)).filter(Boolean);
     }
 );

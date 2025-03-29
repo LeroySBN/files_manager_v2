@@ -12,8 +12,10 @@ class BodySectionWithMarginBottom extends React.Component {
   render() {
     return (
       <div className={css(styles.bodySectionWithMargin)}>
-        <NavigationPane />
-        <BodySection {...this.props} />
+        <div className={`${css(styles.bodyContainer)} container`}>
+          <NavigationPane />
+          <BodySection {...this.props} />
+        </div>
       </div>
     );
   }
@@ -26,16 +28,17 @@ BodySectionWithMarginBottom.propTypes = {
 
 const styles = StyleSheet.create({
   bodySectionWithMargin: {
-    marginBottom: "40px",
-    padding: "0 2vw",
-    display: "grid",
-    gridTemplateColumns: "1fr 4fr",
+    margin: "20px 0",
     minHeight: "100vh",
     background: 'transparent',
+  },
+  bodyContainer: {
+    display: "grid",
+    gridTemplateColumns: "1fr 4fr",
     '@media (max-width: 432px)': {
       gridTemplateColumns: "1fr 5fr",
     },
-  },
+  }
 });
 
 export default BodySectionWithMarginBottom;

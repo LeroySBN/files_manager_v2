@@ -4,7 +4,8 @@ import {UI_ACTIONS} from "../actions/uiActions";
 export const initialState = Map({
     appName: "FileCore",
     isNotificationDrawerVisible: false,
-    dashboardFocus: "Home"
+    dashboardFocus: "Home",
+    selectList: "home"
 });
 
 const uiReducer = (state = initialState, action) => {
@@ -16,16 +17,28 @@ const uiReducer = (state = initialState, action) => {
             return state.set('isNotificationDrawerVisible', false);
 
         case UI_ACTIONS.DASHBOARD_SHOW_HOME:
-            return state.set('dashboardFocus', "Home");
+            return state.merge({
+                'dashboardFocus': 'Home',
+                'selectList': 'home'
+            })
 
         case UI_ACTIONS.DASHBOARD_SHOW_FILES:
-            return state.set('dashboardFocus', "My Files");
+            return state.merge({
+                'dashboardFocus': 'My Files',
+                'selectList': 'files'
+            })
 
         case UI_ACTIONS.DASHBOARD_SHOW_PHOTOS:
-            return state.set('dashboardFocus', "Photos");
+            return state.merge({
+                'dashboardFocus': 'Photos',
+                'selectList': 'images'
+            })
 
         case UI_ACTIONS.DASHBOARD_SHOW_SHARED:
-            return state.set('dashboardFocus', "Shared");
+            return state.merge({
+                'dashboardFocus': 'Shared',
+                'selectList': 'shared'
+            })
 
         default:
             return state;

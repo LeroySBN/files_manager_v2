@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import WithLogging from '../HOC/WithLogging';
 import { signup, clearAuthMessage } from '../actions/authActions';
 
-function Signup({ showLogin, signup, loading, error, message, clearAuthMessage }) {
+function Signup({ appName, showLogin, signup, loading, error, message, clearAuthMessage }) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [enableSubmit, setEnableSubmit] = useState(false);
@@ -63,7 +63,7 @@ function Signup({ showLogin, signup, loading, error, message, clearAuthMessage }
     return (
         <React.Fragment>
             <div className={css(styles['Signup-container'])}>
-                <p className={css(styles.title)}>Create Files account</p>
+                <p className={css(styles.title)}>Create {appName} account</p>
                 {(error || localError) && (
                     <div className={css(styles.errorMessage)}>
                         {error || localError}
@@ -258,6 +258,7 @@ const styles = StyleSheet.create({
 });
 
 Signup.propTypes = {
+    appName: PropTypes.string.isRequired,
     showLogin: PropTypes.func.isRequired,
     signup: PropTypes.func,
     loading: PropTypes.bool,
@@ -267,6 +268,7 @@ Signup.propTypes = {
 };
 
 const mapStateToProps = (state) => ({
+    appName: state.ui.get('appName'),
     message: state.auth.get('message'),
     loading: state.auth.get('loading'),
     error: state.auth.get('error'),

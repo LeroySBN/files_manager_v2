@@ -1,5 +1,5 @@
-import { normalize, schema } from 'normalizr';
-import { fromJS, Map } from 'immutable';
+import {normalize, schema} from 'normalizr';
+import {fromJS} from 'immutable';
 
 const fileSchema = new schema.Entity('files');
 
@@ -11,7 +11,7 @@ export const filesNormalizer = (data) => {
 
     const home = Object.values(files).filter((file) => file.parentId === 0);
     const myFiles = Object.values(files).filter((file) => file.type === 'file');
-    const photos = Object.values(files).filter((file) => file.type === 'image');
+    const images = Object.values(files).filter((file) => file.type === 'image');
     const shared = Object.values(files).filter((file) => file.isPublic === true);
 
     return fromJS({
@@ -19,7 +19,7 @@ export const filesNormalizer = (data) => {
         lists: {
             home: home.map((file) => file.id),
             files: myFiles.map((file) => file.id),
-            photos: photos.map((file) => file.id),
+            images: images.map((file) => file.id),
             shared: shared.map((file) => file.id),
         },
     });

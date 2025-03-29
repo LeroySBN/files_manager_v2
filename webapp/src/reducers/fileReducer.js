@@ -1,5 +1,5 @@
 import {FILE_ACTIONS} from '../actions/fileActions';
-import {Map, List} from 'immutable';
+import {Map, List, Set} from 'immutable';
 import {filesNormalizer} from '../schema/files';
 
 const initialState = Map({
@@ -9,7 +9,7 @@ const initialState = Map({
     lists: Map({
         home: List(),
         files: List(),
-        photos: List(),
+        images: List(),
         shared: List(),
     }),
 });
@@ -24,7 +24,7 @@ const fileReducer = (state = initialState, action) => {
             return state.setIn(['entities', 'files', action.index, 'isSelected'], true);
 
         case FILE_ACTIONS.UNSELECT_FILE:
-            return state.setIn(['entities', 'files', action.index, 'isSelected'], false);
+            return state.setIn(['entities', 'files', action.payload, 'isSelected'], false);
 
         case FILE_ACTIONS.CLEAR_FILE:
             return state.set('lists', initialState.get('lists'));
