@@ -5,7 +5,8 @@ export const initialState = Map({
     appName: "FileCore",
     isNotificationDrawerVisible: false,
     dashboardFocus: "Home",
-    selectList: "home"
+    selectList: "home",
+    loading: false,
 });
 
 const uiReducer = (state = initialState, action) => {
