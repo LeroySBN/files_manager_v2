@@ -2,9 +2,9 @@
 FROM node:22-alpine AS build
 
 WORKDIR /usr/src/app
-COPY webapp/package*.json ./
+COPY webApp/package*.json ./
 RUN npm install
-COPY webapp/ ./
+COPY webApp/ ./
 RUN npm run build
 
 # Stage 2: Serve with Nginx
