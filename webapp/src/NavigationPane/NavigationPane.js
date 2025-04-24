@@ -55,10 +55,31 @@ function NavigationPane({paneFocus, dashboardSwitch}) {
                 onClick={() => handleRowClick("Photos")}
             />
             <NavigationPaneRow
+                icon={photoIcon}
+                title="Videos"
+                isFocus={paneFocus === "Videos"}
+                onClick={() => handleRowClick("Videos")}
+            />
+            <NavigationPaneRow
                 icon={sharedIcon}
                 title="Shared"
                 isFocus={paneFocus === "Shared"}
                 onClick={() => handleRowClick("Shared")}
+            />
+            <div className={css(styles["navigationPaneHeader"])} >
+                <p className={css(styles.navigationItemTitle)}>Collections</p>
+            </div>
+            <NavigationPaneRow
+                icon={fileIcon}
+                title="Albums"
+                isFocus={paneFocus === "Albums"}
+                onClick={() => handleRowClick("Albums")}
+            />
+            <NavigationPaneRow
+                icon={fileIcon}
+                title="Shelves"
+                isFocus={paneFocus === "Shelves"}
+                onClick={() => handleRowClick("Shelves")}
             />
         </div>
     );
@@ -69,10 +90,10 @@ const styles = StyleSheet.create({
         display: "flex",
         flexDirection: "column",
         alignItems: "flex-start",
-        padding: "1em 2em 0 0",
+        padding: "1rem 2rem 0 0",
         gap: "14px",
         '@media (max-width: 432px)': {
-            padding: "1em 0.7em 0 0",
+            padding: "1rem 0.7rem 0 0",
         },
     },
     navigationPaneRow: {
@@ -82,7 +103,7 @@ const styles = StyleSheet.create({
         justifyContent: "left",
         gap: '10px',
         cursor: "pointer",
-        paddingLeft: "0.5em",
+        paddingLeft: "0.5rem",
         borderLeft: "4px solid transparent",
         ':hover': {
             borderLeft: "4px solid #696969",
@@ -123,6 +144,12 @@ const styles = StyleSheet.create({
         '@media (max-width: 432px)': {
             display: "none",
         },
+    },
+    navigationPaneHeader: {
+        fontSize: "0.9rem",
+        color: "#000000",
+        marginTop: "1.5rem",
+        paddingLeft: "1rem",
     }
 })
 
