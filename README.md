@@ -42,13 +42,13 @@ This project is fully containerized using **Docker** and **Docker Compose**, mak
 ```
 .
 ├── api/            # Backend API (Node.js, Express)
-├── web-app/        # Frontend (React, Webpack)
-├── scripts/        # Utility scripts
+├── webApp/        # Frontend (React, Webpack, Redux, SASS)
 ├── docker/         # Docker configurations
-│   ├── Dockerfile.api  # API Dockerfile
-│   ├── Dockerfile.web  # Web App Dockerfile
+│   ├── api.Dockerfile  # API Dockerfile
+│   ├── webappDockerfile  # Web App Dockerfile
 │   ├── docker-compose.yml  # Docker Compose Configuration
 │   ├── .env.example  # Environment Variables Template
+├── scripts/        # Utility scripts
 └── README.md        # Project Documentation
 ```
 
