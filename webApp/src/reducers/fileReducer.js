@@ -10,7 +10,10 @@ const initialState = Map({
         home: List(),
         files: List(),
         images: List(),
+        videos: List(),
         shared: List(),
+        albums: List(),
+        shelves: List(),
     }),
 });
 

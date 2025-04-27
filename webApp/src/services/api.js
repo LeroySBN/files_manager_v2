@@ -73,6 +73,7 @@ export const authService = {
       
       return response.data;
     } catch (error) {
+      console.log(error);
       throw error.response?.data?.error || 'Login failed';
     }
   },

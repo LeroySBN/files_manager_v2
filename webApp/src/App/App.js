@@ -87,6 +87,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter, sans-serif',
     background: 'linear-gradient(0deg, #3d85c677, #fff8f8)',
     minHeight: '100vh',
+    minWidth: '344px',
   },
   Dashboard: {
     position: 'relative',

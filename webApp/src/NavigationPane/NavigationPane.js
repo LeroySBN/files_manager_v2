@@ -92,8 +92,9 @@ const styles = StyleSheet.create({
         alignItems: "flex-start",
         padding: "1rem 2rem 0 0",
         gap: "14px",
-        '@media (max-width: 432px)': {
+        '@media (max-width: 676px)': {
             padding: "1rem 0.7rem 0 0",
+            alignItems: "center",
         },
     },
     navigationPaneRow: {
@@ -107,6 +108,14 @@ const styles = StyleSheet.create({
         borderLeft: "4px solid transparent",
         ':hover': {
             borderLeft: "4px solid #696969",
+        },
+        '@media (max-width: 676px)': {
+            flexDirection: "column",
+            justifyContent: "center",
+            gap: "7px",
+            padding: "1rem",
+            border: "0",
+            borderRadius: "1rem",
         }
     },
     navigationPaneFocus: {
@@ -118,6 +127,15 @@ const styles = StyleSheet.create({
         cursor: "pointer",
         paddingLeft: "0.5em",
         borderLeft: "4px solid #3d85c6",
+        '@media (max-width: 676px)': {
+            flexDirection: "column",
+            justifyContent: "center",
+            gap: "7px",
+            padding: "1rem",
+            border: "0",
+            borderRadius: "1rem",
+            backgroundColor: "#3D85C66B",
+        }
     },
     navigationPaneAdd: {
         display: "flex",
@@ -129,9 +147,12 @@ const styles = StyleSheet.create({
         borderRadius: "28px",
         padding: "0 1em",
         cursor: "pointer",
-        '@media (max-width: 432px)': {
+        '@media (max-width: 676px)': {
             borderRadius: "50&",
             padding: "0.7em",
+            navigationPaneTitle: {
+                display: "none",
+            }
         },
     },
     navigationItemLogo: {
@@ -142,7 +163,7 @@ const styles = StyleSheet.create({
         fontSize: "0.9rem",
         color: "#000000",
         '@media (max-width: 432px)': {
-            display: "none",
+            fontSize: "0.7rem",
         },
     },
     navigationPaneHeader: {

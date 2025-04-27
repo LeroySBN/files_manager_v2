@@ -9,6 +9,9 @@ export const UI_ACTIONS = {
     DASHBOARD_SHOW_FILES: 'ui/DASHBOARD_SHOW_FILES',
     DASHBOARD_SHOW_PHOTOS: 'ui/DASHBOARD_SHOW_PHOTOS',
     DASHBOARD_SHOW_SHARED: 'ui/DASHBOARD_SHOW_SHARED',
+    DASHBOARD_SHOW_VIDEOS: 'ui/DASHBOARD_SHOW_VIDEOS',
+    DASHBOARD_SHOW_ALBUMS: 'ui/DASHBOARD_SHOW_ALBUMS',
+    DASHBOARD_SHOW_SHELVES: 'ui/DASHBOARD_SHOW_SHELVES',
     DASHBOARD_SWITCH: 'ui/DASHBOARD_SWITCH',
 };
 
@@ -19,6 +22,9 @@ const dashboardShowHome = createAction(UI_ACTIONS.DASHBOARD_SHOW_HOME);
 const dashboardShowFiles = createAction(UI_ACTIONS.DASHBOARD_SHOW_FILES);
 const dashboardShowPhotos = createAction(UI_ACTIONS.DASHBOARD_SHOW_PHOTOS);
 const dashboardShowShared = createAction(UI_ACTIONS.DASHBOARD_SHOW_SHARED);
+const dashboardShowVideos = createAction(UI_ACTIONS.DASHBOARD_SHOW_VIDEOS);
+const dashboardShowAlbums = createAction(UI_ACTIONS.DASHBOARD_SHOW_ALBUMS);
+const dashboardShowShelves = createAction(UI_ACTIONS.DASHBOARD_SHOW_SHELVES);
 const dashboardSwitchAction = createAction(UI_ACTIONS.DASHBOARD_SWITCH, (focus) => ({ payload: focus }));
 
 // Thunk actions
@@ -42,5 +48,11 @@ export const dashboardSwitch = (focus) => async (dispatch) => {
         dispatch(dashboardShowPhotos());
     } else if (focus === 'Shared') {
         dispatch(dashboardShowShared());
+    } else if (focus === 'Videos') {
+        dispatch(dashboardShowVideos());
+    } else if (focus === 'Albums') {
+        dispatch(dashboardShowAlbums());
+    } else if (focus === 'Shelves') {
+        dispatch(dashboardShowShelves());
     }
 };

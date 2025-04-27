@@ -41,6 +41,24 @@ const uiReducer = (state = initialState, action) => {
                 'selectList': 'shared'
             })
 
+        case UI_ACTIONS.DASHBOARD_SHOW_VIDEOS:
+            return state.merge({
+                'dashboardFocus': 'Videos',
+                'selectList': 'videos'
+            })
+
+        case UI_ACTIONS.DASHBOARD_SHOW_ALBUMS:
+            return state.merge({
+                'dashboardFocus': 'Albums',
+                'selectList': 'albums'
+            })
+
+        case UI_ACTIONS.DASHBOARD_SHOW_SHELVES:
+            return state.merge({
+                'dashboardFocus': 'Shelves',
+                'selectList': 'shelves'
+            })
+
         default:
             return state;
     }
