@@ -17,6 +17,7 @@ fun SignupScreen(
     var password by remember { mutableStateOf("") }
     var loading by remember { mutableStateOf(false) }
     var error by remember { mutableStateOf<String?>(null) }
+    var attemptSignup by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier.fillMaxSize().padding(24.dp),
@@ -44,21 +45,28 @@ fun SignupScreen(
             Text(error ?: "", color = MaterialTheme.colors.error)
             Spacer(Modifier.height(8.dp))
         }
-        Button(
-            onClick = {
+        LaunchedEffect(attemptSignup) {
+            if (attemptSignup && !loading) {
                 loading = true
                 error = null
-                // Launch coroutine for signup
-                LaunchedEffect(email, password) {
-                    val result = onSignup(email, password)
-                    if (result != null) error = result
-                    loading = false
+                val result = onSignup(email, password)
+                if (result != null) {
+                    error = result
                 }
-            },
+                loading = false
+                attemptSignup = false
+            }
+        }
+        
+        Button(
+            onClick = { attemptSignup = true },
             enabled = !loading,
             modifier = Modifier.fillMaxWidth()
         ) {
-            if (loading) CircularProgressIndicator(Modifier.size(20.dp), strokeWidth = 2.dp) else Text("Sign Up")
+            if (loading)
+                CircularProgressIndicator(Modifier.size(20.dp), strokeWidth = 2.dp)
+            else
+                Text("Sign Up")
         }
         Spacer(Modifier.height(8.dp))
         TextButton(onClick = onSwitchToLogin) {
