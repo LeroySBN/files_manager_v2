@@ -1,145 +1,130 @@
 package ke.leroybuliro.apps
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Snackbar
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import io.ktor.client.plugins.*
-import io.ktor.client.statement.bodyAsText
-import ke.leroybuliro.apps.network.AuthApi
-import kotlinx.coroutines.*
+import ke.leroybuliro.apps.data.PlatformTokenSaver
+import ke.leroybuliro.apps.presentation.screens.DashboardScreen
+import ke.leroybuliro.apps.presentation.screens.LoadingScreen
+import ke.leroybuliro.apps.presentation.screens.LoginScreen
+import ke.leroybuliro.apps.presentation.screens.SignupScreen
+import ke.leroybuliro.apps.presentation.screens.WelcomeScreen
+import ke.leroybuliro.apps.presentation.viewmodels.AuthViewModel
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.ui.tooling.preview.Preview
+
+enum class Screen {
+    Welcome, Login, Signup, Dashboard
+}
 
 @Composable
 @Preview
-fun App() {
+fun App(platformTokenSaver: PlatformTokenSaver) {
+    var isDarkMode by remember { mutableStateOf(false) }
+    val backgroundColor = if (isDarkMode) Color(0xFFBBBBBB) else Color.White
+    val toggleTheme = {
+        isDarkMode = !isDarkMode
+        println("THEME TOGGLED: isDarkMode = $isDarkMode")
+    }
+    val authViewModel = remember { AuthViewModel(platformTokenSaver) }
+    val loading by authViewModel.loading.collectAsState()
+    val errorMsg by authViewModel.error.collectAsState()
+
     MaterialTheme {
-        var screen by remember { mutableStateOf<Screen>(Screen.Welcome) }
-        var userEmail by remember { mutableStateOf<String?>(null) }
-        var errorMsg by remember { mutableStateOf<String?>(null) }
-        var loading by remember { mutableStateOf(false) }
+        Box(
+            modifier = Modifier.fillMaxSize()
+                .background(backgroundColor)
+        ) {
+            var screen by remember { mutableStateOf(Screen.Welcome) }
+            var userEmail by remember { mutableStateOf<String?>(null) }
+            val coroutineScope = rememberCoroutineScope()
 
-        fun resetState() {
-            errorMsg = null
-            loading = false
-        }
+            when (screen) {
+                Screen.Welcome -> {
+                    WelcomeScreen(
+                        onLogin = { screen = Screen.Login },
+                        onSignup = { screen = Screen.Signup },
+                        isDarkTheme = isDarkMode,
+                        onToggleTheme = toggleTheme
+                    )
+                }
 
-        when (screen) {
-            Screen.Welcome -> {
-                WelcomeScreen(
-                    onLogin = { screen = Screen.Login },
-                    onSignup = { screen = Screen.Signup }
-                )
-            }
-            Screen.Login -> {
-                LoginScreen(
-                    onLogin = { email, password ->
-                        resetState()
-                        if (email.isBlank() || password.isBlank()) {
-                            return@LoginScreen "Please fill in all fields"
-                        }
-                        loading = true
-                        try {
-                            val resp = AuthApi.login(email, password)
-                            loading = false
-                            if (resp.token != null) {
-                                userEmail = email
-                                screen = Screen.Dashboard
-                                null
-                            } else {
-                                resp.error ?: "Login failed"
+                Screen.Login -> {
+                    LoginScreen(
+                        isDarkTheme = isDarkMode,
+                        onLogin = { email, password ->
+                            coroutineScope.launch {
+                                authViewModel.login(email, password) {
+                                    userEmail = email
+                                    screen = Screen.Dashboard
+                                }
                             }
-                        } catch (e: ResponseException) {
-                            loading = false
-                            e.response.bodyAsText()
-                        } catch (e: Exception) {
-                            loading = false
-                            e.message ?: "Login failed"
-                        }
-                    },
-                    onSwitchToSignup = { screen = Screen.Signup }
-                )
-            }
-            Screen.Signup -> {
-                SignupScreen(
-                    onSignup = { email, password ->
-                        resetState()
-                        if (email.isBlank() || password.isBlank()) {
-                            return@SignupScreen "Please fill in all fields"
-                        }
-                        loading = true
-                        try {
-                            val resp = AuthApi.signup(email, password)
-                            loading = false
-                            if (resp.email != null) {
-                                userEmail = email
-                                screen = Screen.Dashboard
-                                null
-                            } else {
-                                resp.error ?: "Signup failed"
+                            // errorMsg and loading are handled by ViewModel
+                            null // UI should read errorMsg from ViewModel
+                        },
+                        onSwitchToSignup = { screen = Screen.Signup }
+                    )
+                }
+
+                Screen.Signup -> {
+                    SignupScreen(
+                        isDarkTheme = isDarkMode,
+                        onSignup = { email, password ->
+                            coroutineScope.launch {
+                                authViewModel.signup(email, password) {
+                                    userEmail = email
+                                    screen = Screen.Dashboard
+                                }
                             }
-                        } catch (e: ResponseException) {
-                            loading = false
-                            e.response.bodyAsText()
-                        } catch (e: Exception) {
-                            loading = false
-                            e.message ?: "Signup failed"
+                            // errorMsg and loading are handled by ViewModel
+                            null // UI should read errorMsg from ViewModel
+                        },
+                        onSwitchToLogin = { screen = Screen.Login }
+                    )
+                }
+
+                Screen.Dashboard -> {
+                    DashboardScreen(
+                        isDarkTheme = isDarkMode,
+                        onLogout = {
+                            coroutineScope.launch {
+                                authViewModel.logout {
+                                    userEmail = null
+                                    screen = Screen.Welcome
+                                }
+                            }
                         }
-                    },
-                    onSwitchToLogin = { screen = Screen.Login }
-                )
+                    )
+                }
             }
-            Screen.Dashboard -> {
-                DashboardScreen(
-                    userEmail = userEmail ?: "",
-                    onLogout = {
-                        loading = true
-                        resetState()
-                        runBlocking {
-                            try {
-                                AuthApi.logout()
-                            } catch (_: Exception) {}
-                        }
-                        loading = false
-                        userEmail = null
-                        screen = Screen.Welcome
-                    }
-                )
+
+            if (loading) {
+                LoadingScreen()
             }
-        }
-        if (loading) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
-            }
-        }
-        if (errorMsg != null) {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.TopCenter
-            ) {
-                Snackbar(
-                    modifier = Modifier.padding(16.dp)
+
+            if (errorMsg != null) {
+                Box(
+                    modifier = Modifier.fillMaxSize().padding(16.dp),
+                    contentAlignment = Alignment.BottomCenter
                 ) {
-                    Text(text = errorMsg ?: "")
+                    Snackbar { Text(errorMsg ?: "") }
                 }
             }
         }
     }
-}
-
-sealed class Screen {
-    object Welcome : Screen()
-    object Login : Screen()
-    object Signup : Screen()
-    object Dashboard : Screen()
 }
