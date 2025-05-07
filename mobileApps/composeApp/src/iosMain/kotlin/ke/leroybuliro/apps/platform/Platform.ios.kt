@@ -1,4 +1,4 @@
-package ke.leroybuliro.apps
+package ke.leroybuliro.apps.platform
 
 import platform.UIKit.UIDevice
 
