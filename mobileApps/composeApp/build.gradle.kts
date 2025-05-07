@@ -2,13 +2,14 @@ import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
-val ktor_version: String by project
+//val material_version: String by project
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.composeMultiplatform)
     alias(libs.plugins.composeCompiler)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 kotlin {
@@ -16,9 +17,11 @@ kotlin {
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
+            // Suppress expect/actual classes warning
+            freeCompilerArgs.add("-Xexpect-actual-classes")
         }
     }
-    
+
     listOf(
         iosX64(),
         iosArm64(),
@@ -29,13 +32,15 @@ kotlin {
             isStatic = true
         }
     }
-    
+
+//    ios {
+//        binaries.framework {
+//            baseName = "shared"
+//        }
+//    }
+
     sourceSets {
-        
-        androidMain.dependencies {
-            implementation(compose.preview)
-            implementation(libs.androidx.activity.compose)
-        }
+
         commonMain.dependencies {
             implementation(compose.runtime)
             implementation(compose.foundation)
@@ -45,13 +50,33 @@ kotlin {
             implementation(compose.components.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtime.compose)
-            implementation("com.russhwolf:multiplatform-settings-no-arg:1.3.0")
-            implementation("io.ktor:ktor-client-core:$ktor_version")
-            implementation("io.ktor:ktor-client-cio:$ktor_version")
-            implementation("io.ktor:ktor-client-content-negotiation:$ktor_version")
-            implementation("io.ktor:ktor-serialization-kotlinx-json:$ktor_version")
+
+            implementation(libs.datastore.preferences)
+
+            implementation(libs.bundles.ktor)
+        }
+        androidMain.dependencies {
+            implementation(compose.preview)
+            implementation(libs.androidx.activity.compose)
+
+            implementation(libs.material.icons.core)
+            implementation(libs.material.icons.extended)
+
+            implementation(libs.datastore.preferences)
+        }
+        iosMain.dependencies {
         }
     }
+
+    // Configure interop
+//    targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget> {
+//        compilations["main"].cinterops {
+//            create("KeychainInterop") {
+//                defFile(project.file("src/iosMain/cinterop/keychain.def"))
+//                packageName("com.yourapp.keychaininterop")
+//            }
+//        }
+//    }
 }
 
 android {
