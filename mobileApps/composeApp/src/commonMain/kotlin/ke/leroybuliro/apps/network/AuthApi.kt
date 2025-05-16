@@ -21,24 +21,10 @@ data class SignupResponse(val id: String? = null, val email: String? = null, val
 
 object AuthApi {
     private var token: String? = null
-    
-    fun setToken(newToken: String?) {
-        token = newToken
-    }
-
-    fun getToken(): String? {
-        return token
-    }
-
-    fun clearToken() {
-        token = null
-    }
 
     suspend fun login(email: String, password: String): LoginResponse = withContext(Dispatchers.Default) {
         try {
-            // Create credentials string exactly as the web UI does
             val credentials = "$email:$password"
-            // Use the standard Base64 encoding without any padding or line breaks
             val encodedCredentials = credentials.encodeBase64()
             val basic = "Basic $encodedCredentials"
             
@@ -52,13 +38,12 @@ object AuthApi {
             }
             val body = response.body<LoginResponse>()
             if (body.token != null) {
-                // Simply store the token in memory
-                setToken(body.token)
+                // TODO:save token to disk
+                println("Login successful. Token: $token")
             }
             return@withContext body
         } catch (e: Exception) {
             println("Login error: ${e.message}")
-            // Preserve the original error message
             return@withContext LoginResponse(error = e.message ?: "Operation not permitted")
         }
     }
@@ -71,10 +56,9 @@ object AuthApi {
             }
             val result = response.body<SignupResponse>()
             
-            // If signup was successful and we have an email, we can consider the user logged in
-            if (result.email != null && result.id != null && result.token != null) {
-                // Simply store the token in memory
-                setToken(result.token)
+            if (result.email != null && result.id != null) {
+                // TODO: success screen instructing user to login then redirect to login screen
+                println("Signup successful.")
             }
             
             return@withContext result
@@ -91,10 +75,10 @@ object AuthApi {
                 headers { append("X-Token", token!!) }
             }
         } catch (e: Exception) {
-            // Log error but continue with token removal
             println("Logout error: ${e.message}")
         } finally {
-            clearToken()
+//            clearToken()
+            // TODO: implement clearToken 
         }
     }
 }

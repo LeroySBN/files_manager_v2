@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<resources>
+    <string name="app_name">Drive by Buliro</string>
+    <string name="login">Log In</string>
+    <string name="signup">Sign Up</string>
+    <string name="logout">Log Out</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>">
+    <string name="hide_password">Hide password</string>
+    <string name="show_password">Show password</string>
+    <string name="no_account_yet">Don't have an account? Sign up</string>">
+    <string name="already_have_account">Already have an account? Log in</string>
+    <string name="switch_to_dark_theme">Switch to Dark Theme</string>
+    <string name="switch_to_light_theme">Switch to Light Theme</string>
+    <string name="documents">My Documents</string>
+    <string name="collections">Collections</string>
+    <string name="no_documents">No documents</string>
+    <string name="error_loading_documents">Error loading documents</string>
+    <string name="error_loading_file">Error loading file</string>
+    <string name="no_collections">No collections created</string>
+    <string name="error_loading_collections">Error loading collections</string>
+</resources>

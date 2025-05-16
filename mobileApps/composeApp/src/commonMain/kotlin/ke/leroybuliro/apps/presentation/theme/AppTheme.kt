@@ -1,15 +1,15 @@
 package ke.leroybuliro.apps.presentation.theme
 
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.darkColors
-import androidx.compose.material.lightColors
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
 // Light theme colors - VERY DISTINCT for debugging
-val LightColorPalette = lightColors(
+val LightColorPalette = lightColorScheme(
     primary = Color(0xFF2196F3),      // Blue
-    primaryVariant = Color(0xFF1976D2),
+    inversePrimary = Color(0xFF1976D2),
     secondary = Color(0xFFFF9800),     // Orange
     background = Color.White,
     surface = Color(0xFFF5F5F5),       // Very light gray
@@ -22,9 +22,9 @@ val LightColorPalette = lightColors(
 )
 
 // Dark theme colors with DRAMATICALLY DIFFERENT colors for debugging
-val DarkColorPalette = darkColors(
+val DarkColorPalette = darkColorScheme(
     primary = Color(0xFF64B5F6),      // Light blue
-    primaryVariant = Color(0xFF42A5F5),
+    inversePrimary = Color(0xFF42A5F5),
     secondary = Color(0xFFFFCC80),     // Light orange
     background = Color(0xFF212121),
     surface = Color(0xFFDDDDDD),       // Light gray surface
@@ -52,7 +52,7 @@ fun AppTheme(
 
     // Apply the theme with the selected colors
     MaterialTheme(
-        colors = colorPalette,
+        colorScheme = colorPalette,
         content = content
     )
 }
