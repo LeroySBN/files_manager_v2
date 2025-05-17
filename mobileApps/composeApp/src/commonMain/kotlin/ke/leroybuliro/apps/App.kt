@@ -20,32 +20,32 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import ke.leroybuliro.apps.data.PlatformTokenSaver
-//import ke.leroybuliro.apps.domain.File
-//import ke.leroybuliro.apps.presentation.file_list.FileListScreen
-//import ke.leroybuliro.apps.presentation.file_list.FileListState
+import ke.leroybuliro.apps.domain.File
+import ke.leroybuliro.apps.presentation.file_list.FileListScreen
+import ke.leroybuliro.apps.presentation.file_list.FileListState
 import ke.leroybuliro.apps.presentation.screens.LoginScreen
 import ke.leroybuliro.apps.presentation.screens.SignupScreen
 import ke.leroybuliro.apps.presentation.screens.WelcomeScreen
 import ke.leroybuliro.apps.presentation.viewmodels.AuthViewModel
 import kotlinx.coroutines.launch
 
+private val files = (1..20).map {
+    File(
+        fileId = it.toString(),
+        userId = "1",
+        name = "File $it",
+        type = "file",
+        isPublic = false,
+        parentId = "0"
+    )
+}
+
 enum class Screen {
-    Welcome, Login, Signup,
-//    FileList
+    Welcome, Login, Signup, FileList
 }
 
 // TODO: use sharedFlow to send snack-bar error events to the ui
 
-//private val files = (1..20).map {
-//    File(
-//        fileId = it.toString(),
-//        userId = "1",
-//        name = "File $it",
-//        type = "file",
-//        isPublic = false,
-//        parentId = "0"
-//    )
-//}
 
 @Composable
 fun App(platformTokenSaver: PlatformTokenSaver) {
@@ -83,7 +83,7 @@ fun App(platformTokenSaver: PlatformTokenSaver) {
                             coroutineScope.launch {
                                 authViewModel.login(email, password) {
                                     userEmail = email
-//                                    screen = Screen.FileList
+                                    screen = Screen.FileList
                                 }
                             }
                             // errorMsg and loading are handled by ViewModel
@@ -110,27 +110,27 @@ fun App(platformTokenSaver: PlatformTokenSaver) {
                     )
                 }
 
-//                Screen.FileList -> {
-//                    FileListScreen(
-//                        state = FileListState(
-//                            documentList = files,
-//                            collectionList = files.filter { it.type == "collections" },
-//                            selectedTabIndex = 0,
-//                            isLoading = false,
-//                            error = null
-//                        ),
-//                        onAction = {},
-//                        isDarkTheme = isDarkMode,
-//                        onLogout = {
-//                            coroutineScope.launch {
-//                                authViewModel.logout {
-//                                    userEmail = null
-//                                    screen = Screen.Welcome
-//                                }
-//                            }
-//                        }
-//                    )
-//                }
+                Screen.FileList -> {
+                    FileListScreen(
+                        state = FileListState(
+                            documentList = files,
+                            collectionList = files.filter { it.type == "collections" },
+                            selectedTabIndex = 0,
+                            isLoading = false,
+                            error = null
+                        ),
+                        onAction = {},
+                        isDarkTheme = isDarkMode,
+                        onLogout = {
+                            coroutineScope.launch {
+                                authViewModel.logout {
+                                    userEmail = null
+                                    screen = Screen.Welcome
+                                }
+                            }
+                        }
+                    )
+                }
             }
 
             if (errorMsg != null) {

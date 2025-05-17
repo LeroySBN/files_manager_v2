@@ -3,11 +3,9 @@ package ke.leroybuliro.apps.presentation.file_list
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -34,9 +32,9 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -44,11 +42,27 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import filesmanager.composeapp.generated.resources.Res
-import filesmanager.composeapp.generated.resources.*
+import filesmanager.composeapp.generated.resources.app_name
+import filesmanager.composeapp.generated.resources.collections
+import filesmanager.composeapp.generated.resources.documents
+import filesmanager.composeapp.generated.resources.favorite_24px
+import filesmanager.composeapp.generated.resources.favorite_fill_24px
+import filesmanager.composeapp.generated.resources.favorite_tab
+import filesmanager.composeapp.generated.resources.folder_shared_24px
+import filesmanager.composeapp.generated.resources.folder_shared_fill_24px
+import filesmanager.composeapp.generated.resources.home_24px
+import filesmanager.composeapp.generated.resources.home_fill_24px
+import filesmanager.composeapp.generated.resources.home_tab
+import filesmanager.composeapp.generated.resources.logout
+import filesmanager.composeapp.generated.resources.logout_24px
+import filesmanager.composeapp.generated.resources.no_collections
+import filesmanager.composeapp.generated.resources.no_documents
+import filesmanager.composeapp.generated.resources.shared_tab
 import ke.leroybuliro.apps.presentation.file_list.components.FileList
 import ke.leroybuliro.apps.presentation.theme.DarkColorPalette
 import ke.leroybuliro.apps.presentation.theme.LightColorPalette
-import org.jetbrains.compose.resources.*
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 
 //@Composable
 //fun FileListScreenRoot(
@@ -67,16 +81,19 @@ import org.jetbrains.compose.resources.*
 fun FileListScreen(
     state: FileListState,
     onAction: (FileListAction) -> Unit,
-//    isDarkTheme: Boolean,
-//    onLogout: () -> Unit,
+    isDarkTheme: Boolean,
+    onLogout: () -> Unit,
 ) {
     val pagerState = rememberPagerState{2}
     val documentListState = rememberLazyListState()
     val collectionListState = rememberLazyListState()
-    val isDarkTheme = false
-
     var selectedItem by remember { mutableIntStateOf(0) }
-    val items = listOf("Home", "Favourite", "Shared")
+
+    val items = listOf(
+        stringResource(Res.string.home_tab),
+        stringResource(Res.string.favorite_tab),
+        stringResource(Res.string.shared_tab)
+    )
     val selectedIcons = listOf(
         painterResource(Res.drawable.home_fill_24px),
         painterResource(Res.drawable.favorite_fill_24px),
@@ -136,10 +153,10 @@ fun FileListScreen(
                             }
                         },
                         actions = {
-                            IconButton(onClick = { /* doSomething() */ }) {
+                            IconButton(onClick = { onLogout() }) {
                                 Icon(
                                     painter = painterResource(Res.drawable.logout_24px),
-                                    contentDescription = "Localized description",
+                                    contentDescription = stringResource(Res.string.logout),
                                     tint = MaterialTheme.colorScheme.onSurface
 
                                 )
