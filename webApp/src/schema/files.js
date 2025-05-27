@@ -10,16 +10,16 @@ export const filesNormalizer = (data) => {
     const files = normalizedData.entities.files || {};
 
     const home = Object.values(files).filter((file) => file.parentId === 0);
-    const myFiles = Object.values(files).filter((file) => file.type === 'file');
-    const images = Object.values(files).filter((file) => file.type === 'image');
+    // const myFiles = Object.values(files).filter((file) => file.type === 'file');
+    // const images = Object.values(files).filter((file) => file.type === 'image');
     const shared = Object.values(files).filter((file) => file.isPublic === true);
 
     return fromJS({
         entities: normalizedData.entities,
         lists: {
             home: home.map((file) => file.id),
-            files: myFiles.map((file) => file.id),
-            images: images.map((file) => file.id),
+            // files: myFiles.map((file) => file.id),
+            // images: images.map((file) => file.id),
             shared: shared.map((file) => file.id),
         },
     });

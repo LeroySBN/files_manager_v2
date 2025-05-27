@@ -42,24 +42,24 @@ function NavigationPane({paneFocus, dashboardSwitch}) {
                 isFocus={paneFocus === "Home"}
                 onClick={() => handleRowClick("Home")}
             />
-            <NavigationPaneRow
-                icon={fileIcon}
-                title="My Files"
-                isFocus={paneFocus === "My Files"}
-                onClick={() => handleRowClick("My Files")}
-            />
-            <NavigationPaneRow
-                icon={photoIcon}
-                title="Photos"
-                isFocus={paneFocus === "Photos"}
-                onClick={() => handleRowClick("Photos")}
-            />
-            <NavigationPaneRow
-                icon={photoIcon}
-                title="Videos"
-                isFocus={paneFocus === "Videos"}
-                onClick={() => handleRowClick("Videos")}
-            />
+            {/*<NavigationPaneRow*/}
+            {/*    icon={fileIcon}*/}
+            {/*    title="My Files"*/}
+            {/*    isFocus={paneFocus === "My Files"}*/}
+            {/*    onClick={() => handleRowClick("My Files")}*/}
+            {/*/>*/}
+            {/*<NavigationPaneRow*/}
+            {/*    icon={photoIcon}*/}
+            {/*    title="Photos"*/}
+            {/*    isFocus={paneFocus === "Photos"}*/}
+            {/*    onClick={() => handleRowClick("Photos")}*/}
+            {/*/>*/}
+            {/*<NavigationPaneRow*/}
+            {/*    icon={photoIcon}*/}
+            {/*    title="Videos"*/}
+            {/*    isFocus={paneFocus === "Videos"}*/}
+            {/*    onClick={() => handleRowClick("Videos")}*/}
+            {/*/>*/}
             <NavigationPaneRow
                 icon={sharedIcon}
                 title="Shared"

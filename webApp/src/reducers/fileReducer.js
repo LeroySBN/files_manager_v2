@@ -8,9 +8,9 @@ const initialState = Map({
     }),
     lists: Map({
         home: List(),
-        files: List(),
-        images: List(),
-        videos: List(),
+        // files: List(),
+        // images: List(),
+        // videos: List(),
         shared: List(),
         albums: List(),
         shelves: List(),
