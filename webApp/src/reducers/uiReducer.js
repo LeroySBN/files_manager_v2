@@ -2,7 +2,7 @@ import {Map} from 'immutable';
 import {UI_ACTIONS} from "../actions/uiActions";
 
 export const initialState = Map({
-    appName: "FileCore",
+    appName: "Files",
     isNotificationDrawerVisible: false,
     dashboardFocus: "Home",
     selectList: "home",
