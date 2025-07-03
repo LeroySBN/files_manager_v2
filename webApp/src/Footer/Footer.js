@@ -11,7 +11,7 @@ function Footer({appName}) {
     <>
       <div className="App-footer">
         <div className="footerContainer container">
-          <p>Copyright {getFullYear()} - {appName}</p>
+          <p>Copyright {getFullYear()} - {appName}. Made with coffee and love by Leroy Buliro</p>
         </div>
         </div>
     </>
