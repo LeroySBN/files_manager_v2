@@ -2,6 +2,8 @@
 
 Files Manager is a simple and efficient platform for uploading, organizing, and viewing files. It provides a seamless experience for users to manage their files securely with authentication and permission settings.
 
+It is a containerized full-stack application using JavaScript/Express to serve a RESTful API with Top-Level implementation of React as the web frontend.
+
 ## 🚀 Features
 
 - 🔐 **User Authentication**: Secure token-based authentication.
